@@ -1,14 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { Menu, X, Calendar, Sun, Moon } from "lucide-react";
 import { PhoneSolidIcon } from "@/components/icons/PhoneSolidIcon";
 import { HOTEL } from "@/lib/hotel";
 import { useTheme } from "@/lib/ThemeContext";
 import { BankyLogo } from "@/components/common/BankyLogo";
-
-const NAVY_PAGES = ["/rooms", "/dining", "/events", "/gallery", "/about", "/contact"];
 
 const NAV = [
   { to: "/", label: "Home" },
@@ -24,20 +21,26 @@ export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
-  const pathname = usePathname();
-  const isNavyPage = NAVY_PAGES.some((p) => pathname === p || pathname.startsWith(p + "/"));
 
+  // Transparent header with white text at top; solid brand-blue bar with white text once scrolled past 50px.
   const iconBtnColor = scrolled
-    ? isNavyPage
-      ? "text-white hover:text-[var(--accent-light)]"
-      : theme === "dark"
-      ? "text-[#f4efe6] hover:text-[var(--accent-light)]"
-      : "text-[var(--text-primary)] hover:text-[var(--accent)]"
+    ? "text-white hover:text-[var(--accent-light)]"
     : "text-white hover:text-[var(--accent-light)]";
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 30);
-    onScroll();
+    // Lightweight, performant scroll listener: passive + rAF-throttled (max one state update per frame).
+    let ticking = false;
+    const update = () => {
+      setScrolled(window.scrollY > 50);
+      ticking = false;
+    };
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    };
+    update();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
@@ -48,16 +51,16 @@ export function Header() {
   }, [open]);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 transition-all duration-300">
-      <div className={`transition-all duration-400 ${scrolled ? (isNavyPage ? "bg-[#0a2777] backdrop-blur-xl border-b border-[#0000dd]/20 shadow-sm" : (theme === "dark" ? "bg-[#161616]/95 backdrop-blur-xl border-b border-white/10 shadow-sm" : "bg-white/95 backdrop-blur-xl border-b border-[var(--border)] shadow-sm")) : "bg-transparent border-b border-transparent"}`}>
-        <div className={`container-x flex items-center justify-between transition-all duration-300 ${scrolled ? "py-3" : "py-4 sm:py-5"}`}>
+    <header className="fixed inset-x-0 top-0 z-50">
+      <div className={`transition-all duration-[400ms] ease-in-out ${scrolled ? "bg-[#0a2777] shadow-[0_4px_12px_rgba(0,0,0,0.18)]" : "bg-transparent"}`}>
+        <div className={`container-x flex items-center justify-between transition-all duration-[400ms] ease-in-out ${scrolled ? "py-1.5" : "py-2 sm:py-2.5"}`}>
           {/* Left — Hamburger on mobile & tablet; Phone on desktop */}
-          <div className="flex-1 flex items-center justify-start">
+          <div className="flex-1 flex items-center justify-start max-lg:self-stretch max-lg:items-start">
             {/* Mobile & Tablet: Hamburger menu icon at top-left with no border and no background */}
             <button
               onClick={() => setOpen(!open)}
               aria-label={open ? "Close menu" : "Open menu"}
-              className={`lg:hidden p-2 -ml-2 bg-transparent border-none shadow-none transition-transform active:scale-90 flex items-center justify-center cursor-pointer ${iconBtnColor}`}
+              className={`lg:hidden p-2 -ml-2 mt-1.5 bg-transparent border-none shadow-none transition-transform active:scale-90 flex items-center justify-center cursor-pointer ${iconBtnColor}`}
             >
               {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
@@ -65,59 +68,38 @@ export function Header() {
             {/* Desktop: Phone number */}
             <a
               href={`tel:${HOTEL.phone}`}
-              className={`hidden lg:inline-flex items-center gap-2 font-condensed text-[0.76rem] tracking-[0.16em] uppercase font-medium py-1.5 px-3 ${scrolled ? (isNavyPage ? "text-white/90 hover:text-white" : (theme === "dark" ? "text-[#f4efe6] hover:text-[var(--accent-light)]" : "text-[var(--text-primary)] hover:text-[var(--accent)]")) : "text-white/90 hover:text-white"}`}
+              className={`hidden lg:inline-flex items-center gap-2 font-condensed text-[0.76rem] tracking-[0.16em] uppercase font-medium py-1.5 px-3 transition-colors duration-[400ms] ease-in-out ${scrolled ? "text-white/90 hover:text-white" : "text-white/90 hover:text-white"}`}
             >
               <PhoneSolidIcon className="h-3.5 w-3.5" style={{ color: "var(--accent)" }} />
               <span>+234 903 587 9708</span>
             </a>
           </div>
 
-          {/* Center — logo + brand name */}
-          <Link href="/" className="flex items-center gap-2.5 sm:gap-3.5 group shrink-0">
-            <span className="relative shrink-0 flex items-center justify-center bg-transparent p-0 transition-transform duration-300 group-hover:scale-105 w-[116px] sm:w-[139px] h-[78px] sm:h-[92px]">
-              {/* Logo 1: Banky Hotel & Suites Main Logo 1 (active on transparent navigation bar) */}
+          {/* Center — logo. Same "Main Logo 1" asset in both states; a light border + 4px padding fades in once scrolled. */}
+          <Link href="/" className="flex items-center group shrink-0">
+            <span
+              className={`shrink-0 flex items-center justify-center w-[185px] sm:w-[222px] h-[124px] sm:h-[146px] transition-all duration-[400ms] ease-in-out group-hover:scale-105 ${
+                scrolled
+                  ? "bg-white border border-[#e0e0e0] p-1"
+                  : "bg-transparent border border-transparent p-0"
+              }`}
+            >
               <img
                 src="/images/Banky Hotel & Suites Main Logo 1.png"
                 alt="Banky Hotel & Suites Main Logo"
-                className={`absolute inset-0 w-full h-full object-contain transition-all duration-350 ease-in-out ${
-                  scrolled
-                    ? "opacity-0 scale-95 pointer-events-none"
-                    : "opacity-100 scale-100"
-                }`}
+                className="w-full h-full object-contain"
               />
-
-              {/* Logo 2: Solid logo (active when scrolled down after the header) */}
-              <div
-                className={`absolute inset-0 w-full h-full flex items-center justify-center transition-all duration-350 ease-in-out ${
-                  scrolled
-                    ? "opacity-100 scale-100"
-                    : "opacity-0 scale-95 pointer-events-none"
-                }`}
-              >
-                <BankyLogo
-                  className="w-full h-full object-contain transition-all duration-300"
-                  variant={!isNavyPage && theme === "light" ? "dark" : "white"}
-                />
-              </div>
             </span>
-            <div className="flex flex-col">
-              <span className={`font-display text-xl sm:text-2xl md:text-3xl tracking-tight transition-colors leading-tight ${scrolled ? (isNavyPage ? "text-white" : (theme === "dark" ? "text-[#f4efe6]" : "text-[var(--text-primary)]")) : "text-white"}`}>
-                Banky
-              </span>
-              <span className={`font-condensed text-[0.6rem] sm:text-[0.66rem] tracking-[0.26em] uppercase transition-opacity ${scrolled ? (isNavyPage ? "text-white/70" : (theme === "dark" ? "text-stone-400" : "text-stone-500")) : "text-white/85"}`}>
-                Hotel &amp; Suites
-              </span>
-            </div>
           </Link>
 
           {/* Right — Day/Night toggle on mobile & tablet; Reserve + Day/Night + Menu on desktop */}
-          <div className="flex-1 flex items-center justify-end gap-2 sm:gap-3">
+          <div className="flex-1 flex items-center justify-end gap-2 sm:gap-3 max-lg:self-stretch max-lg:items-start">
             {/* Mobile & Tablet Mode: Day or Night toggle button at the top-right */}
             <button
               onClick={toggleTheme}
               aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
               title={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
-              className={`p-2 -mr-2 sm:mr-0 bg-transparent border-none shadow-none transition-transform active:scale-90 flex items-center justify-center cursor-pointer ${iconBtnColor}`}
+              className={`p-2 -mr-2 mt-1.5 sm:mr-0 bg-transparent border-none shadow-none transition-transform active:scale-90 flex items-center justify-center cursor-pointer ${iconBtnColor}`}
             >
               {theme === "light" ? (
                 <Moon className="h-5 w-5 sm:h-6 sm:w-6" />
@@ -141,7 +123,7 @@ export function Header() {
             {/* Desktop: Menu button */}
             <button
               onClick={() => setOpen(!open)}
-              className={`hidden lg:flex items-center gap-2 h-10 sm:h-11 px-3 sm:px-4 transition-all duration-300 active:scale-95 border ${scrolled ? (isNavyPage ? "bg-white/10 text-white border-white/20" : (theme === "dark" ? "bg-[#222] text-[#f4efe6] border-[#444]" : "bg-[var(--text-primary)] text-white border-[var(--text-primary)]")) : "bg-transparent text-white border-white/30 hover:bg-white/10"}`}
+              className={`hidden lg:flex items-center gap-2 h-10 sm:h-11 px-3 sm:px-4 transition-all duration-[400ms] ease-in-out active:scale-95 border ${scrolled ? "bg-white/10 text-white border-white/20 hover:bg-white/20" : "bg-transparent text-white border-white/30 hover:bg-white/10"}`}
             >
               <span className="hidden sm:inline font-condensed text-xs uppercase tracking-[0.22em] font-medium">{open ? "Close" : "Menu"}</span>
               {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}

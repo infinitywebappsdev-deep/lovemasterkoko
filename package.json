@@ -9,8 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@builder.io/sdk-react": "^5.2.10",
-    "clsx": "^2.1.1",
     "firebase": "^12.18.0",
     "firebase-admin": "^14.3.0",
     "framer-motion": "^13.1.1",
@@ -18,9 +16,7 @@
     "next": "^15.3.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "server-only": "^0.0.1",
-    "tailwind-merge": "^3.5.0",
-    "zod": "^4.5.4"
+    "server-only": "^0.0.1"
   },
   "devDependencies": {
     "@types/bun": "^1.4.2",
