@@ -1,6 +1,6 @@
 {
   "name": "Banky Hotel & Suites",
-  "description": "INFINEON Enterprise Hospitality Booking Engine with atomic inventory locks, traceable price breakdown, dynamic meal packages, and Paystack settlement.",
+  "description": "INFINEON Enterprise Hospitality Booking Engine with atomic inventory locks, traceable price breakdown, dynamic meal packages, Paystack settlement, and contactless QR dining with live kitchen order tracking.",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"

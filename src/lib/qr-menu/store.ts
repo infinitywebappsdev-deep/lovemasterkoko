@@ -385,3 +385,78 @@ export async function updateOrderStatusInDb(orderId: string, status: OrderStatus
     } catch {}
   }
 }
+
+/**
+ * Real-time listener for a single Order by ID (used for Live Guest Order Tracker)
+ */
+export function subscribeOrderById(
+  orderId: string,
+  onUpdate: (order: QrOrder | null) => void
+): () => void {
+  // Check local cache first
+  if (typeof window !== "undefined") {
+    try {
+      const cached = localStorage.getItem(LOCAL_STORAGE_ORDERS_KEY);
+      if (cached) {
+        const orders: QrOrder[] = JSON.parse(cached);
+        const found = orders.find((o) => o.id === orderId);
+        if (found) onUpdate(found);
+      }
+    } catch {}
+  }
+
+  try {
+    const ref = doc(db, "qr_orders", orderId);
+    const unsub = onSnapshot(
+      ref,
+      (docSnap) => {
+        if (docSnap.exists()) {
+          const data = { ...docSnap.data(), id: docSnap.id } as QrOrder;
+          onUpdate(data);
+        }
+      },
+      (err) => {
+        console.warn("Order by id snapshot error:", err.message);
+      }
+    );
+    return unsub;
+  } catch {
+    return () => {};
+  }
+}
+
+const LOCAL_STORAGE_SERVICE_KEY = "banky_qr_service_requests_cache";
+
+/**
+ * Submit Call Waiter or Request Bill
+ */
+export async function submitServiceRequest(
+  req: Omit<import("./types").ServiceRequest, "id" | "createdAt" | "status">
+): Promise<import("./types").ServiceRequest> {
+  const id = `srv_${Date.now()}_${Math.floor(100 + Math.random() * 900)}`;
+  const fullReq: import("./types").ServiceRequest = {
+    ...req,
+    id,
+    status: "pending",
+    createdAt: new Date().toISOString(),
+  };
+
+  try {
+    const ref = doc(db, "service_requests", id);
+    await setDoc(ref, fullReq);
+  } catch (err) {
+    console.warn("Firestore service request error:", err);
+  }
+
+  if (typeof window !== "undefined") {
+    try {
+      const cached = localStorage.getItem(LOCAL_STORAGE_SERVICE_KEY);
+      const list = cached ? JSON.parse(cached) : [];
+      list.unshift(fullReq);
+      localStorage.setItem(LOCAL_STORAGE_SERVICE_KEY, JSON.stringify(list));
+    } catch {}
+  }
+
+  return fullReq;
+}
+

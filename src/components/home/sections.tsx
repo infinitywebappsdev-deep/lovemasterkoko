@@ -164,7 +164,7 @@ export const ExperiencesSection = memo(function ExperiencesSection() {
           </div>
           <h2 className="font-display font-normal text-3xl sm:text-4xl md:text-5xl text-[#222] dark:text-[#f4efe6]">Dining &amp; Banqueting</h2>
         </div>
-        <div id="experiences-cards-grid" className="grid gap-6 sm:gap-8 md:grid-cols-3 w-full max-w-[80%] mx-auto">
+        <div id="experiences-cards-grid" className="grid gap-6 sm:gap-8 lg:grid-cols-3 w-full lg:max-w-[80%] mx-auto">
           {[
             { img: "/images/dining.jpg", title: "A Feast Steeped in Tradition", tag: "Culinary Art", copy: "Nigerian classics and continental plates, served breakfast through dinner.", href: "/dining", id: "dining-box" },
             { img: "/images/lounge.jpg", title: "Open-Air Bar & Lounge", tag: "Cocktails & Spirits", copy: "Handcrafted cocktails, single malts, and relaxed evenings under the stars.", href: "/dining", id: "lounge-box" },
