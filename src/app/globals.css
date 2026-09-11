@@ -252,3 +252,33 @@ h1, h2, h3, h4, h5, h6,
 
 .animate-rise { animation: rise 0.8s cubic-bezier(0.16,1,0.3,1) both; }
 .animate-ticker { animation: ticker 36s linear infinite; }
+
+/* Cropped header logo fitting inside container */
+.cropped-header-logo {
+  object-fit: contain;
+  object-view-box: inset(15% 20% 20% 20%);
+}
+
+@supports not (object-view-box: inset(0)) {
+  .cropped-header-logo {
+    clip-path: inset(15% 20% 20% 20%);
+    transform: scale(1.58) translateY(2.5%);
+    transform-origin: 50% 47.5%;
+  }
+}
+
+/* Desktop / PC mode only: 10% right, 10% left, 5% above, 5% below */
+@media (min-width: 1024px) {
+  .cropped-header-logo {
+    object-fit: contain;
+    object-view-box: inset(5% 10% 5% 10%);
+  }
+
+  @supports not (object-view-box: inset(0)) {
+    .cropped-header-logo {
+      clip-path: inset(5% 10% 5% 10%);
+      transform: scale(1.18) translateY(0);
+      transform-origin: center center;
+    }
+  }
+}

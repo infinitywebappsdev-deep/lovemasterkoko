@@ -1,4 +1,11 @@
-import { describe, test, expect } from "bun:test";
+import { describe, test } from "node:test";
+import assert from "node:assert/strict";
+
+const expect = (actual: any) => ({
+  toBe: (expected: any) => assert.strictEqual(actual, expected),
+  toEqual: (expected: any) => assert.deepStrictEqual(actual, expected),
+  toHaveLength: (len: number) => assert.strictEqual(actual?.length, len),
+});
 import {
   computeNightlyRates,
   applyRatePlan,

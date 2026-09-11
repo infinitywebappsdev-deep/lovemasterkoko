@@ -38,54 +38,160 @@ import type {
 
 const db = () => serverDb();
 
+const DEFAULT_ROOM_TYPES: RoomType[] = [
+  { id: "signature-suite", slug: "signature-suite", name: "Signature Suite", qty: 1, baseRate: 20000000, maxOccupancy: 3, bed: "King Canopy Bed", image: "/images/signature suite room.jpg", blurb: "Our premier signature residence: a sunlit master living parlor, private dressing area, and an opulent king canopy bedroom framed by full-height windows.", features: ["Private living room", "Butler service", "Complimentary breakfast", "VIP airport transfer"], status: "active" },
+  { id: "presidential-suite", slug: "presidential-suite", name: "Presidential Suite", qty: 3, baseRate: 10000000, maxOccupancy: 3, bed: "King Canopy Bed", image: "/images/presidential 17.jpg", blurb: "A stately presidential residence featuring an executive parlor, marble-finished bathroom, and expansive entertaining lounge.", features: ["Executive parlor", "King canopy bed", "Complimentary breakfast", "Late checkout"], status: "active" },
+  { id: "super-executive", slug: "super-executive", name: "Super Executive", qty: 1, baseRate: 6000000, maxOccupancy: 2, bed: "King Bed", image: "/images/superexecutive.jpg", blurb: "An expansive, peaceful haven featuring a private reading corner, plush bedding, and soft natural daylight.", features: ["King bed", "Reading corner", "Smart TV", "Daily housekeeping"], status: "active" },
+  { id: "executive", slug: "executive", name: "Executive", qty: 8, baseRate: 5000000, maxOccupancy: 2, bed: "King Bed", image: "/images/executive.jpg", blurb: "Rich warm timber, crisp Egyptian cotton linen, and an ergonomic workstation for productive executive stays.", features: ["King bed", "Work desk", "Rain shower", "Complimentary Wi-Fi"], status: "active" },
+  { id: "standard-plus", slug: "standard-plus", name: "Standard Plus", qty: 4, baseRate: 4500000, maxOccupancy: 3, bed: "Queen Bed", image: "/images/standar plus.jpg", blurb: "An elevated retreat offering an extended lounge seating area, workspace, and serene courtyard views.", features: ["Queen bed", "Seating area", "Smart TV", "Air conditioning"], status: "active" },
+  { id: "deluxe", slug: "deluxe", name: "Deluxe", qty: 5, baseRate: 4000000, maxOccupancy: 2, bed: "Queen Bed", image: "/images/deluxe.jpg", blurb: "Understated luxury with scenic garden-facing windows and a soothing contemporary palette.", features: ["Queen bed", "Garden view", "Smart TV", "24-hour room service"], status: "active" },
+  { id: "studio", slug: "studio", name: "Studio", qty: 1, baseRate: 3500000, maxOccupancy: 2, bed: "Queen Bed", image: "/images/studio3.jpg", blurb: "A versatile open-plan studio residence for extended stays with kitchenette and dining nook.", features: ["Open plan", "Kitchenette", "Work nook", "Laundry service"], status: "active" },
+  { id: "standard", slug: "standard", name: "Standard", qty: 5, baseRate: 3000000, maxOccupancy: 2, bed: "Double Bed", image: "/images/standard.jpg", blurb: "A welcoming, quiet sanctuary featuring premium bedding and refined contemporary essentials.", features: ["Double bed", "Smart TV", "Air conditioning", "Complimentary Wi-Fi"], status: "active" },
+];
+
+const DEFAULT_RATE_PLANS: RatePlan[] = [
+  {
+    id: "flexible",
+    name: "Flexible",
+    priceModifier: { type: "percent", value: 0 },
+    freeCancellationDays: 1,
+    cancellationPolicy: "flexible",
+    depositPercent: 50,
+    minNights: 1,
+    description: "Free cancellation until 1 day before check-in. 50% deposit to secure.",
+    active: true,
+  },
+  {
+    id: "non-refundable-saver",
+    name: "Non-Refundable Saver",
+    priceModifier: { type: "percent", value: -10 },
+    freeCancellationDays: 0,
+    cancellationPolicy: "non_refundable",
+    depositPercent: 100,
+    minNights: 1,
+    description: "Pay in full, save 10%. Non-refundable once confirmed.",
+    active: true,
+  },
+  {
+    id: "bed-breakfast",
+    name: "Bed & Breakfast",
+    priceModifier: { type: "percent", value: 5 },
+    freeCancellationDays: 2,
+    cancellationPolicy: "flexible",
+    depositPercent: 50,
+    minNights: 1,
+    description: "Includes daily gourmet breakfast for two. Free cancellation until 2 days before arrival.",
+    active: true,
+  },
+];
+
+const DEFAULT_ADDONS: Addon[] = [
+  { id: "airport-transfer", name: "VIP Airport Transfer", price: 2500000, unit: "per_stay", active: true, description: "Private air-conditioned transfer to/from the airport." },
+  { id: "early-checkin", name: "Early Check-in (from 10 AM)", price: 1000000, unit: "per_stay", active: true },
+  { id: "late-checkout", name: "Late Checkout (until 4 PM)", price: 1000000, unit: "per_stay", active: true },
+  { id: "extra-bed", name: "Extra Bed", price: 1500000, unit: "per_night", active: true },
+  { id: "anniversary", name: "Anniversary / Special Occasion Setup", price: 3000000, unit: "per_stay", active: true },
+];
+
 export async function getRoomTypes(): Promise<RoomType[]> {
-  const snap = await db().collection(COL.roomTypes).where("status", "==", "active").get();
-  return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<RoomType, "id">) }));
+  try {
+    const snap = await db().collection(COL.roomTypes).where("status", "==", "active").get();
+    if (!snap.empty) {
+      return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<RoomType, "id">) }));
+    }
+  } catch (err) {
+    console.warn("Failed to fetch room types from Firestore, using default catalog:", err);
+  }
+  return DEFAULT_ROOM_TYPES;
 }
 
 export async function getRoomTypeBySlug(slug: string): Promise<RoomType | null> {
-  const snap = await db().collection(COL.roomTypes).where("slug", "==", slug).limit(1).get();
-  if (snap.empty) return null;
-  const d = snap.docs[0];
-  return { id: d.id, ...(d.data() as Omit<RoomType, "id">) };
+  try {
+    const snap = await db().collection(COL.roomTypes).where("slug", "==", slug).limit(1).get();
+    if (!snap.empty) {
+      const d = snap.docs[0];
+      return { id: d.id, ...(d.data() as Omit<RoomType, "id">) };
+    }
+  } catch (err) {
+    console.warn(`Failed to fetch room type slug ${slug} from Firestore:`, err);
+  }
+  return DEFAULT_ROOM_TYPES.find((r) => r.slug === slug) ?? null;
 }
 
 export async function getRoomTypeById(id: string): Promise<RoomType | null> {
-  const d = await db().collection(COL.roomTypes).doc(id).get();
-  if (!d.exists) return null;
-  return { id: d.id, ...(d.data() as Omit<RoomType, "id">) };
+  try {
+    const d = await db().collection(COL.roomTypes).doc(id).get();
+    if (d.exists) {
+      return { id: d.id, ...(d.data() as Omit<RoomType, "id">) };
+    }
+  } catch (err) {
+    console.warn(`Failed to fetch room type id ${id} from Firestore:`, err);
+  }
+  return DEFAULT_ROOM_TYPES.find((r) => r.id === id || r.slug === id) ?? null;
 }
 
 export async function getRatePlans(): Promise<RatePlan[]> {
-  const snap = await db().collection(COL.ratePlans).get();
-  return snap.docs
-    .map((d) => ({ id: d.id, ...(d.data() as Omit<RatePlan, "id">) }))
-    .filter((p) => p.active !== false);
+  try {
+    const snap = await db().collection(COL.ratePlans).get();
+    if (!snap.empty) {
+      const plans = snap.docs
+        .map((d) => ({ id: d.id, ...(d.data() as Omit<RatePlan, "id">) }))
+        .filter((p) => p.active !== false);
+      if (plans.length > 0) return plans;
+    }
+  } catch (err) {
+    console.warn("Failed to fetch rate plans from Firestore:", err);
+  }
+  return DEFAULT_RATE_PLANS;
 }
 
 export async function getRatePlanById(id: string): Promise<RatePlan | null> {
-  const d = await db().collection(COL.ratePlans).doc(id).get();
-  if (!d.exists) return null;
-  return { id: d.id, ...(d.data() as Omit<RatePlan, "id">) };
+  try {
+    const d = await db().collection(COL.ratePlans).doc(id).get();
+    if (d.exists) {
+      return { id: d.id, ...(d.data() as Omit<RatePlan, "id">) };
+    }
+  } catch (err) {
+    console.warn(`Failed to fetch rate plan ${id} from Firestore:`, err);
+  }
+  return DEFAULT_RATE_PLANS.find((p) => p.id === id) ?? null;
 }
 
 export async function getRateRules(): Promise<RateRule[]> {
-  const snap = await db().collection(COL.rateRules).get();
-  return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<RateRule, "id">) }));
+  try {
+    const snap = await db().collection(COL.rateRules).get();
+    return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<RateRule, "id">) }));
+  } catch (err) {
+    console.warn("Failed to fetch rate rules from Firestore:", err);
+    return [];
+  }
 }
 
 export async function getAddons(): Promise<Addon[]> {
-  const snap = await db().collection(COL.addons).get();
-  return snap.docs
-    .map((d) => ({ id: d.id, ...(d.data() as Omit<Addon, "id">) }))
-    .filter((a) => a.active !== false);
+  try {
+    const snap = await db().collection(COL.addons).get();
+    if (!snap.empty) {
+      const addons = snap.docs
+        .map((d) => ({ id: d.id, ...(d.data() as Omit<Addon, "id">) }))
+        .filter((a) => a.active !== false);
+      if (addons.length > 0) return addons;
+    }
+  } catch (err) {
+    console.warn("Failed to fetch addons from Firestore:", err);
+  }
+  return DEFAULT_ADDONS;
 }
 
 export async function getPromoByCode(code: string): Promise<PromoCode | null> {
-  const snap = await db().collection(COL.promos).where("code", "==", code.toUpperCase().trim()).limit(1).get();
-  if (snap.empty) return null;
-  const d = snap.docs[0];
-  return { id: d.id, ...(d.data() as Omit<PromoCode, "id">) };
+  try {
+    const snap = await db().collection(COL.promos).where("code", "==", code.toUpperCase().trim()).limit(1).get();
+    if (snap.empty) return null;
+    const d = snap.docs[0];
+    return { id: d.id, ...(d.data() as Omit<PromoCode, "id">) };
+  } catch (err) {
+    console.warn(`Failed to fetch promo code ${code}:`, err);
+    return null;
+  }
 }
 
 /* ------------------------------------------------------------------ */
@@ -107,54 +213,64 @@ async function bookedCountsByDate(
   checkOut: string,
   excludeReservationId?: string,
 ): Promise<Map<string, number>> {
-  const snap = await db()
-    .collection(COL.reservations)
-    .where("roomTypeId", "==", roomTypeId)
-    .where("checkIn", "<", checkOut)
-    .get();
   const counts = new Map<string, number>();
   const nights = nightsBetweenISO(checkIn, checkOut);
   for (const n of nights) counts.set(n, 0);
 
-  for (const doc of snap.docs) {
-    const r = doc.data() as Reservation;
-    if (excludeReservationId && doc.id === excludeReservationId) continue;
-    if (!INVENTORY_CONSUMING_STATUSES.includes(r.status)) continue;
-    if (!overlapsRange({ checkIn: r.checkIn, checkOut: r.checkOut }, checkIn, checkOut)) continue;
+  try {
+    const snap = await db()
+      .collection(COL.reservations)
+      .where("roomTypeId", "==", roomTypeId)
+      .where("checkIn", "<", checkOut)
+      .get();
 
-    const rooms = r.rooms && r.rooms.length > 0 ? r.rooms : [];
-    if (rooms.length > 0) {
-      for (const rr of rooms) {
-        if (rr.roomTypeId !== roomTypeId) continue;
+    for (const doc of snap.docs) {
+      const r = doc.data() as Reservation;
+      if (excludeReservationId && doc.id === excludeReservationId) continue;
+      if (!INVENTORY_CONSUMING_STATUSES.includes(r.status)) continue;
+      if (!overlapsRange({ checkIn: r.checkIn, checkOut: r.checkOut }, checkIn, checkOut)) continue;
+
+      const rooms = r.rooms && r.rooms.length > 0 ? r.rooms : [];
+      if (rooms.length > 0) {
+        for (const rr of rooms) {
+          if (rr.roomTypeId !== roomTypeId) continue;
+          for (const n of nights) counts.set(n, (counts.get(n) ?? 0) + 1);
+        }
+      } else {
         for (const n of nights) counts.set(n, (counts.get(n) ?? 0) + 1);
       }
-    } else {
-      for (const n of nights) counts.set(n, (counts.get(n) ?? 0) + 1);
     }
+  } catch (err) {
+    console.warn("Failed to query booked counts from Firestore:", err);
   }
   return counts;
 }
 
 /** Active (non-released, non-expired) holds for a room type in the range. */
 async function heldCountsByDate(roomTypeId: string, checkIn: string, checkOut: string): Promise<Map<string, number>> {
-  const snap = await db()
-    .collection(COL.holds)
-    .where("roomTypeId", "==", roomTypeId)
-    .where("released", "==", false)
-    .get();
   const counts = new Map<string, number>();
   const nights = nightsBetweenISO(checkIn, checkOut);
   for (const n of nights) counts.set(n, 0);
-  const now = Date.now();
-  for (const doc of snap.docs) {
-    const h = doc.data() as BookingHold;
-    if (h.expiresAt < now) continue;
-    if (!overlapsRange({ checkIn: h.checkIn, checkOut: h.checkOut }, checkIn, checkOut)) continue;
-    for (const n of nights) {
-      if (overlapsRange({ checkIn: h.checkIn, checkOut: h.checkOut }, n, addDaysISO(n, 1))) {
-        counts.set(n, (counts.get(n) ?? 0) + (h.roomCount ?? 1));
+
+  try {
+    const snap = await db()
+      .collection(COL.holds)
+      .where("roomTypeId", "==", roomTypeId)
+      .where("released", "==", false)
+      .get();
+    const now = Date.now();
+    for (const doc of snap.docs) {
+      const h = doc.data() as BookingHold;
+      if (h.expiresAt < now) continue;
+      if (!overlapsRange({ checkIn: h.checkIn, checkOut: h.checkOut }, checkIn, checkOut)) continue;
+      for (const n of nights) {
+        if (overlapsRange({ checkIn: h.checkIn, checkOut: h.checkOut }, n, addDaysISO(n, 1))) {
+          counts.set(n, (counts.get(n) ?? 0) + (h.roomCount ?? 1));
+        }
       }
     }
+  } catch (err) {
+    console.warn("Failed to query held counts from Firestore:", err);
   }
   return counts;
 }
@@ -1070,17 +1186,27 @@ export async function serverPaymentByGatewayRef(reservationId: string): Promise<
 }
 
 export async function listReservations(opts: { limit?: number; status?: string } = {}): Promise<Reservation[]> {
-  let q: FirebaseFirestore.Query = db().collection(COL.reservations).orderBy("createdAt", "desc").limit(opts.limit ?? 100);
-  if (opts.status) q = q.where("status", "==", opts.status);
-  const snap = await q.get();
-  return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Reservation, "id">) }));
+  try {
+    let q: FirebaseFirestore.Query = db().collection(COL.reservations).orderBy("createdAt", "desc").limit(opts.limit ?? 100);
+    if (opts.status) q = q.where("status", "==", opts.status);
+    const snap = await q.get();
+    return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Reservation, "id">) }));
+  } catch (err) {
+    console.warn("Failed to list reservations from Firestore:", err);
+    return [];
+  }
 }
 
 export async function listPhysicalRooms(roomTypeId?: string): Promise<PhysicalRoom[]> {
-  let q: FirebaseFirestore.Query = db().collection(COL.physicalRooms);
-  if (roomTypeId) q = q.where("roomTypeId", "==", roomTypeId);
-  const snap = await q.get();
-  return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<PhysicalRoom, "id">) }));
+  try {
+    let q: FirebaseFirestore.Query = db().collection(COL.physicalRooms);
+    if (roomTypeId) q = q.where("roomTypeId", "==", roomTypeId);
+    const snap = await q.get();
+    return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<PhysicalRoom, "id">) }));
+  } catch (err) {
+    console.warn("Failed to list physical rooms from Firestore:", err);
+    return [];
+  }
 }
 
 export { overlapsRange, INVENTORY_CONSUMING_STATUSES };

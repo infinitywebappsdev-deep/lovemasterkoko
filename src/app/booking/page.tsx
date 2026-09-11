@@ -223,7 +223,7 @@ function BookingFlow() {
       /* storage unavailable — verify falls back to the BKS reference */
     }
     window.location.assign(res.data.authorizationUrl);
-  }, [reservationId]);
+  }, [reservationId, reference]);
 
   const checkPayment = useCallback(async () => {
     if (!reference) return;

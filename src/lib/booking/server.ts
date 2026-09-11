@@ -2,10 +2,11 @@ import "server-only";
 import { cert, getApps, initializeApp, type App } from "firebase-admin/app";
 import { getFirestore, type Firestore } from "firebase-admin/firestore";
 import { getAuth } from "firebase-admin/auth";
+import firebaseConfigData from "../../../firebase-applet-config.json";
 
 /**
  * Server-side Firebase Admin SDK bootstrap.
- * Requires FIREBASE_SERVICE_ACCOUNT_JSON (the full service-account JSON) in env.
+ * Uses FIREBASE_SERVICE_ACCOUNT_JSON if provided, or defaults to the applet project.
  * All server-authoritative booking writes flow through this module.
  */
 
@@ -17,24 +18,33 @@ export function getAdminApp(): App {
   if (existing) return existing;
 
   const raw = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
-  if (!raw) {
-    throw new Error(
-      "FIREBASE_SERVICE_ACCOUNT_JSON is not set. Add the Firebase service-account JSON in Settings → Environment.",
-    );
+  if (raw) {
+    try {
+      const credsJson = JSON.parse(raw);
+      return initializeApp(
+        {
+          credential: cert(credsJson as Parameters<typeof cert>[0]),
+          projectId: firebaseConfigData?.projectId,
+        },
+        "banky-server",
+      );
+    } catch {
+      console.warn("FIREBASE_SERVICE_ACCOUNT_JSON is not valid JSON. Falling back to project ID configuration.");
+    }
   }
-  let credsJson: object;
-  try {
-    credsJson = JSON.parse(raw);
-  } catch {
-    throw new Error("FIREBASE_SERVICE_ACCOUNT_JSON is not valid JSON.");
-  }
-  return initializeApp({ credential: cert(credsJson as Parameters<typeof cert>[0]) }, "banky-server");
+
+  return initializeApp(
+    {
+      projectId: firebaseConfigData?.projectId,
+    },
+    "banky-server",
+  );
 }
 
 /** Lazy singletons so module import doesn't throw at build time. */
 export function serverDb(): Firestore {
   if (_db) return _db;
-  _db = getFirestore(getAdminApp());
+  _db = getFirestore(getAdminApp(), firebaseConfigData?.firestoreDatabaseId);
   _db.settings({ ignoreUndefinedProperties: true });
   return _db;
 }

@@ -1,6 +1,6 @@
 /**
  * Seed script — provisions the hotel's real inventory into Firestore.
- * Run: bun scripts/seed-booking.ts
+ * Run: npx tsx scripts/seed-booking.ts
  *
  * Uses FIREBASE_SERVICE_ACCOUNT_JSON from the environment (set via
  * Settings → Environment). Idempotent: re-running updates, not duplicates.
@@ -8,6 +8,7 @@
 import "dotenv/config";
 import { cert, getApps, initializeApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
+import firebaseConfigData from "../firebase-applet-config.json";
 
 type RoomTypeSeed = {
   slug: string;
@@ -91,10 +92,8 @@ async function main() {
     console.error("FIREBASE_SERVICE_ACCOUNT_JSON is not set. Add it in Settings → Environment first.");
     process.exit(1);
   }
-  if (getApps().length === 0) {
-    initializeApp({ credential: cert(JSON.parse(raw)) });
-  }
-  const db = getFirestore();
+  const app = getApps().length === 0 ? initializeApp({ credential: cert(JSON.parse(raw)) }) : getApps()[0];
+  const db = getFirestore(app, firebaseConfigData?.firestoreDatabaseId);
 
   console.log("Seeding room types…");
   for (const rt of ROOM_TYPES) {
