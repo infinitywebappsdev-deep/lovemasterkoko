@@ -30,6 +30,10 @@ import type {
   PriceBreakdown,
   Addon,
   CancellationPolicyType,
+  CalendarAvailabilityQuery,
+  CalendarAvailabilityResult,
+  DayInventory,
+  DayInventoryStatus,
 } from "./types";
 
 /* ------------------------------------------------------------------ */
@@ -38,61 +42,183 @@ import type {
 
 const db = () => serverDb();
 
+const DEFAULT_ROOM_TYPES: RoomType[] = [
+  { id: "luxury-suite", slug: "luxury-suite", name: "Luxury Suite", qty: 1, baseRate: 20000000, maxOccupancy: 3, image: "/images/signature suite room.jpg", blurb: "Our premier luxury residence: a sunlit master living parlor, private dressing area, and an opulent master suite framed by full-height windows.", features: ["Private living room", "Butler service", "Complimentary breakfast", "VIP airport transfer"], status: "active" },
+  { id: "luxury", slug: "luxury", name: "Luxury", qty: 3, baseRate: 10000000, maxOccupancy: 3, image: "/images/Presidential.jpg", images: ["/images/Presidential.jpg", "/images/presidential 17.jpg", "/images/presidential23.jpg", "/images/presidential3.jpg"], blurb: "A stately luxury residence featuring an executive parlor, marble-finished bathroom, and expansive entertaining lounge.", features: ["Executive parlor", "VIP lounge access", "Complimentary breakfast", "Late checkout"], status: "active" },
+  { id: "super-executive", slug: "super-executive", name: "Super Executive", qty: 1, baseRate: 6000000, maxOccupancy: 2, image: "/images/superexecutive.jpg", images: ["/images/superexecutive.jpg", "/images/super executive1.jpg", "/images/super executive 2.jpg"], blurb: "An expansive, peaceful haven featuring a private reading corner, plush appointments, and soft natural daylight.", features: ["Reading corner", "Smart TV", "Daily housekeeping", "Courtyard view"], status: "active" },
+  { id: "executive", slug: "executive", name: "Executive", qty: 8, baseRate: 5000000, maxOccupancy: 2, image: "/images/EXECUTIVE Main.jpeg", images: ["/images/EXECUTIVE Main.jpeg", "/images/EXECUTIVE MAIN2.jpeg"], blurb: "Rich warm timber, crisp Egyptian cotton linen, and an ergonomic workstation for productive executive stays.", features: ["Work desk", "Rain shower", "Complimentary Wi-Fi", "Daily housekeeping"], status: "active" },
+  { id: "standard-plus", slug: "standard-plus", name: "Standard Plus", qty: 4, baseRate: 4500000, maxOccupancy: 3, image: "/images/Standard PLUS.jpeg", images: ["/images/Standard PLUS.jpeg", "/images/STANDARD PLUS MAIN .jpeg"], blurb: "An elevated retreat offering an extended lounge seating area, workspace, and serene courtyard views.", features: ["Seating area", "Smart TV", "Air conditioning", "Complimentary Wi-Fi"], status: "active" },
+  { id: "deluxe", slug: "deluxe", name: "Deluxe", qty: 5, baseRate: 4000000, maxOccupancy: 2, image: "/images/DELUXE MAIN1.jpeg", images: ["/images/DELUXE MAIN1.jpeg", "/images/DELUXE MAIN2.jpeg"], blurb: "Understated luxury with modern ambient ceiling lighting, executive comfort, flat-screen entertainment, and a soothing warm palette.", features: ["Smart TV", "Mood lighting", "Air conditioning", "Work desk"], status: "active" },
+  { id: "studio", slug: "studio", name: "Studio", qty: 1, baseRate: 3500000, maxOccupancy: 2, image: "/images/Suite1.jpg", blurb: "A versatile open-plan studio residence for extended stays with kitchenette and dining nook.", features: ["Open plan", "Kitchenette", "Work nook", "Laundry service"], status: "active" },
+  { id: "standard", slug: "standard", name: "Standard", qty: 5, baseRate: 3000000, maxOccupancy: 2, image: "/images/Standard room.jpg", images: ["/images/Standard room.jpg", "/images/standard.jpg"], blurb: "A welcoming, quiet sanctuary featuring refined contemporary essentials, climate control, and dedicated service.", features: ["Smart TV", "Air conditioning", "Complimentary Wi-Fi", "En-suite bathroom"], status: "active" },
+];
+
+const DEFAULT_RATE_PLANS: RatePlan[] = [
+  {
+    id: "flexible",
+    name: "Flexible",
+    priceModifier: { type: "percent", value: 0 },
+    freeCancellationDays: 1,
+    cancellationPolicy: "flexible",
+    depositPercent: 100,
+    minNights: 1,
+    description: "Free cancellation until 1 day before check-in. Instant reservation confirmation.",
+    active: true,
+  },
+  {
+    id: "non-refundable-saver",
+    name: "Non-Refundable Saver",
+    priceModifier: { type: "percent", value: -10 },
+    freeCancellationDays: 0,
+    cancellationPolicy: "non_refundable",
+    depositPercent: 100,
+    minNights: 1,
+    description: "Pay in full, save 10%. Non-refundable once confirmed.",
+    active: true,
+  },
+  {
+    id: "bed-breakfast",
+    name: "Bed & Breakfast",
+    priceModifier: { type: "percent", value: 5 },
+    freeCancellationDays: 2,
+    cancellationPolicy: "flexible",
+    depositPercent: 100,
+    minNights: 1,
+    description: "Includes daily gourmet breakfast for two. Free cancellation until 2 days before arrival.",
+    active: true,
+  },
+];
+
+const DEFAULT_ADDONS: Addon[] = [
+  { id: "airport-transfer", name: "VIP Airport Transfer", price: 2500000, unit: "per_stay", active: true, description: "Private air-conditioned transfer to/from the airport." },
+  { id: "early-checkin", name: "Early Check-in (from 10 AM)", price: 1000000, unit: "per_stay", active: true },
+  { id: "late-checkout", name: "Late Checkout (until 4 PM)", price: 1000000, unit: "per_stay", active: true },
+  { id: "extra-bed", name: "Extra Bed", price: 1500000, unit: "per_night", active: true },
+  { id: "anniversary", name: "Anniversary / Special Occasion Setup", price: 3000000, unit: "per_stay", active: true },
+];
+
 export async function getRoomTypes(): Promise<RoomType[]> {
-  const snap = await db().collection(COL.roomTypes).where("status", "==", "active").get();
-  return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<RoomType, "id">) }));
+  try {
+    const snap = await db().collection(COL.roomTypes).where("status", "==", "active").get();
+    if (!snap.empty) {
+      return snap.docs.map((d: any) => ({ id: d.id, ...(d.data() as Omit<RoomType, "id">) }));
+    }
+  } catch (err) {
+    console.warn("Failed to fetch room types from Firestore, using default catalog:", err);
+  }
+  return DEFAULT_ROOM_TYPES;
 }
 
 export async function getRoomTypeBySlug(slug: string): Promise<RoomType | null> {
-  const snap = await db().collection(COL.roomTypes).where("slug", "==", slug).limit(1).get();
-  if (snap.empty) return null;
-  const d = snap.docs[0];
-  return { id: d.id, ...(d.data() as Omit<RoomType, "id">) };
+  try {
+    const snap = await db().collection(COL.roomTypes).where("slug", "==", slug).limit(1).get();
+    if (!snap.empty) {
+      const d = snap.docs[0];
+      return { id: d.id, ...(d.data() as Omit<RoomType, "id">) };
+    }
+  } catch (err) {
+    console.warn(`Failed to fetch room type slug ${slug} from Firestore:`, err);
+  }
+  return (
+    DEFAULT_ROOM_TYPES.find(
+      (r) =>
+        r.slug === slug ||
+        (slug === "signature-suite" && r.slug === "luxury-suite") ||
+        (slug === "presidential-suite" && r.slug === "luxury")
+    ) ?? null
+  );
 }
 
 export async function getRoomTypeById(id: string): Promise<RoomType | null> {
-  const d = await db().collection(COL.roomTypes).doc(id).get();
-  if (!d.exists) return null;
-  return { id: d.id, ...(d.data() as Omit<RoomType, "id">) };
+  try {
+    const d = await db().collection(COL.roomTypes).doc(id).get();
+    if (d.exists) {
+      return { id: d.id, ...(d.data() as Omit<RoomType, "id">) };
+    }
+  } catch (err) {
+    console.warn(`Failed to fetch room type id ${id} from Firestore:`, err);
+  }
+  return (
+    DEFAULT_ROOM_TYPES.find(
+      (r) =>
+        r.id === id ||
+        r.slug === id ||
+        (id === "signature-suite" && (r.id === "luxury-suite" || r.slug === "luxury-suite")) ||
+        (id === "presidential-suite" && (r.id === "luxury" || r.slug === "luxury"))
+    ) ?? null
+  );
 }
 
 export async function getRatePlans(): Promise<RatePlan[]> {
-  const snap = await db().collection(COL.ratePlans).get();
-  return snap.docs
-    .map((d) => ({ id: d.id, ...(d.data() as Omit<RatePlan, "id">) }))
-    .filter((p) => p.active !== false);
+  try {
+    const snap = await db().collection(COL.ratePlans).get();
+    if (!snap.empty) {
+      const plans = snap.docs
+        .map((d: any): RatePlan => ({ id: d.id, ...(d.data() as Omit<RatePlan, "id">) }))
+        .filter((p: RatePlan) => p.active !== false);
+      if (plans.length > 0) return plans;
+    }
+  } catch (err) {
+    console.warn("Failed to fetch rate plans from Firestore:", err);
+  }
+  return DEFAULT_RATE_PLANS;
 }
 
 export async function getRatePlanById(id: string): Promise<RatePlan | null> {
-  const d = await db().collection(COL.ratePlans).doc(id).get();
-  if (!d.exists) return null;
-  return { id: d.id, ...(d.data() as Omit<RatePlan, "id">) };
+  try {
+    const d = await db().collection(COL.ratePlans).doc(id).get();
+    if (d.exists) {
+      return { id: d.id, ...(d.data() as Omit<RatePlan, "id">) };
+    }
+  } catch (err) {
+    console.warn(`Failed to fetch rate plan ${id} from Firestore:`, err);
+  }
+  return DEFAULT_RATE_PLANS.find((p) => p.id === id) ?? null;
 }
 
 export async function getRateRules(): Promise<RateRule[]> {
-  const snap = await db().collection(COL.rateRules).get();
-  return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<RateRule, "id">) }));
+  try {
+    const snap = await db().collection(COL.rateRules).get();
+    return snap.docs.map((d: any) => ({ id: d.id, ...(d.data() as Omit<RateRule, "id">) }));
+  } catch (err) {
+    console.warn("Failed to fetch rate rules from Firestore:", err);
+    return [];
+  }
 }
 
 export async function getAddons(): Promise<Addon[]> {
-  const snap = await db().collection(COL.addons).get();
-  return snap.docs
-    .map((d) => ({ id: d.id, ...(d.data() as Omit<Addon, "id">) }))
-    .filter((a) => a.active !== false);
+  try {
+    const snap = await db().collection(COL.addons).get();
+    if (!snap.empty) {
+      const addons = snap.docs
+        .map((d: any): Addon => ({ id: d.id, ...(d.data() as Omit<Addon, "id">) }))
+        .filter((a: Addon) => a.active !== false);
+      if (addons.length > 0) return addons;
+    }
+  } catch (err) {
+    console.warn("Failed to fetch addons from Firestore:", err);
+  }
+  return DEFAULT_ADDONS;
 }
 
 export async function getPromoByCode(code: string): Promise<PromoCode | null> {
-  const snap = await db().collection(COL.promos).where("code", "==", code.toUpperCase().trim()).limit(1).get();
-  if (snap.empty) return null;
-  const d = snap.docs[0];
-  return { id: d.id, ...(d.data() as Omit<PromoCode, "id">) };
+  try {
+    const snap = await db().collection(COL.promos).where("code", "==", code.toUpperCase().trim()).limit(1).get();
+    if (snap.empty) return null;
+    const d = snap.docs[0];
+    return { id: d.id, ...(d.data() as Omit<PromoCode, "id">) };
+  } catch (err) {
+    console.warn(`Failed to fetch promo code ${code}:`, err);
+    return null;
+  }
 }
 
 /* ------------------------------------------------------------------ */
 /* Availability                                                        */
 /* ------------------------------------------------------------------ */
 
-/** Statuses that consume inventory. Cancelled/failed do not. */
+/** Committed statuses that permanently consume inventory. Cancelled/failed do not. */
+const COMMITTED_BOOKING_STATUSES: ReservationStatus[] = ["confirmed", "checked_in"];
 const INVENTORY_CONSUMING_STATUSES: ReservationStatus[] = ["pending", "confirmed", "checked_in"];
 
 function overlapsRange(r: { checkIn: string; checkOut: string }, checkIn: string, checkOut: string): boolean {
@@ -100,80 +226,153 @@ function overlapsRange(r: { checkIn: string; checkOut: string }, checkIn: string
   return r.checkIn < checkOut && r.checkOut > checkIn;
 }
 
-/** Count inventory-consuming bookings of a room type per night. */
+/**
+ * Count committed bookings of a room type per night.
+ * Accurately handles multi-room reservations and checks overlap per individual night.
+ * Avoids multi-field range queries that fail when composite indexes are pending.
+ */
 async function bookedCountsByDate(
   roomTypeId: string,
   checkIn: string,
   checkOut: string,
   excludeReservationId?: string,
 ): Promise<Map<string, number>> {
-  const snap = await db()
-    .collection(COL.reservations)
-    .where("roomTypeId", "==", roomTypeId)
-    .where("checkIn", "<", checkOut)
-    .get();
   const counts = new Map<string, number>();
   const nights = nightsBetweenISO(checkIn, checkOut);
   for (const n of nights) counts.set(n, 0);
 
-  for (const doc of snap.docs) {
-    const r = doc.data() as Reservation;
-    if (excludeReservationId && doc.id === excludeReservationId) continue;
-    if (!INVENTORY_CONSUMING_STATUSES.includes(r.status)) continue;
-    if (!overlapsRange({ checkIn: r.checkIn, checkOut: r.checkOut }, checkIn, checkOut)) continue;
+  try {
+    const snap = await db()
+      .collection(COL.reservations)
+      .where("roomTypeId", "==", roomTypeId)
+      .get();
 
-    const rooms = r.rooms && r.rooms.length > 0 ? r.rooms : [];
-    if (rooms.length > 0) {
-      for (const rr of rooms) {
-        if (rr.roomTypeId !== roomTypeId) continue;
-        for (const n of nights) counts.set(n, (counts.get(n) ?? 0) + 1);
+    for (const doc of snap.docs) {
+      if (excludeReservationId && doc.id === excludeReservationId) continue;
+      const r = doc.data() as Reservation;
+      if (!COMMITTED_BOOKING_STATUSES.includes(r.status)) continue;
+      if (!overlapsRange({ checkIn: r.checkIn, checkOut: r.checkOut }, checkIn, checkOut)) continue;
+
+      const roomCountForType =
+        typeof r.roomCount === "number" && r.roomCount > 0
+          ? r.roomCount
+          : r.rooms && r.rooms.length > 0
+          ? r.rooms.filter((rr) => rr.roomTypeId === roomTypeId).length || 1
+          : 1;
+
+      for (const n of nights) {
+        if (overlapsRange({ checkIn: r.checkIn, checkOut: r.checkOut }, n, addDaysISO(n, 1))) {
+          counts.set(n, (counts.get(n) ?? 0) + roomCountForType);
+        }
       }
-    } else {
-      for (const n of nights) counts.set(n, (counts.get(n) ?? 0) + 1);
     }
+  } catch (err) {
+    console.warn("Failed to query booked counts from Firestore:", err);
   }
   return counts;
 }
 
 /** Active (non-released, non-expired) holds for a room type in the range. */
-async function heldCountsByDate(roomTypeId: string, checkIn: string, checkOut: string): Promise<Map<string, number>> {
-  const snap = await db()
-    .collection(COL.holds)
-    .where("roomTypeId", "==", roomTypeId)
-    .where("released", "==", false)
-    .get();
+async function heldCountsByDate(
+  roomTypeId: string,
+  checkIn: string,
+  checkOut: string,
+  excludeReservationId?: string,
+): Promise<Map<string, number>> {
   const counts = new Map<string, number>();
   const nights = nightsBetweenISO(checkIn, checkOut);
   for (const n of nights) counts.set(n, 0);
-  const now = Date.now();
-  for (const doc of snap.docs) {
-    const h = doc.data() as BookingHold;
-    if (h.expiresAt < now) continue;
-    if (!overlapsRange({ checkIn: h.checkIn, checkOut: h.checkOut }, checkIn, checkOut)) continue;
-    for (const n of nights) {
-      if (overlapsRange({ checkIn: h.checkIn, checkOut: h.checkOut }, n, addDaysISO(n, 1))) {
-        counts.set(n, (counts.get(n) ?? 0) + (h.roomCount ?? 1));
+
+  try {
+    const snap = await db()
+      .collection(COL.holds)
+      .where("roomTypeId", "==", roomTypeId)
+      .where("released", "==", false)
+      .get();
+    const now = Date.now();
+    for (const doc of snap.docs) {
+      const h = doc.data() as BookingHold;
+      if (excludeReservationId && h.reservationId === excludeReservationId) continue;
+      if (h.expiresAt < now) continue;
+      if (!overlapsRange({ checkIn: h.checkIn, checkOut: h.checkOut }, checkIn, checkOut)) continue;
+      for (const n of nights) {
+        if (overlapsRange({ checkIn: h.checkIn, checkOut: h.checkOut }, n, addDaysISO(n, 1))) {
+          counts.set(n, (counts.get(n) ?? 0) + (h.roomCount ?? 1));
+        }
       }
     }
+  } catch (err) {
+    console.warn("Failed to query held counts from Firestore:", err);
   }
   return counts;
+}
+
+/**
+ * Public helper to check if a room type has enough capacity for a requested date range.
+ */
+export async function isRoomAvailable(
+  roomTypeId: string,
+  checkIn: string,
+  checkOut: string,
+  roomCount: number = 1,
+  excludeReservationId?: string,
+): Promise<boolean> {
+  const roomType = await getRoomTypeById(roomTypeId);
+  if (!roomType || roomType.qty <= 0) return false;
+
+  const [booked, held, blocked] = await Promise.all([
+    bookedCountsByDate(roomTypeId, checkIn, checkOut, excludeReservationId),
+    heldCountsByDate(roomTypeId, checkIn, checkOut, excludeReservationId),
+    blockedRoomIdsForRange(roomTypeId, checkIn, checkOut),
+  ]);
+
+  const totalSellable = Math.max(0, roomType.qty - blocked.size);
+  const nights = nightsBetweenISO(checkIn, checkOut);
+  for (const n of nights) {
+    const avail = totalSellable - (booked.get(n) ?? 0) - (held.get(n) ?? 0);
+    if (avail < roomCount) return false;
+  }
+  return true;
+}
+
+/**
+ * Refreshes the inventory hold duration for a pending reservation if still available.
+ */
+export async function refreshHoldForReservation(
+  reservationId: string,
+  durationMs: number = 20 * 60 * 1000,
+): Promise<void> {
+  const newExpiry = Date.now() + durationMs;
+  const newExpiryISO = new Date(newExpiry).toISOString();
+  await db().collection(COL.reservations).doc(reservationId).update({
+    holdExpiresAt: newExpiryISO,
+    updatedAt: new Date().toISOString(),
+  });
+  const snap = await db().collection(COL.holds).where("reservationId", "==", reservationId).get();
+  const batch = db().batch();
+  snap.docs.forEach((d) => batch.update(d.ref, { expiresAt: newExpiry, released: false }));
+  await batch.commit();
 }
 
 /** Maintenance / out-of-order or dated-blocked rooms for a type in the range. */
 async function blockedRoomIdsForRange(roomTypeId: string, checkIn: string, checkOut: string): Promise<Set<string>> {
   const out = new Set<string>();
-  const prSnap = await db().collection(COL.physicalRooms).where("roomTypeId", "==", roomTypeId).get();
-  for (const d of prSnap.docs) {
-    const p = d.data() as PhysicalRoom;
-    if (p.status && p.status !== "active") out.add(d.id);
-  }
-  const blSnap = await db().collection(COL.inventoryBlocks).where("roomTypeId", "==", roomTypeId).get();
-  for (const d of blSnap.docs) {
-    const b = d.data() as { physicalRoomId?: string; startDate?: string; endDate?: string; active?: boolean };
-    if (b.active === false) continue;
-    const from = b.startDate ?? "0000-01-01";
-    const to = b.endDate ?? "9999-12-31";
-    if (from < checkOut && to > checkIn && b.physicalRoomId) out.add(b.physicalRoomId);
+  try {
+    const prSnap = await db().collection(COL.physicalRooms).where("roomTypeId", "==", roomTypeId).get();
+    for (const d of prSnap.docs) {
+      const p = d.data() as PhysicalRoom;
+      if (p.status && p.status !== "active") out.add(d.id);
+    }
+    const blSnap = await db().collection(COL.inventoryBlocks).where("roomTypeId", "==", roomTypeId).get();
+    for (const d of blSnap.docs) {
+      const b = d.data() as { physicalRoomId?: string; startDate?: string; endDate?: string; active?: boolean };
+      if (b.active === false) continue;
+      const from = b.startDate ?? "0000-01-01";
+      const to = b.endDate ?? "9999-12-31";
+      if (from < checkOut && to > checkIn && b.physicalRoomId) out.add(b.physicalRoomId);
+    }
+  } catch (err) {
+    console.warn("Failed to query blocked rooms from Firestore:", err);
   }
   return out;
 }
@@ -245,6 +444,139 @@ export async function searchAvailability(q: AvailabilityQuery): Promise<ApiResul
       checkOut: q.checkOut,
       nights: nightsBetweenISO(q.checkIn, q.checkOut).length,
       rooms,
+    },
+  };
+}
+
+/**
+ * Real-time daily inventory availability for calendar date-picker.
+ * Evaluates sellable inventory, active reservations, payment holds, and maintenance blocks
+ * across all or specific room types.
+ */
+export async function getCalendarAvailability(
+  q: CalendarAvailabilityQuery,
+): Promise<ApiResult<CalendarAvailabilityResult>> {
+  const today = todayHotelISO();
+  const startDate = q.startDate || today;
+  const endDate = q.endDate || addDaysISO(startDate, 90);
+
+  if (endDate <= startDate) {
+    return { ok: false, error: "INVALID_DATES", message: "End date must be after start date." };
+  }
+
+  const roomTypes = await getRoomTypes();
+  const rateRules = await getRateRules();
+
+  const adults = Math.max(1, Number(q.adults ?? 2));
+  const children = Math.max(0, Number(q.children ?? 0));
+  const roomCount = Math.max(1, Number(q.roomCount ?? 1));
+  const guestsPerRoom = Math.ceil((adults + children) / roomCount);
+
+  // Filter eligible room types by occupancy and optional specific roomTypeId
+  const eligibleRoomTypes = roomTypes.filter((rt) => {
+    if (rt.qty <= 0) return false;
+    if (q.roomTypeId && rt.id !== q.roomTypeId) return false;
+    if (guestsPerRoom > rt.maxOccupancy) return false;
+    return true;
+  });
+
+  const allNights = nightsBetweenISO(startDate, endDate);
+  const days: Record<string, DayInventory> = {};
+  const totalHotelRooms = roomTypes.reduce((acc, rt) => acc + (rt.qty ?? 0), 0);
+
+  if (eligibleRoomTypes.length === 0) {
+    for (const n of allNights) {
+      days[n] = {
+        date: n,
+        status: n < today ? "past" : "sold_out",
+        availableRooms: 0,
+        totalRooms: totalHotelRooms,
+        hasEligibleRoom: false,
+      };
+    }
+    return {
+      ok: true,
+      data: { startDate, endDate, today, days },
+    };
+  }
+
+  // Pre-load inventory usage per room type across the entire requested range [startDate, endDate)
+  const bookedPerType = new Map<string, Map<string, number>>();
+  const heldPerType = new Map<string, Map<string, number>>();
+  const blockedPerType = new Map<string, Set<string>>();
+
+  await Promise.all(
+    eligibleRoomTypes.map(async (rt) => {
+      const [bookedMap, heldMap, blockedSet] = await Promise.all([
+        bookedCountsByDate(rt.id, startDate, endDate),
+        heldCountsByDate(rt.id, startDate, endDate),
+        blockedRoomIdsForRange(rt.id, startDate, endDate),
+      ]);
+      bookedPerType.set(rt.id, bookedMap);
+      heldPerType.set(rt.id, heldMap);
+      blockedPerType.set(rt.id, blockedSet);
+    }),
+  );
+
+  for (const date of allNights) {
+    if (date < today) {
+      days[date] = {
+        date,
+        status: "past",
+        availableRooms: 0,
+        totalRooms: totalHotelRooms,
+        hasEligibleRoom: false,
+      };
+      continue;
+    }
+
+    let dateAvailableRooms = 0;
+    let hasEligibleRoom = false;
+    let minRateOnDate: number | undefined;
+
+    for (const rt of eligibleRoomTypes) {
+      const blocked = blockedPerType.get(rt.id)?.size ?? 0;
+      const totalSellable = Math.max(0, (rt.qty ?? 0) - blocked);
+      const booked = bookedPerType.get(rt.id)?.get(date) ?? 0;
+      const held = heldPerType.get(rt.id)?.get(date) ?? 0;
+      const avail = Math.max(0, totalSellable - booked - held);
+
+      dateAvailableRooms += avail;
+
+      if (avail >= roomCount) {
+        hasEligibleRoom = true;
+        const { nightlyRates } = computeNightlyRates(rt, [date], rateRules);
+        const rate = nightlyRates[0] ?? rt.baseRate;
+        if (minRateOnDate === undefined || rate < minRateOnDate) {
+          minRateOnDate = rate;
+        }
+      }
+    }
+
+    let status: DayInventoryStatus = "available";
+    if (!hasEligibleRoom || dateAvailableRooms < roomCount) {
+      status = "sold_out";
+    } else if (dateAvailableRooms <= 2) {
+      status = "limited";
+    }
+
+    days[date] = {
+      date,
+      status,
+      availableRooms: dateAvailableRooms,
+      totalRooms: totalHotelRooms,
+      minRate: minRateOnDate,
+      hasEligibleRoom,
+    };
+  }
+
+  return {
+    ok: true,
+    data: {
+      startDate,
+      endDate,
+      today,
+      days,
     },
   };
 }
@@ -453,39 +785,52 @@ export async function createBooking(input: CreateBookingInput): Promise<ApiResul
 
   try {
     const result = await db().runTransaction(async (tx) => {
-      // ---- 1. Re-check availability inside the transaction -------------
+      // ---- 1. Acquire concurrency lock on the room type -----------------
+      // Reading this document in the transaction forces Firestore to track it
+      // in the optimistic lock set. Any concurrent booking attempt for this room
+      // type will serialize, preventing race-condition phantom overbooking.
+      const lockRef = db().collection(COL.inventoryLocks).doc(quote.roomTypeId);
+      const lockDoc = await tx.get(lockRef);
+
+      // ---- 2. Re-check availability inside the transaction -------------
       const resSnap = await tx.get(
         db()
           .collection(COL.reservations)
-          .where("roomTypeId", "==", quote.roomTypeId)
-          .where("checkIn", "<", quote.checkOut),
+          .where("roomTypeId", "==", quote.roomTypeId),
       );
-      let bookedPeak = 0;
       const nights = nightsBetweenISO(quote.checkIn, quote.checkOut);
       const perNight = new Map<string, number>();
       for (const n of nights) perNight.set(n, 0);
+
       for (const d of resSnap.docs) {
         const r = d.data() as Reservation;
-        if (!INVENTORY_CONSUMING_STATUSES.includes(r.status)) continue;
+        if (!COMMITTED_BOOKING_STATUSES.includes(r.status)) continue;
         if (!overlapsRange({ checkIn: r.checkIn, checkOut: r.checkOut }, quote.checkIn, quote.checkOut)) continue;
-        const lineCount = r.rooms?.find((rr) => rr.roomTypeId === quote.roomTypeId) ? r.rooms.length : 1;
+
+        const count =
+          typeof r.roomCount === "number" && r.roomCount > 0
+            ? r.roomCount
+            : r.rooms && r.rooms.length > 0
+            ? r.rooms.filter((rr) => rr.roomTypeId === quote.roomTypeId).length || 1
+            : 1;
+
         for (const n of nights) {
           if (overlapsRange({ checkIn: r.checkIn, checkOut: r.checkOut }, n, addDaysISO(n, 1))) {
-            perNight.set(n, (perNight.get(n) ?? 0) + Math.max(1, lineCount));
+            perNight.set(n, (perNight.get(n) ?? 0) + count);
           }
         }
       }
-      bookedPeak = Math.max(0, ...perNight.values(), 0);
 
-      // holds
+      // Active holds
       const holdsSnap = await tx.get(
         db().collection(COL.holds).where("roomTypeId", "==", quote.roomTypeId).where("released", "==", false),
       );
       const holdPerNight = new Map<string, number>();
       for (const n of nights) holdPerNight.set(n, 0);
+      const nowMs = Date.now();
       for (const d of holdsSnap.docs) {
         const h = d.data() as BookingHold;
-        if (h.expiresAt < Date.now() || h.released) continue;
+        if (h.expiresAt < nowMs || h.released) continue;
         if (!overlapsRange({ checkIn: h.checkIn, checkOut: h.checkOut }, quote.checkIn, quote.checkOut)) continue;
         for (const n of nights) {
           if (overlapsRange({ checkIn: h.checkIn, checkOut: h.checkOut }, n, addDaysISO(n, 1))) {
@@ -540,8 +885,8 @@ export async function createBooking(input: CreateBookingInput): Promise<ApiResul
       let assignedRoomNumber: string | undefined;
       const prSnap = await tx.get(db().collection(COL.physicalRooms).where("roomTypeId", "==", quote.roomTypeId));
       const candidates: PhysicalRoom[] = prSnap.docs
-        .map((d) => ({ id: d.id, ...(d.data() as Omit<PhysicalRoom, "id">) }))
-        .filter((p) => p.status === "active" && !blocked.has(p.id));
+        .map((d: any): PhysicalRoom => ({ id: d.id, ...(d.data() as Omit<PhysicalRoom, "id">) }))
+        .filter((p: PhysicalRoom) => p.status === "active" && !blocked.has(p.id));
       if (candidates.length > 0) {
         // find one with no overlapping reservation assignment
         const takenNumbers = new Set<string>();
@@ -556,20 +901,19 @@ export async function createBooking(input: CreateBookingInput): Promise<ApiResul
       }
 
       // ---- 4. Create the reservation -----------------------------------
-      const reservationRooms: ReservationRoom[] = [
-        {
-          roomTypeId: quote.roomTypeId,
-          roomTypeName: quote.roomTypeName,
-          ratePlanId: quote.ratePlanId,
-          ratePlanName: quote.ratePlanName,
-          adults: quote.adults,
-          children: quote.children,
-          assignedRoomNumber,
-          nightlyRates: quote.nightlyRates,
-          subtotal: pricing.roomSubtotal,
-          addons: quote.addons,
-        },
-      ];
+      const count = quote.roomCount || 1;
+      const reservationRooms: ReservationRoom[] = Array.from({ length: count }).map((_, idx) => ({
+        roomTypeId: quote.roomTypeId,
+        roomTypeName: quote.roomTypeName,
+        ratePlanId: quote.ratePlanId,
+        ratePlanName: quote.ratePlanName,
+        adults: Math.max(1, Math.floor(quote.adults / count)),
+        children: Math.floor(quote.children / count),
+        assignedRoomNumber: idx === 0 ? assignedRoomNumber : undefined,
+        nightlyRates: quote.nightlyRates,
+        subtotal: Math.round(pricing.roomSubtotal / count),
+        addons: idx === 0 ? quote.addons : [],
+      }));
 
       const reservation: Reservation = {
         id: "",
@@ -589,6 +933,7 @@ export async function createBooking(input: CreateBookingInput): Promise<ApiResul
         nights: quote.nights,
         adults: quote.adults,
         children: quote.children,
+        roomCount: quote.roomCount,
         requests: input.requests,
         status: "pending",
         paymentStatus: "pending",
@@ -659,7 +1004,19 @@ export async function createBooking(input: CreateBookingInput): Promise<ApiResul
         }
       }
 
-      // ---- 8. Consume the quote ------------------------------------------
+      // ---- 8. Touch inventory lock to serialize concurrent bookings ----
+      tx.set(
+        lockRef,
+        {
+          roomTypeId: quote.roomTypeId,
+          lastReference: reference,
+          lastLockedAt: now,
+          version: ((lockDoc.data()?.version as number) ?? 0) + 1,
+        },
+        { merge: true },
+      );
+
+      // ---- 9. Consume the quote ------------------------------------------
       tx.set(quoteDoc.ref, { status: "consumed", consumedBy: resRef.id }, { merge: true });
 
       return {
@@ -745,8 +1102,72 @@ export async function verifyAndConfirmPayment(input: VerifyPaymentInput): Promis
         throw new BookingError("INVALID_BOOKING_STATE", "Cannot pay for a cancelled reservation.");
       }
 
-      const expected = r.pricing.depositDue;
-      if (input.amountPaid < expected) {
+      // Concurrency lock on room type to serialize payment confirmations against new bookings
+      const lockRef = db().collection(COL.inventoryLocks).doc(r.roomTypeId);
+      const lockDoc = await tx.get(lockRef);
+
+      // Check if hold is still active
+      const holdSnap = await tx.get(db().collection(COL.holds).where("reservationId", "==", input.reservationId));
+      // Read payment records BEFORE any writes to satisfy Firestore transaction requirements
+      const paySnap = await tx.get(db().collection(COL.payments).where("reservationId", "==", input.reservationId));
+      const activeHold = holdSnap.docs.find((d: any) => {
+        const h = d.data() as BookingHold;
+        return !h.released && h.expiresAt >= Date.now();
+      });
+
+      // If hold has expired before payment arrived, we must verify capacity before confirming
+      // to ensure no double-booking occurs!
+      if (!activeHold) {
+        const requiredRooms = r.roomCount || (r.rooms ? r.rooms.length : 1);
+        const roomType = await getRoomTypeById(r.roomTypeId);
+        if (!roomType) throw new BookingError("ROOM_NOT_FOUND", "Room type no longer exists.");
+
+        const blocked = await blockedRoomIdsForRange(r.roomTypeId, r.checkIn, r.checkOut);
+        const sellable = Math.max(0, roomType.qty - blocked.size);
+        const nights = nightsBetweenISO(r.checkIn, r.checkOut);
+
+        const otherResSnap = await tx.get(
+          db().collection(COL.reservations).where("roomTypeId", "==", r.roomTypeId),
+        );
+        const otherHoldsSnap = await tx.get(
+          db().collection(COL.holds).where("roomTypeId", "==", r.roomTypeId).where("released", "==", false),
+        );
+
+        for (const n of nights) {
+          let nightBooked = 0;
+          let nightHeld = 0;
+          for (const od of otherResSnap.docs) {
+            if (od.id === r.id) continue;
+            const otherR = od.data() as Reservation;
+            if (!COMMITTED_BOOKING_STATUSES.includes(otherR.status)) continue;
+            if (overlapsRange({ checkIn: otherR.checkIn, checkOut: otherR.checkOut }, n, addDaysISO(n, 1))) {
+              nightBooked += otherR.roomCount || (otherR.rooms ? otherR.rooms.length : 1);
+            }
+          }
+          const nowMs = Date.now();
+          for (const hd of otherHoldsSnap.docs) {
+            const h = hd.data() as BookingHold;
+            if (h.reservationId === r.id || h.expiresAt < nowMs || h.released) continue;
+            if (overlapsRange({ checkIn: h.checkIn, checkOut: h.checkOut }, n, addDaysISO(n, 1))) {
+              nightHeld += h.roomCount ?? 1;
+            }
+          }
+          if (sellable - nightBooked - nightHeld < requiredRooms) {
+            const now = new Date().toISOString();
+            tx.update(resRef, {
+              paymentStatus: "successful",
+              updatedAt: now,
+            });
+            throw new BookingError(
+              "ROOM_UNAVAILABLE",
+              "Your payment was received, but your 30-minute booking hold had expired and this room category is fully booked. Our front desk manager has been notified to assign an upgraded room or assist you.",
+            );
+          }
+        }
+      }
+
+      const expected = r.pricing.grandTotal || r.pricing.depositDue;
+      if (input.amountPaid > 0 && input.amountPaid < expected) {
         throw new BookingError(
           "PAYMENT_FAILED",
           "Payment amount does not match the amount due. Please contact the front desk.",
@@ -754,7 +1175,7 @@ export async function verifyAndConfirmPayment(input: VerifyPaymentInput): Promis
       }
 
       const now = new Date().toISOString();
-      const paid = r.pricing.amountPaid + input.amountPaid;
+      const paid = input.amountPaid > 0 ? r.pricing.amountPaid + input.amountPaid : r.pricing.grandTotal;
       const pricing: PriceBreakdown = {
         ...r.pricing,
         amountPaid: paid,
@@ -771,8 +1192,7 @@ export async function verifyAndConfirmPayment(input: VerifyPaymentInput): Promis
       });
 
       // Update payment record(s)
-      const paySnap = await tx.get(db().collection(COL.payments).where("reservationId", "==", input.reservationId));
-      paySnap.docs.forEach((d) =>
+      paySnap.docs.forEach((d: any) =>
         tx.update(d.ref, {
           status: "successful",
           gatewayReference: input.paystackReference,
@@ -783,8 +1203,19 @@ export async function verifyAndConfirmPayment(input: VerifyPaymentInput): Promis
       );
 
       // Release the hold (inventory now consumed by the confirmed reservation)
-      const holdSnap = await tx.get(db().collection(COL.holds).where("reservationId", "==", input.reservationId));
-      holdSnap.docs.forEach((d) => tx.update(d.ref, { released: true, releasedAt: now }));
+      holdSnap.docs.forEach((d: any) => tx.update(d.ref, { released: true, releasedAt: now }));
+
+      // Touch concurrency lock
+      tx.set(
+        lockRef,
+        {
+          roomTypeId: r.roomTypeId,
+          lastReference: r.reference,
+          lastConfirmedAt: now,
+          version: ((lockDoc.data()?.version as number) ?? 0) + 1,
+        },
+        { merge: true },
+      );
 
       // Audit
       const auditRef = db().collection(COL.auditLogs).doc();
@@ -805,7 +1236,7 @@ export async function verifyAndConfirmPayment(input: VerifyPaymentInput): Promis
   } catch (e) {
     if (e instanceof BookingError) return { ok: false, error: e.code, message: e.message };
     console.error("verifyAndConfirmPayment failed:", e);
-    return { ok: false, error: "INTERNAL_ERROR", message: "Payment verification failed. Please contact support." };
+    return { ok: false, error: "INTERNAL_ERROR", message: e instanceof Error ? e.message : "Payment verification failed. Please contact support." };
   }
 }
 
@@ -821,7 +1252,7 @@ export async function markPaymentFailed(reservationId: string, reason: string): 
       if (r.paymentStatus === "successful") return; // never downgrade a real payment
       tx.update(resRef, { paymentStatus: "failed", updatedAt: now });
       const paySnap = await tx.get(db().collection(COL.payments).where("reservationId", "==", reservationId));
-      paySnap.docs.forEach((d) => tx.update(d.ref, { status: "failed", failureReason: reason, updatedAt: now }));
+      paySnap.docs.forEach((d: any) => tx.update(d.ref, { status: "failed", failureReason: reason, updatedAt: now }));
     });
     await releaseHoldsForReservation(reservationId);
     return { ok: true, data: null };
@@ -850,6 +1281,42 @@ export async function transitionReservation(
       if (!canTransition(r.status, to)) {
         throw new BookingError("INVALID_BOOKING_STATE", `Cannot move a reservation from ${r.status} to ${to}.`);
       }
+
+      // If transitioning to confirmed, re-verify inventory so manual admin confirmations cannot overbook
+      if (to === "confirmed" && r.status !== "confirmed") {
+        const lockRef = db().collection(COL.inventoryLocks).doc(r.roomTypeId);
+        await tx.get(lockRef);
+
+        const requiredRooms = r.roomCount || (r.rooms ? r.rooms.length : 1);
+        const roomType = await getRoomTypeById(r.roomTypeId);
+        if (!roomType) throw new BookingError("ROOM_NOT_FOUND", "Room type no longer exists.");
+
+        const blocked = await blockedRoomIdsForRange(r.roomTypeId, r.checkIn, r.checkOut);
+        const sellable = Math.max(0, roomType.qty - blocked.size);
+        const nights = nightsBetweenISO(r.checkIn, r.checkOut);
+
+        const otherResSnap = await tx.get(
+          db().collection(COL.reservations).where("roomTypeId", "==", r.roomTypeId),
+        );
+        for (const n of nights) {
+          let nightBooked = 0;
+          for (const od of otherResSnap.docs) {
+            if (od.id === r.id) continue;
+            const otherR = od.data() as Reservation;
+            if (!COMMITTED_BOOKING_STATUSES.includes(otherR.status)) continue;
+            if (overlapsRange({ checkIn: otherR.checkIn, checkOut: otherR.checkOut }, n, addDaysISO(n, 1))) {
+              nightBooked += otherR.roomCount || (otherR.rooms ? otherR.rooms.length : 1);
+            }
+          }
+          if (sellable - nightBooked < requiredRooms) {
+            throw new BookingError(
+              "ROOM_UNAVAILABLE",
+              `Cannot confirm reservation: ${roomType.name} is fully booked on ${n}.`,
+            );
+          }
+        }
+      }
+
       const now = new Date().toISOString();
       const patch: Record<string, unknown> = { status: to, updatedAt: now };
       if (to === "cancelled") {
@@ -863,7 +1330,7 @@ export async function transitionReservation(
 
       if (to === "cancelled" || to === "no_show") {
         const holdSnap = await tx.get(db().collection(COL.holds).where("reservationId", "==", reservationId));
-        holdSnap.docs.forEach((d) => tx.update(d.ref, { released: true, releasedAt: now }));
+        holdSnap.docs.forEach((d: any) => tx.update(d.ref, { released: true, releasedAt: now }));
       }
 
       const auditRef = db().collection(COL.auditLogs).doc();
@@ -911,12 +1378,17 @@ export async function assignRoom(
       const pr = prSnap.docs[0].data() as PhysicalRoom;
       if (pr.status !== "active") throw new BookingError("VALIDATION_ERROR", "That room is out of service.");
 
+      // Check maintenance or blocked status
+      const blocked = await blockedRoomIdsForRange(r.roomTypeId, r.checkIn, r.checkOut);
+      if (blocked.has(prSnap.docs[0].id)) {
+        throw new BookingError("VALIDATION_ERROR", `Room ${roomNumber} is blocked for maintenance during these dates.`);
+      }
+
       const overlapSnap = await tx.get(
         db()
           .collection(COL.reservations)
           .where("roomTypeId", "==", r.roomTypeId)
-          .where("assignedRoomNumber", "==", roomNumber)
-          .where("checkIn", "<", r.checkOut),
+          .where("assignedRoomNumber", "==", roomNumber),
       );
       for (const d of overlapSnap.docs) {
         if (d.id === reservationId) continue;
@@ -1002,7 +1474,7 @@ export async function cancelBooking(
       }
 
       const holdSnap = await tx.get(db().collection(COL.holds).where("reservationId", "==", reservationId));
-      holdSnap.docs.forEach((d) => tx.update(d.ref, { released: true, releasedAt: now }));
+      holdSnap.docs.forEach((d: any) => tx.update(d.ref, { released: true, releasedAt: now }));
 
       const auditRef = db().collection(COL.auditLogs).doc();
       tx.set(auditRef, {
@@ -1070,17 +1542,27 @@ export async function serverPaymentByGatewayRef(reservationId: string): Promise<
 }
 
 export async function listReservations(opts: { limit?: number; status?: string } = {}): Promise<Reservation[]> {
-  let q: FirebaseFirestore.Query = db().collection(COL.reservations).orderBy("createdAt", "desc").limit(opts.limit ?? 100);
-  if (opts.status) q = q.where("status", "==", opts.status);
-  const snap = await q.get();
-  return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Reservation, "id">) }));
+  try {
+    let q: any = db().collection(COL.reservations).orderBy("createdAt", "desc").limit(opts.limit ?? 100);
+    if (opts.status) q = q.where("status", "==", opts.status);
+    const snap = await q.get();
+    return snap.docs.map((d: any) => ({ id: d.id, ...(d.data() as Omit<Reservation, "id">) }));
+  } catch (err) {
+    console.warn("Failed to list reservations from Firestore:", err);
+    return [];
+  }
 }
 
 export async function listPhysicalRooms(roomTypeId?: string): Promise<PhysicalRoom[]> {
-  let q: FirebaseFirestore.Query = db().collection(COL.physicalRooms);
-  if (roomTypeId) q = q.where("roomTypeId", "==", roomTypeId);
-  const snap = await q.get();
-  return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<PhysicalRoom, "id">) }));
+  try {
+    let q: any = db().collection(COL.physicalRooms);
+    if (roomTypeId) q = q.where("roomTypeId", "==", roomTypeId);
+    const snap = await q.get();
+    return snap.docs.map((d: any) => ({ id: d.id, ...(d.data() as Omit<PhysicalRoom, "id">) }));
+  } catch (err) {
+    console.warn("Failed to list physical rooms from Firestore:", err);
+    return [];
+  }
 }
 
 export { overlapsRange, INVENTORY_CONSUMING_STATUSES };

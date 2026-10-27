@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 
 type GalleryItem = { src: string; alt: string; category: string };
@@ -20,27 +21,33 @@ const GALLERY: GalleryItem[] = [
   { src: "/images/corridor-hallway-2.jpg", alt: "Hallway details", category: "Lobby & Reception" },
 
   // Rooms & Suites
-  { src: "/images/signature suite room.jpg", alt: "Signature Suite", category: "Rooms & Suites" },
-  { src: "/images/Diplomatic Suite.jpg", alt: "Diplomatic Suite", category: "Rooms & Suites" },
+  { src: "/images/signature suite room.jpg", alt: "Luxury Suite", category: "Rooms & Suites" },
+  { src: "/images/Presidential.jpg", alt: "Luxury room master parlor", category: "Rooms & Suites" },
+  { src: "/images/presidential 17.jpg", alt: "Luxury room VIP appointments", category: "Rooms & Suites" },
+  { src: "/images/presidential23.jpg", alt: "Luxury room stately ambiance", category: "Rooms & Suites" },
+  { src: "/images/presidential3.jpg", alt: "Luxury room luxury interior", category: "Rooms & Suites" },
   { src: "/images/superexecutive.jpg", alt: "Super Executive room", category: "Rooms & Suites" },
-  { src: "/images/executive.jpg", alt: "Executive Suite", category: "Rooms & Suites" },
-  { src: "/images/Standard Plus.jpg", alt: "Standard Plus room", category: "Rooms & Suites" },
-  { src: "/images/deluxe.jpg", alt: "Deluxe room", category: "Rooms & Suites" },
+  { src: "/images/EXECUTIVE Main.jpeg", alt: "Executive room — Master bed and ambient paneling", category: "Rooms & Suites" },
+  { src: "/images/EXECUTIVE MAIN2.jpeg", alt: "Executive room — Marble media wall and dressing suite", category: "Rooms & Suites" },
+  { src: "/images/Standard PLUS.jpeg", alt: "Standard Plus room — Master bed and ambient lighting", category: "Rooms & Suites" },
+  { src: "/images/STANDARD PLUS MAIN .jpeg", alt: "Standard Plus room — Suite interior and appointments", category: "Rooms & Suites" },
   { src: "/images/Suite1.jpg", alt: "Studio suite", category: "Rooms & Suites" },
-  { src: "/images/Standard room.jpg", alt: "Standard room", category: "Rooms & Suites" },
+  { src: "/images/Standard room.jpg", alt: "Standard room — Sanctuary bed and mood lighting", category: "Rooms & Suites" },
+  { src: "/images/standard.jpg", alt: "Standard room — Contemporary appointments and workstation", category: "Rooms & Suites" },
 
-  // Dining & Bar
-  { src: "/images/dining.jpg", alt: "Fine dining restaurant", category: "Dining & Bar" },
-  { src: "/images/Restaurant 2.jpg", alt: "Restaurant setting", category: "Dining & Bar" },
-  { src: "/images/lounge.jpg", alt: "Lounge area", category: "Dining & Bar" },
+  // Restaurant
+  { src: "/images/dining.jpg", alt: "Fine dining restaurant main hall", category: "Restaurant" },
+  { src: "/images/Restaurant 2.jpg", alt: "Restaurant setting & table service", category: "Restaurant" },
+  { src: "/images/restaurant14.jpg", alt: "Private dining & banqueting setup", category: "Restaurant" },
 
-  // Garden & Outdoor
-  { src: "/images/OpenBar Garden.jpg", alt: "Open-air garden bar", category: "Garden & Outdoor" },
-  { src: "/images/OpenBar Garden 2.jpg", alt: "Garden courtyard", category: "Garden & Outdoor" },
-  { src: "/images/OpenBar Garden 3.jpg", alt: "Private garden area", category: "Garden & Outdoor" },
-  { src: "/images/OpenBar sitout.jpg", alt: "Evening garden sit-out", category: "Garden & Outdoor" },
-  { src: "/images/open air bar sitout.jpg", alt: "Al fresco dining", category: "Garden & Outdoor" },
-  { src: "/images/Ballard Table.jpg", alt: "Billiards & outdoor recreation", category: "Garden & Outdoor" },
+  // The Bar & Lounge
+  { src: "/images/OpenBar Garden.jpg", alt: "Open-air bar & garden terrace", category: "The Bar & Lounge" },
+  { src: "/images/lounge.jpg", alt: "VIP indoor cocktail lounge & spirits bar", category: "The Bar & Lounge" },
+  { src: "/images/Ballard Table.jpg", alt: "Billiards & lounge recreation", category: "The Bar & Lounge" },
+  { src: "/images/OpenBar Garden 2.jpg", alt: "Garden bar evening courtyard", category: "The Bar & Lounge" },
+  { src: "/images/OpenBar Garden 3.jpg", alt: "Open-air bar lounge pavilion", category: "The Bar & Lounge" },
+  { src: "/images/OpenBar sitout.jpg", alt: "Evening garden sit-out", category: "The Bar & Lounge" },
+  { src: "/images/open air bar sitout.jpg", alt: "Open-air bar sitout lounge", category: "The Bar & Lounge" },
 
   // Events & Banqueting
   { src: "/images/BankyHall.jpg", alt: "Banky Hall 300-seat banqueting venue", category: "Events & Banqueting" },
@@ -84,8 +91,15 @@ export default function GalleryPage() {
   return (
     <>
       {/* Hero */}
-      <section className="relative pt-32 pb-20 sm:pt-40 sm:pb-28 bg-[#1b1b1b] dark:bg-[#0d0d0d]">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#1b1b1b] dark:from-[#0d0d0d] via-[#1b1b1b]/80 to-[#1b1b1b]" />
+      <section className="relative pt-32 pb-20 sm:pt-40 sm:pb-28 bg-[#1b1b1b] dark:bg-[#1a1a1d] overflow-hidden">
+        {/* Baseline Gallery Header Image — guaranteed first visual to show immediately */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/images/Hotel Lobby.jpg"
+          alt="Banky Hotel Gallery"
+          className="absolute inset-0 w-full h-full object-cover opacity-25 pointer-events-none select-none"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#1b1b1b]/80 dark:from-[#202023]/80 via-[#1b1b1b]/90 to-[#1b1b1b]" />
         <div className="container-x relative z-10 text-center">
           <span className="eyebrow text-[var(--accent)] block mb-3">Visual Tour</span>
           <h1 className="font-display text-4xl sm:text-5xl md:text-6xl text-white">Photo Gallery</h1>
@@ -96,7 +110,7 @@ export default function GalleryPage() {
       </section>
 
       {/* Gallery with categories */}
-      <section className="py-16 sm:py-24 bg-white dark:bg-[#121212]">
+      <section className="py-16 sm:py-24 bg-white dark:bg-[#202023]">
         <div className="container-x">
           {/* Category tabs */}
           <div className="flex flex-wrap items-center justify-center gap-2 mb-10">
@@ -126,15 +140,36 @@ export default function GalleryPage() {
               <button
                 key={item.src}
                 onClick={() => setLightboxIdx(i)}
-                className="overflow-hidden rounded-2xl border border-[#ece6dd] dark:border-[#2e2b26] group cursor-pointer block w-full text-left shadow-sm aspect-[16/10] relative"
+                className="overflow-hidden rounded-2xl border border-[#ece6dd] dark:border-[#2e2b26] group cursor-pointer block w-full text-left shadow-sm aspect-[16/10] relative bg-stone-200 dark:bg-stone-800"
               >
-                <img
+                {/* Blurred placeholder background using CSS filter: blur(20px) while full image loads */}
+                <div
+                  className="img-blur-bg absolute inset-0 bg-cover bg-center pointer-events-none transition-opacity duration-700"
+                  style={{
+                    backgroundImage: `url(${encodeURI(item.src)})`,
+                    filter: "blur(20px)",
+                    WebkitFilter: "blur(20px)",
+                    transform: "scale(1.15)",
+                  }}
+                  data-placeholder="blur"
+                  aria-hidden="true"
+                />
+                <Image
                   src={item.src}
                   alt={item.alt}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                  loading="lazy"
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  referrerPolicy="no-referrer"
+                  className="relative z-10 object-cover group-hover:scale-105 transition-transform duration-700"
+                  onLoad={(e) => {
+                    const sibling = e.currentTarget.previousElementSibling as HTMLElement | null;
+                    if (sibling) {
+                      sibling.style.opacity = "0";
+                      sibling.classList.add("is-loaded");
+                    }
+                  }}
                 />
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/35 transition-all duration-300 flex items-end justify-between p-3 opacity-0 group-hover:opacity-100">
+                <div className="absolute inset-0 z-20 bg-black/0 group-hover:bg-black/35 transition-all duration-300 flex items-end justify-between p-3 opacity-0 group-hover:opacity-100">
                   <span className="text-white text-xs font-condensed uppercase tracking-wider font-medium">{item.category}</span>
                   <span className="text-[var(--accent)] text-xs font-condensed font-medium bg-black/40 px-2 py-0.5 rounded">View</span>
                 </div>
@@ -186,10 +221,14 @@ export default function GalleryPage() {
           {/* Image */}
           <div className="max-w-[90vw] max-h-[85vh]" onClick={(e) => e.stopPropagation()}>
             <div className="overflow-hidden rounded-2xl shadow-2xl border border-white/10">
-              <img
+              <Image
                 src={lightboxItem.src}
                 alt={lightboxItem.alt}
-                className="max-w-full max-h-[80vh] object-contain"
+                width={1400}
+                height={900}
+                priority
+                referrerPolicy="no-referrer"
+                className="max-w-full max-h-[80vh] w-auto h-auto object-contain"
               />
             </div>
             <div className="mt-3 text-center">

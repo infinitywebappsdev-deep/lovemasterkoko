@@ -18,6 +18,9 @@ import {
   AlertTriangle,
   ChevronRight,
   Sparkles,
+  Printer,
+  Sliders,
+  Download,
 } from "lucide-react";
 import { QrOrder, MenuItem, OrderStatus } from "@/lib/qr-menu/types";
 import {
@@ -28,11 +31,14 @@ import {
   playOrderChime,
   formatNaira,
 } from "@/lib/qr-menu/store";
+import { ThermalReceiptModal } from "@/components/qr/ThermalReceiptModal";
+import { usePaymentSettings } from "@/lib/settings/usePaymentSettings";
 
 const STAFF_PASSCODE = "banky2026";
 const ALTERNATE_PASSCODE = "1234";
 
 export default function QrAdminKitchenStation() {
+  const { thermalSettings, toggleAutoPrintThermal } = usePaymentSettings();
   const [passcode, setPasscode] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authError, setAuthError] = useState("");
@@ -42,6 +48,8 @@ export default function QrAdminKitchenStation() {
   const [items, setItems] = useState<MenuItem[]>([]);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [stockFilter, setStockFilter] = useState("");
+  const [receiptModalOrder, setReceiptModalOrder] = useState<QrOrder | null>(null);
+  const [autoPrintModal, setAutoPrintModal] = useState<boolean>(false);
   const previousOrdersLength = useRef(0);
 
   // Check saved session in localStorage
@@ -60,16 +68,28 @@ export default function QrAdminKitchenStation() {
     const unsub = subscribeOrders((newOrders) => {
       if (
         previousOrdersLength.current > 0 &&
-        newOrders.length > previousOrdersLength.current &&
-        soundEnabled
+        newOrders.length > previousOrdersLength.current
       ) {
-        playOrderChime();
+        if (soundEnabled) {
+          playOrderChime();
+        }
+        // Auto-print thermal slip upon incoming new order if enabled
+        if (
+          thermalSettings.autoPrintOnConfirmation &&
+          (thermalSettings.triggerOn === "incoming" || thermalSettings.triggerOn === "both")
+        ) {
+          const newestOrder = newOrders[0];
+          if (newestOrder) {
+            setReceiptModalOrder(newestOrder);
+            setAutoPrintModal(true);
+          }
+        }
       }
       previousOrdersLength.current = newOrders.length;
       setOrders(newOrders);
     });
     return () => unsub();
-  }, [isAuthenticated, soundEnabled]);
+  }, [isAuthenticated, soundEnabled, thermalSettings.autoPrintOnConfirmation, thermalSettings.triggerOn]);
 
   // Listen to items for live 86 / stock manager
   useEffect(() => {
@@ -100,6 +120,97 @@ export default function QrAdminKitchenStation() {
     }
   };
 
+  const handleExportCsv = () => {
+    if (orders.length === 0) return;
+
+    try {
+      const headers = [
+        "Order Number",
+        "Created Date & Time (WAT / Lagos)",
+        "Status",
+        "Order Location Type",
+        "Room or Table",
+        "Guest Name",
+        "Guest Phone",
+        "Items Breakdown",
+        "Total Items Count",
+        "Total Amount (NGN)",
+        "Special Instructions / Notes",
+      ];
+
+      const escapeCsv = (val: unknown) => {
+        if (val === null || val === undefined) return '""';
+        const str = String(val).replace(/"/g, '""');
+        return `"${str}"`;
+      };
+
+      const rows = orders.map((order) => {
+        const formattedDate = new Date(order.createdAt).toLocaleString("en-GB", {
+          timeZone: "Africa/Lagos",
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        });
+
+        const itemsBreakdown = order.items
+          .map(
+            (item) =>
+              `${item.quantity}x ${item.title} (₦${item.price.toLocaleString("en-NG")})${
+                item.notes ? ` [Note: ${item.notes}]` : ""
+              }`
+          )
+          .join("; ");
+
+        const statusLabel =
+          order.status === "pending"
+            ? "Pending Confirmation"
+            : order.status === "in_progress"
+            ? "In Preparation"
+            : order.status === "fulfilled"
+            ? "Fulfilled"
+            : "Cancelled";
+
+        const typeLabel =
+          order.orderType === "room"
+            ? "In-Room Dining"
+            : order.orderType === "poolside_garden"
+            ? "Poolside / Garden"
+            : "Restaurant Table";
+
+        return [
+          escapeCsv(order.orderNumber),
+          escapeCsv(formattedDate),
+          escapeCsv(statusLabel),
+          escapeCsv(typeLabel),
+          escapeCsv(order.roomOrTable),
+          escapeCsv(order.guestName || "Walk-in Guest"),
+          escapeCsv(order.guestPhone || "N/A"),
+          escapeCsv(itemsBreakdown),
+          escapeCsv(order.totalItems),
+          escapeCsv(order.totalAmount),
+          escapeCsv(order.specialInstructions || "None"),
+        ].join(",");
+      });
+
+      const csvContent = "\uFEFF" + [headers.join(","), ...rows].join("\r\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      const dateStr = new Date().toISOString().slice(0, 10);
+      link.setAttribute("href", url);
+      link.setAttribute("download", `banky-kitchen-orders-audit-${dateStr}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Failed to generate CSV export:", err);
+    }
+  };
+
   const pendingOrders = orders.filter((o) => o.status === "pending");
   const inProgressOrders = orders.filter((o) => o.status === "in_progress");
 
@@ -108,7 +219,7 @@ export default function QrAdminKitchenStation() {
     return (
       <div className="min-h-screen bg-[#11100f] text-[#f4efe6] flex items-center justify-center p-4">
         <div className="max-w-sm w-full bg-[#181715] border border-stone-800 rounded-3xl p-6 text-center shadow-2xl">
-          <div className="h-14 w-14 rounded-2xl bg-[#aa8453]/20 border border-[#aa8453]/40 flex items-center justify-center mx-auto mb-4 text-[#aa8453]">
+          <div className="h-14 w-14 rounded-2xl bg-[#ffbf00]/20 border border-[#ffbf00]/40 flex items-center justify-center mx-auto mb-4 text-[#ffbf00]">
             <Lock className="h-6 w-6" />
           </div>
 
@@ -129,7 +240,7 @@ export default function QrAdminKitchenStation() {
                 value={passcode}
                 onChange={(e) => setPasscode(e.target.value)}
                 placeholder="Enter passcode (e.g. banky2026)"
-                className="w-full h-11 pl-10 pr-4 bg-stone-950 border border-stone-800 rounded-xl text-sm text-white placeholder-stone-600 focus:outline-none focus:border-[#aa8453] text-center tracking-widest font-mono"
+                className="w-full h-11 pl-10 pr-4 bg-stone-950 border border-stone-800 rounded-xl text-sm text-white placeholder-stone-600 focus:outline-none focus:border-[#ffbf00] text-center tracking-widest font-mono"
               />
             </div>
 
@@ -141,7 +252,7 @@ export default function QrAdminKitchenStation() {
 
             <button
               type="submit"
-              className="w-full h-11 bg-[#aa8453] hover:bg-[#967344] text-white rounded-xl text-sm font-semibold shadow-lg shadow-[#aa8453]/20 active:scale-95 transition-all"
+              className="w-full h-11 bg-[#ffbf00] hover:bg-[#e09e00] text-white rounded-xl text-sm font-semibold shadow-lg shadow-[#ffbf00]/20 active:scale-95 transition-all"
             >
               Unlock Station
             </button>
@@ -183,6 +294,16 @@ export default function QrAdminKitchenStation() {
               {soundEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
             </button>
 
+            <button
+              onClick={handleExportCsv}
+              disabled={orders.length === 0}
+              className="px-3 py-1.5 rounded-lg bg-stone-900 border border-stone-800 text-stone-300 text-xs hover:text-white flex items-center gap-1.5 transition-colors disabled:opacity-40 cursor-pointer"
+              title="Download audit CSV report of kitchen orders"
+            >
+              <Download className="h-3.5 w-3.5 text-amber-500" />
+              <span className="hidden sm:inline">Export CSV</span>
+            </button>
+
             <Link
               href="/admin/qr-orders"
               className="px-3 py-1.5 rounded-lg bg-stone-900 border border-stone-800 text-stone-300 text-xs hover:text-white"
@@ -205,7 +326,7 @@ export default function QrAdminKitchenStation() {
             onClick={() => setActiveTab("orders")}
             className={`px-4 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-2 transition-colors ${
               activeTab === "orders"
-                ? "bg-[#aa8453] text-white"
+                ? "bg-[#ffbf00] text-white"
                 : "bg-stone-900 text-stone-400 hover:text-white"
             }`}
           >
@@ -217,7 +338,7 @@ export default function QrAdminKitchenStation() {
             onClick={() => setActiveTab("stock")}
             className={`px-4 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-2 transition-colors ${
               activeTab === "stock"
-                ? "bg-[#aa8453] text-white"
+                ? "bg-[#ffbf00] text-white"
                 : "bg-stone-900 text-stone-400 hover:text-white"
             }`}
           >
@@ -276,7 +397,7 @@ export default function QrAdminKitchenStation() {
 
                         {/* Room */}
                         <div className="text-lg font-bold text-white mb-2 flex items-center gap-2">
-                          <span className="bg-[#aa8453] text-white px-2.5 py-0.5 rounded-lg text-sm">
+                          <span className="bg-[#ffbf00] text-white px-2.5 py-0.5 rounded-lg text-sm">
                             {o.roomOrTable}
                           </span>
                           {o.guestName && (
@@ -313,15 +434,38 @@ export default function QrAdminKitchenStation() {
 
                       {/* Total & Action */}
                       <div className="pt-3 border-t border-stone-800/80 flex items-center justify-between gap-3">
-                        <div className="font-display font-semibold text-sm text-[#aa8453]">
+                        <div className="font-display font-semibold text-sm text-[#ffbf00]">
                           {formatNaira(o.totalAmount)}
                         </div>
 
                         <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => {
+                              setReceiptModalOrder(o);
+                              setAutoPrintModal(false);
+                            }}
+                            className="p-1.5 text-stone-400 hover:text-white rounded-lg hover:bg-stone-800 transition-colors"
+                            title="Print thermal receipt docket"
+                          >
+                            <Printer className="h-4 w-4" />
+                          </button>
+
                           {isPending && (
                             <button
-                              onClick={() => updateOrderStatusInDb(o.id, "in_progress")}
-                              className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-semibold"
+                              onClick={async () => {
+                                await updateOrderStatusInDb(o.id, "in_progress");
+                                if (
+                                  thermalSettings.autoPrintOnConfirmation &&
+                                  (thermalSettings.triggerOn === "confirmation" || thermalSettings.triggerOn === "both")
+                                ) {
+                                  setReceiptModalOrder(o);
+                                  setAutoPrintModal(true);
+                                  if (soundEnabled && thermalSettings.chimeOnPrint) {
+                                    playOrderChime();
+                                  }
+                                }
+                              }}
+                              className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-semibold cursor-pointer"
                             >
                               Start Cooking
                             </button>
@@ -329,7 +473,7 @@ export default function QrAdminKitchenStation() {
                           {isInProgress && (
                             <button
                               onClick={() => updateOrderStatusInDb(o.id, "fulfilled")}
-                              className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1"
+                              className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1 cursor-pointer"
                             >
                               <CheckCircle2 className="h-3.5 w-3.5" />
                               <span>Delivered</span>
@@ -397,6 +541,19 @@ export default function QrAdminKitchenStation() {
           </div>
         )}
       </main>
+
+      {/* Printer-Friendly Thermal Receipt Modal */}
+      <ThermalReceiptModal
+        order={receiptModalOrder}
+        onClose={() => {
+          setReceiptModalOrder(null);
+          setAutoPrintModal(false);
+        }}
+        elapsedMinutes={0}
+        autoPrint={autoPrintModal}
+        defaultPaperWidth={thermalSettings.paperWidth}
+        autoCloseAfterPrint={thermalSettings.autoCloseAfterPrint}
+      />
     </div>
   );
 }

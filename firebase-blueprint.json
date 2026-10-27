@@ -89,6 +89,7 @@
         "base_occupancy": { "type": "number" },
         "size": { "type": "string" },
         "image_url": { "type": "string" },
+        "video_url": { "type": "string" },
         "features": { "type": "array", "items": { "type": "string" } },
         "amenities": { "type": "array", "items": { "type": "string" } },
         "availability_status": { "type": "string" },
@@ -177,6 +178,36 @@
         "created_at": { "type": "string" }
       },
       "required": ["room_type_id", "start_date", "end_date", "quantity", "reason"]
+    },
+    "Addon": {
+      "title": "Addon",
+      "description": "Bookable hospitality amenity extras such as airport transfers, early check-in, or celebration setups.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "price": { "type": "number" },
+        "unit": { "type": "string" },
+        "active": { "type": "boolean" },
+        "created_at": { "type": "string" }
+      },
+      "required": ["name", "price", "active"]
+    },
+    "BookingHold": {
+      "title": "BookingHold",
+      "description": "Temporary reservation lock holding room inventory during payment checkout.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "room_type_id": { "type": "string" },
+        "check_in": { "type": "string" },
+        "check_out": { "type": "string" },
+        "quantity": { "type": "number" },
+        "expires_at": { "type": "string" },
+        "created_at": { "type": "string" }
+      },
+      "required": ["room_type_id", "check_in", "check_out", "expires_at"]
     },
     "Reservation": {
       "title": "Reservation",
@@ -614,35 +645,133 @@
     }
   },
   "firestore": {
-    "menu_categories": { "entity": "MenuCategory" },
-    "menu_items": { "entity": "MenuItem" },
-    "qr_orders": { "entity": "QrOrder" },
-    "organizations": { "entity": "Organization" },
-    "properties": { "entity": "Property" },
-    "site_settings": { "entity": "SiteSettings" },
-    "rooms": { "entity": "RoomType" },
-    "room_types": { "entity": "RoomType" },
-    "physical_rooms": { "entity": "Room" },
-    "rate_plans": { "entity": "RatePlan" },
-    "rate_rules": { "entity": "RateRule" },
-    "inventory_blocks": { "entity": "InventoryBlock" },
-    "rooms/{roomId}/dailyAvailability/{date}": { "entity": "DailyAvailability" },
-    "reservations": { "entity": "Reservation" },
-    "guests": { "entity": "Guest" },
-    "payments": { "entity": "Payment" },
-    "refunds": { "entity": "Refund" },
-    "folios": { "entity": "Folio" },
-    "folio_charges": { "entity": "FolioCharge" },
-    "promotions": { "entity": "Promotion" },
-    "integration_events": { "entity": "IntegrationEvent" },
-    "pages": { "entity": "Page" },
-    "gallery_images": { "entity": "GalleryImage" },
-    "faqs": { "entity": "Faq" },
-    "newsletter_subscribers": { "entity": "NewsletterSubscriber" },
-    "messages": { "entity": "Message" },
-    "guest_reviews": { "entity": "GuestReview" },
-    "audit_logs": { "entity": "AuditLog" },
-    "user_roles": { "entity": "UserRole" },
-    "profiles": { "entity": "Profile" }
+    "organizations": {
+      "schema": "Organization",
+      "description": "Hospitality enterprise organization details."
+    },
+    "properties": {
+      "schema": "Property",
+      "description": "Property operational profiles and location attributes."
+    },
+    "site_settings": {
+      "schema": "SiteSettings",
+      "description": "Branding, contact info, theme colors, and site configuration."
+    },
+    "rooms": {
+      "schema": "RoomType",
+      "description": "Public catalog of hotel residences and rooms."
+    },
+    "room_types": {
+      "schema": "RoomType",
+      "description": "Room type inventory categories, pricing, capacities, and amenities."
+    },
+    "physical_rooms": {
+      "schema": "Room",
+      "description": "Individual physical room units with housekeeping and maintenance status."
+    },
+    "rate_plans": {
+      "schema": "RatePlan",
+      "description": "Room pricing plans (Flexible, Non-Refundable, Bed & Breakfast)."
+    },
+    "rate_rules": {
+      "schema": "RateRule",
+      "description": "Dynamic pricing rules (weekend uplifts, seasonal peaks)."
+    },
+    "inventory_blocks": {
+      "schema": "InventoryBlock",
+      "description": "Maintenance holds and out-of-order room allocations."
+    },
+    "addons": {
+      "schema": "Addon",
+      "description": "Bookable extras including airport transfers, early check-in, and celebration setups."
+    },
+    "booking_holds": {
+      "schema": "BookingHold",
+      "description": "Temporary inventory holds during active checkout sessions."
+    },
+    "rooms/{roomId}/dailyAvailability/{date}": {
+      "schema": "DailyAvailability",
+      "description": "Daily room unit availability counters and blackout overrides."
+    },
+    "reservations": {
+      "schema": "Reservation",
+      "description": "Guest reservations, booking statuses, totals, and payment references."
+    },
+    "guests": {
+      "schema": "Guest",
+      "description": "Guest contact records, stay history, and VIP status."
+    },
+    "payments": {
+      "schema": "Payment",
+      "description": "Payment transactions, Paystack gateway references, and settlements."
+    },
+    "refunds": {
+      "schema": "Refund",
+      "description": "Refund audit logs and provider settlement references."
+    },
+    "folios": {
+      "schema": "Folio",
+      "description": "Guest operational billing folios for charges and balance tracking."
+    },
+    "folio_charges": {
+      "schema": "FolioCharge",
+      "description": "Departmental charges posted to guest folios."
+    },
+    "promotions": {
+      "schema": "Promotion",
+      "description": "Special promo discount vouchers and usage caps."
+    },
+    "integration_events": {
+      "schema": "IntegrationEvent",
+      "description": "PMS, OTA Channel, WhatsApp, and webhook integration event logs."
+    },
+    "pages": {
+      "schema": "Page",
+      "description": "Static content pages for about, amenities, dining, and contact."
+    },
+    "gallery_images": {
+      "schema": "GalleryImage",
+      "description": "Photo library assets with categories and captions."
+    },
+    "faqs": {
+      "schema": "Faq",
+      "description": "Frequently asked questions and answers for guests."
+    },
+    "newsletter_subscribers": {
+      "schema": "NewsletterSubscriber",
+      "description": "Newsletter and marketing email subscriber list."
+    },
+    "messages": {
+      "schema": "Message",
+      "description": "Guest and staff reservation communication messages."
+    },
+    "guest_reviews": {
+      "schema": "GuestReview",
+      "description": "Verified guest reviews, ratings, and testimonials."
+    },
+    "menu_categories": {
+      "schema": "MenuCategory",
+      "description": "Categories for the in-room and dining QR menu."
+    },
+    "menu_items": {
+      "schema": "MenuItem",
+      "description": "Food and beverage menu items with pricing, dietary info, and images."
+    },
+    "qr_orders": {
+      "schema": "QrOrder",
+      "description": "In-room dining and restaurant table orders placed via QR code."
+    },
+    "audit_logs": {
+      "schema": "AuditLog",
+      "description": "Administrative audit logs of critical changes and logins."
+    },
+    "user_roles": {
+      "schema": "UserRole",
+      "description": "Administrative roles and permissions for hotel staff."
+    },
+    "profiles": {
+      "schema": "Profile",
+      "description": "User profile records."
+    }
   }
 }

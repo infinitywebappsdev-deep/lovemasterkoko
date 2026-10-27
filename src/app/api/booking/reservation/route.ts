@@ -18,6 +18,8 @@ export async function GET(req: Request) {
   const pub: Partial<Reservation> = {
     reference: r.reference,
     guestName: r.guestName,
+    guestEmail: r.guestEmail,
+    guestPhone: r.guestPhone,
     roomTypeName: r.roomTypeName,
     assignedRoomNumber: r.assignedRoomNumber,
     ratePlanName: r.ratePlanName,
@@ -29,6 +31,7 @@ export async function GET(req: Request) {
     status: r.status,
     paymentStatus: r.paymentStatus,
     pricing: r.pricing,
+    rooms: r.rooms ?? [],
     cancellationPolicy: r.cancellationPolicy,
     cancellationDeadline: r.cancellationDeadline,
     requests: r.requests,

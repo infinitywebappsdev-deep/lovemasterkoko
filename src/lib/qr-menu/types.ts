@@ -26,10 +26,33 @@ export interface MenuItem {
   updatedAt?: string;
 }
 
+export interface DishAddon {
+  id: string;
+  name: string;
+  price: number;
+}
+
 export interface CartItem {
+  cartKey?: string;
   item: MenuItem;
   quantity: number;
+  selectedAddons?: DishAddon[];
   notes?: string;
+  unitPrice?: number;
+}
+
+export type ServiceRequestType = "water" | "cutlery" | "clean" | "waiter" | "bill" | "ice" | "other";
+
+export interface ServiceRequest {
+  id: string;
+  roomOrTable: string;
+  orderType: "room" | "table" | "poolside_garden";
+  type: ServiceRequestType;
+  title: string;
+  notes?: string;
+  paymentMethod?: string;
+  createdAt: string;
+  status: "pending" | "resolved";
 }
 
 export type OrderStatus = "pending" | "in_progress" | "fulfilled" | "cancelled";

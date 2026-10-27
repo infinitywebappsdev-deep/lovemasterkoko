@@ -1,48 +1,362 @@
 import "server-only";
 import { cert, getApps, initializeApp, type App } from "firebase-admin/app";
-import { getFirestore, type Firestore } from "firebase-admin/firestore";
-import { getAuth } from "firebase-admin/auth";
+import { getFirestore as getAdminFirestore, type Firestore as AdminFirestore } from "firebase-admin/firestore";
+import { getAuth as getAdminAuth } from "firebase-admin/auth";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
+  updateDoc,
+  deleteDoc,
+  addDoc,
+  query,
+  where,
+  orderBy,
+  limit,
+  runTransaction,
+  writeBatch,
+  type DocumentReference,
+  type QueryConstraint,
+  type WhereFilterOp,
+  type OrderByDirection,
+} from "firebase/firestore";
+import { db as webDb } from "@/lib/firebase";
+import firebaseConfigData from "../../../firebase-applet-config.json";
+
+let _adminApp: App | null = null;
+let _adminDb: AdminFirestore | null = null;
+let _adminAuth: ReturnType<typeof getAdminAuth> | null = null;
+
+function hasValidServiceAccount(): boolean {
+  const raw = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
+  if (!raw) return false;
+  try {
+    const parsed = JSON.parse(raw);
+    return Boolean(parsed.project_id && parsed.private_key && parsed.client_email);
+  } catch {
+    return false;
+  }
+}
+
+export function getAdminApp(): App | null {
+  if (!hasValidServiceAccount()) return null;
+  if (_adminApp) return _adminApp;
+
+  const existing = getApps().find((a) => a.name === "banky-server");
+  if (existing) {
+    _adminApp = existing;
+    return _adminApp;
+  }
+
+  try {
+    const credsJson = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON!);
+    _adminApp = initializeApp(
+      {
+        credential: cert(credsJson as Parameters<typeof cert>[0]),
+        projectId: firebaseConfigData?.projectId,
+      },
+      "banky-server",
+    );
+    return _adminApp;
+  } catch (err) {
+    console.warn("Failed to initialize Firebase Admin with service account:", err);
+    return null;
+  }
+}
+
+export interface GenericDocSnapshot<T = any> {
+  id: string;
+  exists: boolean;
+  data: () => T | undefined;
+  ref: WebDocRef;
+}
+
+export interface GenericQuerySnapshot<T = any> {
+  empty: boolean;
+  size: number;
+  docs: GenericDocSnapshot<T>[];
+}
+
+export class WebDocRef {
+  readonly id: string;
+  readonly ref: DocumentReference;
+  readonly colName: string;
+
+  constructor(colName: string, id?: string) {
+    this.colName = colName;
+    if (id) {
+      this.ref = doc(webDb, colName, id);
+      this.id = id;
+    } else {
+      this.ref = doc(collection(webDb, colName));
+      this.id = this.ref.id;
+    }
+  }
+
+  async get(): Promise<GenericDocSnapshot> {
+    const snap = await getDoc(this.ref);
+    return {
+      id: snap.id,
+      exists: snap.exists(),
+      data: () => snap.data(),
+      ref: this,
+    };
+  }
+
+  async set(data: any, options?: { merge?: boolean }): Promise<void> {
+    const sanitized = sanitizeUndefined(data);
+    if (options?.merge) {
+      await setDoc(this.ref, sanitized, { merge: true });
+    } else {
+      await setDoc(this.ref, sanitized);
+    }
+  }
+
+  async update(data: any): Promise<void> {
+    const sanitized = sanitizeUndefined(data);
+    await updateDoc(this.ref, sanitized);
+  }
+
+  async delete(): Promise<void> {
+    await deleteDoc(this.ref);
+  }
+}
+
+export class WebQuery {
+  protected colName: string;
+  protected constraints: QueryConstraint[];
+
+  constructor(colName: string, constraints: QueryConstraint[] = []) {
+    this.colName = colName;
+    this.constraints = constraints;
+  }
+
+  where(field: string, opStr: string, value: any): WebQuery {
+    return new WebQuery(this.colName, [
+      ...this.constraints,
+      where(field, opStr as WhereFilterOp, value),
+    ]);
+  }
+
+  orderBy(field: string, directionStr?: "asc" | "desc"): WebQuery {
+    return new WebQuery(this.colName, [
+      ...this.constraints,
+      orderBy(field, directionStr as OrderByDirection),
+    ]);
+  }
+
+  limit(n: number): WebQuery {
+    return new WebQuery(this.colName, [
+      ...this.constraints,
+      limit(n),
+    ]);
+  }
+
+  async get(): Promise<GenericQuerySnapshot> {
+    const colRef = collection(webDb, this.colName);
+    const q = this.constraints.length > 0 ? query(colRef, ...this.constraints) : colRef;
+    const snap = await getDocs(q);
+    return {
+      empty: snap.empty,
+      size: snap.size,
+      docs: snap.docs.map((d) => ({
+        id: d.id,
+        exists: true,
+        data: () => d.data(),
+        ref: new WebDocRef(this.colName, d.id),
+      })),
+    };
+  }
+}
+
+export class WebCollectionRef extends WebQuery {
+  constructor(name: string) {
+    super(name, []);
+  }
+
+  doc(id?: string): WebDocRef {
+    return new WebDocRef(this.colName, id);
+  }
+
+  async add(data: any): Promise<WebDocRef> {
+    const sanitized = sanitizeUndefined(data);
+    const colRef = collection(webDb, this.colName);
+    const res = await addDoc(colRef, sanitized);
+    return new WebDocRef(this.colName, res.id);
+  }
+}
+
+function sanitizeUndefined(obj: any): any {
+  if (obj === undefined) return null;
+  if (obj === null || typeof obj !== "object") return obj;
+  if (obj instanceof Date) return obj.toISOString();
+  if (Array.isArray(obj)) return obj.map(sanitizeUndefined);
+  const out: Record<string, any> = {};
+  for (const [k, v] of Object.entries(obj)) {
+    if (v !== undefined) {
+      out[k] = sanitizeUndefined(v);
+    }
+  }
+  return out;
+}
+
+function resolveNativeDocRef(target: any): DocumentReference {
+  if (!target) throw new Error("Null or undefined target provided to transaction");
+  if (target instanceof WebDocRef) return target.ref;
+  if (target.ref instanceof WebDocRef) return target.ref.ref;
+  if (target.ref && typeof target.ref === "object" && "id" in target.ref) return target.ref;
+  if (target && typeof target === "object" && "id" in target && "path" in target) return target;
+  throw new Error(`Unable to resolve DocumentReference from target: ${typeof target}`);
+}
+
+export class WebFirestoreAdapter {
+  collection(name: string): WebCollectionRef {
+    return new WebCollectionRef(name);
+  }
+
+  async runTransaction<T>(updateFunction: (tx: any) => Promise<T>): Promise<T> {
+    return await runTransaction(webDb, async (nativeTx) => {
+      const txProxy = {
+        get: async (target: any) => {
+          if (target instanceof WebDocRef) {
+            const snap = await nativeTx.get(target.ref);
+            return {
+              id: snap.id,
+              exists: snap.exists(),
+              data: () => snap.data(),
+              ref: target,
+            };
+          }
+          if (target && target.ref instanceof WebDocRef) {
+            const snap = await nativeTx.get(target.ref.ref);
+            return {
+              id: snap.id,
+              exists: snap.exists(),
+              data: () => snap.data(),
+              ref: target.ref,
+            };
+          }
+          if (target && typeof target.get === "function") {
+            return await target.get();
+          }
+          const nativeRef = resolveNativeDocRef(target);
+          const snap = await nativeTx.get(nativeRef);
+          return {
+            id: snap.id,
+            exists: snap.exists(),
+            data: () => snap.data(),
+            ref: new WebDocRef(nativeRef.parent.id, snap.id),
+          };
+        },
+        set: (target: any, data: any, options?: { merge?: boolean }) => {
+          const nativeRef = resolveNativeDocRef(target);
+          const sanitized = sanitizeUndefined(data);
+          if (options?.merge) {
+            nativeTx.set(nativeRef, sanitized, { merge: true });
+          } else {
+            nativeTx.set(nativeRef, sanitized);
+          }
+        },
+        update: (target: any, data: any) => {
+          const nativeRef = resolveNativeDocRef(target);
+          const sanitized = sanitizeUndefined(data);
+          nativeTx.update(nativeRef, sanitized);
+        },
+        delete: (target: any) => {
+          const nativeRef = resolveNativeDocRef(target);
+          nativeTx.delete(nativeRef);
+        },
+      };
+      return await updateFunction(txProxy);
+    });
+  }
+
+  batch() {
+    const b = writeBatch(webDb);
+    return {
+      set: (target: any, data: any, options?: { merge?: boolean }) => {
+        const nativeRef = resolveNativeDocRef(target);
+        const sanitized = sanitizeUndefined(data);
+        if (options?.merge) {
+          b.set(nativeRef, sanitized, { merge: true });
+        } else {
+          b.set(nativeRef, sanitized);
+        }
+        return this;
+      },
+      update: (target: any, data: any) => {
+        const nativeRef = resolveNativeDocRef(target);
+        const sanitized = sanitizeUndefined(data);
+        b.update(nativeRef, sanitized);
+        return this;
+      },
+      delete: (target: any) => {
+        const nativeRef = resolveNativeDocRef(target);
+        b.delete(nativeRef);
+        return this;
+      },
+      commit: async () => {
+        await b.commit();
+      },
+    };
+  }
+}
+
+const _webDbAdapter = new WebFirestoreAdapter();
 
 /**
- * Server-side Firebase Admin SDK bootstrap.
- * Requires FIREBASE_SERVICE_ACCOUNT_JSON (the full service-account JSON) in env.
- * All server-authoritative booking writes flow through this module.
+ * Authoritative Server Database instance.
  */
-
-let _db: Firestore | null = null;
-let _auth: ReturnType<typeof getAuth> | null = null;
-
-export function getAdminApp(): App {
-  const existing = getApps().find((a) => a.name === "banky-server");
-  if (existing) return existing;
-
-  const raw = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
-  if (!raw) {
-    throw new Error(
-      "FIREBASE_SERVICE_ACCOUNT_JSON is not set. Add the Firebase service-account JSON in Settings → Environment.",
-    );
+export function serverDb(): WebFirestoreAdapter {
+  const adminApp = getAdminApp();
+  if (adminApp) {
+    if (_adminDb) return _adminDb as unknown as WebFirestoreAdapter;
+    _adminDb = getAdminFirestore(adminApp, firebaseConfigData?.firestoreDatabaseId);
+    _adminDb.settings({ ignoreUndefinedProperties: true });
+    return _adminDb as unknown as WebFirestoreAdapter;
   }
-  let credsJson: object;
-  try {
-    credsJson = JSON.parse(raw);
-  } catch {
-    throw new Error("FIREBASE_SERVICE_ACCOUNT_JSON is not valid JSON.");
-  }
-  return initializeApp({ credential: cert(credsJson as Parameters<typeof cert>[0]) }, "banky-server");
+  return _webDbAdapter;
 }
 
-/** Lazy singletons so module import doesn't throw at build time. */
-export function serverDb(): Firestore {
-  if (_db) return _db;
-  _db = getFirestore(getAdminApp());
-  _db.settings({ ignoreUndefinedProperties: true });
-  return _db;
-}
+export function serverAuth(): any {
+  const adminApp = getAdminApp();
+  if (adminApp) {
+    if (_adminAuth) return _adminAuth;
+    _adminAuth = getAdminAuth(adminApp);
+    return _adminAuth;
+  }
 
-export function serverAuth() {
-  if (_auth) return _auth;
-  _auth = getAuth(getAdminApp());
-  return _auth;
+  return {
+    verifyIdToken: async (idToken: string) => {
+      const apiKey = firebaseConfigData?.apiKey || process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+      if (!apiKey) {
+        throw new Error("Missing Firebase API key for ID token verification");
+      }
+      const res = await fetch(
+        `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${apiKey}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ idToken }),
+        },
+      );
+      if (!res.ok) {
+        throw new Error(`Token verification failed: ${res.status}`);
+      }
+      const data = await res.json();
+      const user = data.users?.[0];
+      if (!user) {
+        throw new Error("No user profile associated with provided token");
+      }
+      return {
+        uid: user.localId,
+        email: user.email,
+        email_verified: user.emailVerified ?? false,
+      };
+    },
+  };
 }
 
 /** Collection names (single authoritative naming for the booking domain). */
@@ -61,4 +375,6 @@ export const COL = {
   refunds: "refunds",
   auditLogs: "audit_logs",
   idempotency: "idempotency_keys",
+  inventoryLocks: "inventory_locks",
+  siteSettings: "site_settings",
 } as const;

@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import { HOTEL, whatsappLink, bookingMessage } from "@/lib/hotel";
 import { Mail, MapPin } from "lucide-react";
 import { PhoneSolidIcon } from "@/components/icons/PhoneSolidIcon";
@@ -7,20 +8,53 @@ import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 export default function ContactPage() {
   return (
     <>
-      <section className="relative pt-32 pb-20 sm:pt-40 sm:pb-28 bg-[#1b1b1b] dark:bg-[#0d0d0d]">
-        <img src="/images/hotel-front-left.jpg" alt="Banky Hotel Exterior" className="absolute inset-0 w-full h-full object-cover opacity-35" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#1b1b1b]/90 dark:from-[#0d0d0d]/90 via-[#1b1b1b]/70 to-[#1b1b1b]" />
+      <section className="relative pt-32 pb-20 sm:pt-40 sm:pb-28 bg-[#1b1b1b] dark:bg-[#1a1a1d]">
+        <Image
+          src="/images/hotel-front-left.jpg"
+          alt="Banky Hotel Exterior"
+          fill
+          priority
+          referrerPolicy="no-referrer"
+          className="object-cover opacity-35"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#1b1b1b]/90 dark:from-[#202023]/90 via-[#1b1b1b]/70 to-[#1b1b1b]" />
         <div className="container-x relative z-10 text-center">
           <span className="eyebrow text-[var(--accent)] block mb-3">Get in Touch</span>
           <h1 className="font-display font-normal text-4xl sm:text-5xl md:text-6xl text-white">Contact Us</h1>
         </div>
       </section>
-      <section className="py-16 sm:py-24 bg-white dark:bg-[#121212]">
+      <section className="py-16 sm:py-24 bg-white dark:bg-[#202023]">
         <div className="container-x max-w-4xl">
           {/* Landscape Exterior Feature */}
-          <div className="mb-12 overflow-hidden rounded-2xl border border-[#ece6dd] dark:border-[#2e2b26] shadow-md aspect-[16/10] sm:aspect-[21/9] relative">
-            <img src="/images/hotel-front-right.jpg" alt="Banky Hotel & Suites Entrance" className="w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-6">
+          <div className="mb-12 overflow-hidden rounded-2xl border border-[#ece6dd] dark:border-[#2e2b26] shadow-md aspect-[16/10] sm:aspect-[21/9] relative bg-stone-200 dark:bg-stone-800">
+            {/* Blurred placeholder background using CSS filter: blur(20px) while full image loads */}
+            <div
+              className="img-blur-bg absolute inset-0 bg-cover bg-center pointer-events-none transition-opacity duration-700"
+              style={{
+                backgroundImage: "url('/images/hotel-front-right.jpg')",
+                filter: "blur(20px)",
+                WebkitFilter: "blur(20px)",
+                transform: "scale(1.15)",
+              }}
+              data-placeholder="blur"
+              aria-hidden="true"
+            />
+            <Image
+              src="/images/hotel-front-right.jpg"
+              alt="Banky Hotel & Suites Entrance"
+              fill
+              sizes="(max-width: 768px) 100vw, 896px"
+              referrerPolicy="no-referrer"
+              className="relative z-10 object-cover transition-opacity duration-500"
+              onLoad={(e) => {
+                const sibling = e.currentTarget.previousElementSibling as HTMLElement | null;
+                if (sibling) {
+                  sibling.style.opacity = "0";
+                  sibling.classList.add("is-loaded");
+                }
+              }}
+            />
+            <div className="absolute inset-0 z-20 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-6">
               <div>
                 <span className="text-[var(--accent)] text-xs font-condensed tracking-wider uppercase font-bold block mb-1">Visit Us In Person</span>
                 <p className="text-white text-base sm:text-lg font-display">Ado-Ekiti, Ekiti State · Warmly Welcoming Guests Daily</p>

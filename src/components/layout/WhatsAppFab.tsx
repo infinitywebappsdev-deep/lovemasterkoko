@@ -1,10 +1,18 @@
 "use client";
+import { usePathname } from "next/navigation";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { whatsappLink, bookingMessage } from "@/lib/hotel";
 
 export function WhatsAppFab() {
+  const pathname = usePathname();
+
+  if (pathname?.startsWith("/qr") || pathname?.startsWith("/admin")) {
+    return null;
+  }
+
   return (
     <a
+      id="whatsapp-fab-btn"
       href={whatsappLink(bookingMessage({}))}
       target="_blank"
       rel="noreferrer"

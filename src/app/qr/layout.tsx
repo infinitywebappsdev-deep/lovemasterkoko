@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 
 export default function QrLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-[#121110] text-[#f4efe6] antialiased selection:bg-[#aa8453] selection:text-white font-sans">
+    <div className="min-h-screen bg-[#121110] text-[#f4efe6] antialiased selection:bg-[#ffbf00] selection:text-black font-sans">
       {children}
     </div>
   );

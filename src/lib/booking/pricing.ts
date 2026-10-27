@@ -167,10 +167,9 @@ export function calculateQuote(input: QuoteInput): QuoteOutput {
   const vat = Math.round((taxable * TAX_CONFIG.vatPercent) / 100);
   const taxTotal = vat;
 
-  // 6. Totals (integer kobo)
+  // 6. Totals (integer kobo) — Full payment upfront, remove deposit due and balance split
   const grandTotal = Math.max(0, taxable + serviceCharge + taxTotal);
-  const depositDue =
-    ratePlan.depositPercent >= 100 ? grandTotal : Math.round((grandTotal * ratePlan.depositPercent) / 100);
+  const depositDue = grandTotal;
 
   const currency = input.currency ?? "NGN";
   const pricing: PriceBreakdown = {
@@ -182,7 +181,7 @@ export function calculateQuote(input: QuoteInput): QuoteOutput {
     grandTotal,
     depositDue,
     amountPaid: 0,
-    balanceDue: grandTotal - depositDue,
+    balanceDue: 0,
     currency,
   };
 

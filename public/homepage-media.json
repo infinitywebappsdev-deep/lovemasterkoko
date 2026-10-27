@@ -1,0 +1,90 @@
+{
+  "hero": {
+    "videoUrl": "/videos/hero.mp4",
+    "videoSecondaryUrl": "/videos/executive-room.mp4",
+    "posterImage": "/images/exterior-night.jpg",
+    "isVideoEnabled": true,
+    "slideshowImages": [
+      "/images/exterior-night.jpg",
+      "/images/Hotel Lobby.jpg",
+      "/images/Presidential.jpg",
+      "/images/OpenBar Garden.jpg"
+    ],
+    "headline": "Banky Hotel & Suites",
+    "tagline": "Quiet luxury in the heart of Ado-Ekiti",
+    "ctaText": "Book Now",
+    "ctaLink": "/booking"
+  },
+  "about": {
+    "image1": "/images/hotel-front-right.jpg",
+    "image2": "/images/OpenBar Garden.jpg",
+    "image1Alt": "Hotel exterior",
+    "image2Alt": "Garden bar",
+    "heading": "Enjoy a Calm Haven in Ado-Ekiti",
+    "description1": "Step into a story century in the making. At Banky, timeless architecture meets modern indulgence, where heritage charm and heartfelt warmth welcome you like family. Savor tradition-inspired dining beneath chandeliers that have witnessed generations, unwind in a wellness sanctuary rooted in old-world calm, and rest in rooms where history and comfort meet in perfect harmony. This isn't just a stay, it's a passage through time, wrapped in warmth, elegance, and unforgettable moments",
+    "description2": "Our 28 bespoke rooms and suites feature quiet climate control, unbroken high-speed Wi-Fi, and 24/7 dedicated generator power grid."
+  },
+  "gallery": [
+    { "id": "gal-1", "url": "/images/Hotel Lobby.jpg", "title": "Grand Reception & Lounge", "category": "Lobby", "active": true, "order": 1 },
+    { "id": "gal-2", "url": "/images/Restaurant 2.jpg", "title": "Fine Dining Restaurant", "category": "Dining", "active": true, "order": 2 },
+    { "id": "gal-3", "url": "/images/lounge.jpg", "title": "Executive VIP Lounge", "category": "Lounge", "active": true, "order": 3 },
+    { "id": "gal-4", "url": "/images/corridor-hallway.jpg", "title": "Serene Room Corridors", "category": "Interior", "active": true, "order": 4 },
+    { "id": "gal-5", "url": "/images/dining.jpg", "title": "Gourmet Culinary Service", "category": "Dining", "active": true, "order": 5 },
+    { "id": "gal-6", "url": "/images/BankyHall.jpg", "title": "Banky Banqueting Hall", "category": "Events", "active": true, "order": 6 },
+    { "id": "gal-7", "url": "/images/Reception.jpg", "title": "24/7 Front Desk Concierge", "category": "Lobby", "active": true, "order": 7 },
+    { "id": "gal-8", "url": "/images/Presidential.jpg", "title": "Presidential Luxury Suite", "category": "Rooms", "active": true, "order": 8 }
+  ],
+  "experiences": [
+    {
+      "id": "exp-1",
+      "img": "/images/dining.jpg",
+      "title": "A Feast Steeped in Tradition",
+      "tag": "The Restaurant",
+      "copy": "Nigerian classics and continental plates, served breakfast through dinner.",
+      "href": "/restaurant"
+    },
+    {
+      "id": "exp-2",
+      "img": "/images/OpenBar Garden.jpg",
+      "title": "Open-Air Bar & Lounge",
+      "tag": "The Bar",
+      "copy": "Handcrafted cocktails, single malts, and relaxed evenings under the stars.",
+      "href": "/bar"
+    },
+    {
+      "id": "exp-3",
+      "img": "/images/BankyHall.jpg",
+      "title": "Banky Hall",
+      "tag": "Banqueting & Events",
+      "copy": "Lustrous hall with seating for up to 300 guests for weddings and conferences.",
+      "href": "/events"
+    }
+  ],
+  "featuredVideos": [
+    {
+      "id": "vid-1",
+      "title": "Homepage Hero Tour",
+      "url": "/videos/hero.mp4",
+      "poster": "/images/exterior-night.jpg",
+      "description": "Main atmospheric loop showing the hotel exterior and grounds.",
+      "active": true
+    },
+    {
+      "id": "vid-2",
+      "title": "Presidential & Executive Suites",
+      "url": "/videos/presidential-suite.mp4",
+      "poster": "/images/Presidential.jpg",
+      "description": "Walkthrough of our signature luxury accommodation.",
+      "active": true
+    },
+    {
+      "id": "vid-3",
+      "title": "Deluxe Comfort Showcase",
+      "url": "/videos/deluxe.mp4",
+      "poster": "/images/deluxe.jpg",
+      "description": "Teaser video highlighting modern amenities and cozy ambiance.",
+      "active": true
+    }
+  ],
+  "updatedAt": "2026-10-26T00:00:00.000Z"
+}

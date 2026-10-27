@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { HOTEL, whatsappLink, bookingMessage } from "@/lib/hotel";
 import { Mail, MapPin } from "lucide-react";
 import { PhoneSolidIcon } from "@/components/icons/PhoneSolidIcon";
@@ -8,7 +9,8 @@ import { BankyLogo } from "@/components/common/BankyLogo";
 
 const LINKS = [
   { label: "Rooms & Suites", href: "/rooms" },
-  { label: "Restaurant & Bar", href: "/dining" },
+  { label: "The Restaurant", href: "/restaurant" },
+  { label: "Lounge", href: "/bar" },
   { label: "Meetings & Events", href: "/events" },
   { label: "Gallery", href: "/gallery" },
   { label: "About Us", href: "/about" },
@@ -18,8 +20,14 @@ const LINKS = [
 ];
 
 export function Footer() {
+  const pathname = usePathname();
+
+  if (pathname?.startsWith("/qr") || pathname?.startsWith("/admin")) {
+    return null;
+  }
+
   return (
-    <footer className="bg-[#0a2777] dark:bg-[#071d5a] text-white border-t" style={{ borderColor: "color-mix(in srgb, #0000dd 20%, transparent)" }}>
+    <footer className="bg-[#0a2777] dark:bg-[#18181b] text-white border-t border-transparent dark:border-[#3a3a42]" style={{ borderColor: "color-mix(in srgb, #0000dd 20%, transparent)" }}>
       <div className="container-x py-16 sm:py-20">
         <div className="grid gap-12 lg:grid-cols-12">
           {/* Brand */}
@@ -32,7 +40,7 @@ export function Footer() {
                 />
               </span>
               <div>
-                <span className="font-display text-2xl text-white block leading-tight font-normal">Banky</span>
+                <span className="font-display text-2xl text-white block leading-tight font-normal uppercase tracking-wider">BANKY</span>
                 <span className="font-condensed text-[0.65rem] tracking-[0.25em] uppercase font-medium" style={{ color: "var(--accent-light)" }}>Hotel &amp; Suites</span>
               </div>
             </div>

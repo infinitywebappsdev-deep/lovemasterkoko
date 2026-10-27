@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Sparkles, UtensilsCrossed, BedDouble, HeartHandshake, ShieldCheck } from "lucide-react";
 import { BreadcrumbSchema } from "@/components/seo/StructuredData";
+import { LazyAspectImage } from "@/components/common/LazyAspectImage";
 
 export const metadata: Metadata = {
   title: "About Us | Where Every Stay Becomes a Story",
@@ -27,7 +28,7 @@ export default function AboutPage() {
       <BreadcrumbSchema items={breadcrumbs} />
 
       {/* Hero Header */}
-      <section className="relative pt-36 pb-24 sm:pt-44 sm:pb-32 bg-[#1b1b1b] dark:bg-[#0d0d0d] overflow-hidden">
+      <section className="relative pt-36 pb-24 sm:pt-44 sm:pb-32 bg-[#1b1b1b] dark:bg-[#1a1a1d] overflow-hidden">
         <Image
           src="/images/Hotel Lobby.jpg"
           alt="Banky Hotel Grand Lobby"
@@ -36,7 +37,7 @@ export default function AboutPage() {
           referrerPolicy="no-referrer"
           className="object-cover opacity-25"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#1b1b1b] dark:from-[#0d0d0d] via-[#1b1b1b]/70 to-[#1b1b1b]/80" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#1b1b1b] dark:from-[#202023] via-[#1b1b1b]/70 to-[#1b1b1b]/80" />
 
         <div className="container-x relative z-10 text-center max-w-4xl mx-auto">
           <span className="eyebrow text-[var(--accent)] block mb-3 tracking-[0.25em]">
@@ -52,7 +53,7 @@ export default function AboutPage() {
       </section>
 
       {/* Main Narrative Body */}
-      <div className="bg-white dark:bg-[#121212] py-20 sm:py-28">
+      <div className="bg-white dark:bg-[#202023] py-20 sm:py-28">
         <div className="container-x max-w-6xl space-y-24 sm:space-y-32">
 
           {/* Section 1: Where Heritage Meets Warmth */}
@@ -69,28 +70,26 @@ export default function AboutPage() {
                 True luxury is not found in newness, but in things that endure and Banky is a testament to that enduring grace. Ornate details, sweeping staircases, and interiors steeped in old-world charm meet the warmth of a team devoted to hospitality passed down through generations. Here, history is not distant or untouchable, it is alive in every handcrafted fixture, every polished floor, every quiet corner that has welcomed travelers for years past. Luxury at Banky is warm, storied, and deeply personal.
               </p>
             </div>
-            <div className="relative w-full aspect-[16/10] sm:aspect-video rounded-2xl overflow-hidden border border-[#ece6dd] dark:border-[#2e2b26] shadow-xl group">
-              <Image
-                src="/images/Reception.jpg"
-                alt="Banky Reception & Welcome Lounge"
-                fill
-                referrerPolicy="no-referrer"
-                className="object-cover transition-transform duration-700 group-hover:scale-105"
-              />
-            </div>
+            <LazyAspectImage
+              src="/images/Reception.jpg"
+              alt="Banky Reception & Welcome Lounge"
+              aspectClass="aspect-[16/10] sm:aspect-video"
+              className="w-full rounded-2xl border border-[#ece6dd] dark:border-[#2e2b26] shadow-xl group"
+              imgClassName="transition-transform duration-700 group-hover:scale-105"
+              useNextImage={true}
+            />
           </section>
 
           {/* Section 2: Love, Warmth, and Timeless Experiences */}
           <section className="grid gap-12 lg:grid-cols-2 items-center">
-            <div className="order-2 lg:order-1 relative w-full aspect-[16/10] sm:aspect-video rounded-2xl overflow-hidden border border-[#ece6dd] dark:border-[#2e2b26] shadow-xl group">
-              <Image
-                src="/images/OpenBar Garden.jpg"
-                alt="Banky Garden and Courtyard Sitout"
-                fill
-                referrerPolicy="no-referrer"
-                className="object-cover transition-transform duration-700 group-hover:scale-105"
-              />
-            </div>
+            <LazyAspectImage
+              src="/images/OpenBar Garden.jpg"
+              alt="Banky Garden and Courtyard Sitout"
+              aspectClass="aspect-[16/10] sm:aspect-video"
+              className="order-2 lg:order-1 w-full rounded-2xl border border-[#ece6dd] dark:border-[#2e2b26] shadow-xl group"
+              imgClassName="transition-transform duration-700 group-hover:scale-105"
+              useNextImage={true}
+            />
             <div className="order-1 lg:order-2 space-y-6">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--accent)]/10 text-[var(--accent)] text-xs font-condensed uppercase tracking-wider font-bold">
                 <HeartHandshake className="h-3.5 w-3.5" />
@@ -118,38 +117,44 @@ export default function AboutPage() {
               <p className="text-base sm:text-lg text-stone-700 dark:text-stone-300 font-normal leading-relaxed">
                 At Banky, dining is a journey through time. Our chefs honor time-honored recipes and classic techniques, layering them with refined modern touches to create dishes that pay homage to the past while delighting the present-day palate. Savor a candlelit dinner beneath century-old chandeliers, linger over a leisurely brunch in a sunlit courtyard that has hosted travelers for generations, or enjoy a quiet in-room dining experience infused with heritage flavor. Every meal at Banky is a toast to tradition, served with contemporary grace.
               </p>
-              <div className="pt-2">
+              <div className="pt-2 flex flex-wrap items-center gap-4">
                 <Link
-                  href="/dining"
+                  href="/restaurant"
                   className="inline-flex items-center gap-2 font-condensed uppercase tracking-wider text-xs font-bold text-[var(--accent)] hover:underline"
                 >
-                  <span>Explore Dining Experiences</span>
+                  <span>Explore The Restaurant</span>
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+                <span className="text-stone-300 dark:text-stone-700">&bull;</span>
+                <Link
+                  href="/bar"
+                  className="inline-flex items-center gap-2 font-condensed uppercase tracking-wider text-xs font-bold text-[var(--accent)] hover:underline"
+                >
+                  <span>The Bar &amp; Lounge</span>
                   <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
               </div>
             </div>
-            <div className="relative w-full aspect-[16/10] sm:aspect-video rounded-2xl overflow-hidden border border-[#ece6dd] dark:border-[#2e2b26] shadow-xl group">
-              <Image
-                src="/images/dining.jpg"
-                alt="Banky Fine Dining Restaurant"
-                fill
-                referrerPolicy="no-referrer"
-                className="object-cover transition-transform duration-700 group-hover:scale-105"
-              />
-            </div>
+            <LazyAspectImage
+              src="/images/dining.jpg"
+              alt="Banky Fine Dining Restaurant"
+              aspectClass="aspect-[16/10] sm:aspect-video"
+              className="w-full rounded-2xl border border-[#ece6dd] dark:border-[#2e2b26] shadow-xl group"
+              imgClassName="transition-transform duration-700 group-hover:scale-105"
+              useNextImage={true}
+            />
           </section>
 
           {/* Section 4: Wellness: A Sanctuary Rooted in Old-World Calm */}
           <section className="grid gap-12 lg:grid-cols-2 items-center">
-            <div className="order-2 lg:order-1 relative w-full aspect-[16/10] sm:aspect-video rounded-2xl overflow-hidden border border-[#ece6dd] dark:border-[#2e2b26] shadow-xl group">
-              <Image
-                src="/images/OpenBar sitout.jpg"
-                alt="Courtyard and Serene Relaxation Area"
-                fill
-                referrerPolicy="no-referrer"
-                className="object-cover transition-transform duration-700 group-hover:scale-105"
-              />
-            </div>
+            <LazyAspectImage
+              src="/images/OpenBar sitout.jpg"
+              alt="Courtyard and Serene Relaxation Area"
+              aspectClass="aspect-[16/10] sm:aspect-video"
+              className="order-2 lg:order-1 w-full rounded-2xl border border-[#ece6dd] dark:border-[#2e2b26] shadow-xl group"
+              imgClassName="transition-transform duration-700 group-hover:scale-105"
+              useNextImage={true}
+            />
             <div className="order-1 lg:order-2 space-y-6">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--accent)]/10 text-[var(--accent)] text-xs font-condensed uppercase tracking-wider font-bold">
                 <Sparkles className="h-3.5 w-3.5" />
@@ -192,24 +197,22 @@ export default function AboutPage() {
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="relative aspect-[16/10] rounded-xl overflow-hidden border border-[#ece6dd] dark:border-[#2e2b26] shadow-md">
-                  <Image
-                    src="/images/signature suite room.jpg"
-                    alt="Signature Suite"
-                    fill
-                    referrerPolicy="no-referrer"
-                    className="object-cover hover:scale-105 transition-transform duration-700"
-                  />
-                </div>
-                <div className="relative aspect-[16/10] rounded-xl overflow-hidden border border-[#ece6dd] dark:border-[#2e2b26] shadow-md">
-                  <Image
-                    src="/images/executive.jpg"
-                    alt="Executive Suite"
-                    fill
-                    referrerPolicy="no-referrer"
-                    className="object-cover hover:scale-105 transition-transform duration-700"
-                  />
-                </div>
+                <LazyAspectImage
+                  src="/images/signature suite room.jpg"
+                  alt="Luxury Suite"
+                  aspectClass="aspect-[16/10]"
+                  className="rounded-xl border border-[#ece6dd] dark:border-[#2e2b26] shadow-md"
+                  imgClassName="hover:scale-105 transition-transform duration-700"
+                  useNextImage={true}
+                />
+                <LazyAspectImage
+                  src="/images/executive.jpg"
+                  alt="Executive Suite"
+                  aspectClass="aspect-[16/10]"
+                  className="rounded-xl border border-[#ece6dd] dark:border-[#2e2b26] shadow-md"
+                  imgClassName="hover:scale-105 transition-transform duration-700"
+                  useNextImage={true}
+                />
               </div>
             </div>
           </section>
@@ -234,7 +237,7 @@ export default function AboutPage() {
       </div>
 
       {/* Epilogue & Call to Action */}
-      <section className="relative py-24 sm:py-32 bg-[#0a2777] text-white text-center overflow-hidden border-t border-[var(--accent)]/30">
+      <section className="relative py-24 sm:py-32 bg-[#0a2777] dark:bg-[#1a1a1d] text-white text-center overflow-hidden border-t border-[var(--accent)]/30">
         <div className="container-x relative z-10 max-w-4xl mx-auto space-y-8">
           <span className="eyebrow text-[var(--accent-light)] block tracking-[0.25em]">
             Timeless Invitation

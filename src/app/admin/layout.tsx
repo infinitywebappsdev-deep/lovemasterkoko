@@ -2,15 +2,29 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, CalendarRange, BedDouble, UtensilsCrossed, BellRing, Settings, Menu, X } from "lucide-react";
+import {
+  LayoutDashboard,
+  CalendarRange,
+  BedDouble,
+  BellRing,
+  Settings,
+  Menu,
+  X,
+  Image as ImageIcon,
+  ReceiptText,
+  Film,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV = [
   { to: "/admin", label: "Overview", icon: LayoutDashboard },
+  { to: "/admin/home-media", label: "Home Media Center", icon: Film },
   { to: "/admin/reservations", label: "Reservations", icon: CalendarRange },
+  { to: "/admin/transactions", label: "Transaction Audit", icon: ReceiptText },
   { to: "/admin/rooms", label: "Rooms", icon: BedDouble },
+  { to: "/admin/media", label: "Room Photos & Media", icon: ImageIcon },
   { to: "/admin/qr-orders", label: "Kitchen / Bar Orders", icon: BellRing },
-  { to: "/admin/qr-menu", label: "QR Menu & Stock", icon: UtensilsCrossed },
+  { to: "/admin/settings", label: "Payment & Settings", icon: Settings },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -38,7 +52,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             const Icon = item.icon;
             const active = pathname === item.to;
             return (
-              <Link key={item.to} href={item.to} onClick={() => setOpen(false)} className={cn("flex items-center gap-3 px-4 py-3 rounded-md text-sm transition-colors", active ? "bg-[#aa8453]/20 text-[#aa8453]" : "text-stone-400 hover:bg-white/5 hover:text-white")}>
+              <Link key={item.to} href={item.to} onClick={() => setOpen(false)} className={cn("flex items-center gap-3 px-4 py-3 rounded-md text-sm transition-colors", active ? "bg-[#ffbf00]/20 text-[#ffbf00]" : "text-stone-400 hover:bg-white/5 hover:text-white")}>
                 <Icon className="h-4 w-4" /><span className="font-condensed uppercase tracking-wider">{item.label}</span>
               </Link>
             );

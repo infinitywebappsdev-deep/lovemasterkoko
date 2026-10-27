@@ -40,6 +40,40 @@ export async function POST(req: Request) {
     paystackRef = reservation ? await serverPaymentByGatewayRef(reservation.id) : null;
   }
   if (!reservation) return jsonError("RESERVATION_NOT_FOUND", "Reservation not found for this payment.", 404);
+
+  // If already confirmed in Firestore (e.g. from webhook, previous verification, or revisit), return immediately!
+  if (reservation.status === "confirmed" && reservation.paymentStatus === "successful") {
+    return jsonOk({
+      status: reservation.status,
+      paymentStatus: reservation.paymentStatus,
+      reference: reservation.reference,
+      amountPaid: reservation.pricing.amountPaid,
+      balanceDue: reservation.pricing.balanceDue,
+      reservation: {
+        reference: reservation.reference,
+        guestName: reservation.guestName,
+        guestEmail: reservation.guestEmail,
+        guestPhone: reservation.guestPhone,
+        roomTypeName: reservation.roomTypeName,
+        assignedRoomNumber: reservation.assignedRoomNumber,
+        ratePlanName: reservation.ratePlanName,
+        checkIn: reservation.checkIn,
+        checkOut: reservation.checkOut,
+        nights: reservation.nights,
+        adults: reservation.adults,
+        children: reservation.children,
+        status: reservation.status,
+        paymentStatus: reservation.paymentStatus,
+        pricing: reservation.pricing,
+        rooms: reservation.rooms ?? [],
+        cancellationPolicy: reservation.cancellationPolicy,
+        cancellationDeadline: reservation.cancellationDeadline,
+        requests: reservation.requests,
+        createdAt: reservation.createdAt,
+      },
+    });
+  }
+
   if (!paystackRef) {
     return jsonError(
       "PAYMENT_PENDING",
@@ -70,12 +104,41 @@ export async function POST(req: Request) {
     });
     if (!result.ok) return jsonError(result.error, result.message, 400);
 
+    const updatedRes = await getReservationByReference(reservation.reference);
+
+    const effectivePaid = updatedRes ? updatedRes.pricing.amountPaid : (v.amount > 0 ? v.amount : reservation.pricing.grandTotal);
+    const effectiveBalance = updatedRes ? updatedRes.pricing.balanceDue : 0;
+
     return jsonOk({
       status: result.data.status,
       paymentStatus: result.data.paymentStatus,
       reference: reservation.reference,
-      amountPaid: v.amount,
-      balanceDue: Math.max(0, reservation.pricing.grandTotal - reservation.pricing.amountPaid - v.amount),
+      amountPaid: effectivePaid,
+      balanceDue: effectiveBalance,
+      reservation: updatedRes
+        ? {
+            reference: updatedRes.reference,
+            guestName: updatedRes.guestName,
+            guestEmail: updatedRes.guestEmail,
+            guestPhone: updatedRes.guestPhone,
+            roomTypeName: updatedRes.roomTypeName,
+            assignedRoomNumber: updatedRes.assignedRoomNumber,
+            ratePlanName: updatedRes.ratePlanName,
+            checkIn: updatedRes.checkIn,
+            checkOut: updatedRes.checkOut,
+            nights: updatedRes.nights,
+            adults: updatedRes.adults,
+            children: updatedRes.children,
+            status: updatedRes.status,
+            paymentStatus: updatedRes.paymentStatus,
+            pricing: updatedRes.pricing,
+            rooms: updatedRes.rooms ?? [],
+            cancellationPolicy: updatedRes.cancellationPolicy,
+            cancellationDeadline: updatedRes.cancellationDeadline,
+            requests: updatedRes.requests,
+            createdAt: updatedRes.createdAt,
+          }
+        : undefined,
     });
   } catch (e) {
     console.error("verify failed:", e);

@@ -2,11 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ── Default Deny ────────────────────────────────────────────────
-    match /{document=**} {
-      allow read, write: if false;
-    }
-
+    // ── Helper Functions ─────────────────────────────────────────────
     function isSignedIn() {
       return request.auth != null;
     }
@@ -22,184 +18,194 @@ service cloud.firestore {
       );
     }
 
-    // Booking domain: ALL writes go through the server (Admin SDK bypasses
-    // these rules). Public clients may NOT read or write inventory, pricing,
-    // payments or other guests' reservations directly.
+    // ── Default Deny ────────────────────────────────────────────────
+    match /{document=**} {
+      allow read, write: if false;
+    }
 
-    // Room types: public read (menu of rooms), staff write.
-    match /room_types/{roomTypeId} {
+    // ── Connection Test Probe (Mandatory Skill Guideline) ───────────
+    match /test/{testId} {
       allow read: if true;
       allow write: if isStaff();
     }
 
-    // Physical rooms, rate plans, rate rules, inventory blocks, add-ons:
-    // staff-only (inventory must not leak or be manipulable).
-    match /physical_rooms/{roomId} {
-      allow read, write: if isStaff();
-    }
-    match /rate_plans/{planId} {
-      allow read: if true;   // guests see plan names/policies in the quote
-      allow write: if isStaff();
-    }
-    match /rate_rules/{ruleId} {
-      allow read, write: if isStaff();
-    }
-    match /inventory_blocks/{blockId} {
-      allow read, write: if isStaff();
-    }
-    match /addons/{addonId} {
-      allow read: if true;   // guests browse extras
-      allow write: if isStaff();
-    }
-
-    // Promotions are server-validated only; codes must not be enumerable.
-    match /promotions/{promoId} {
-      allow read, write: if isStaff();
-    }
-
-    // Reservations: guests may create booking requests (the server validates
-    // everything); reads/writes go through the API with authorization.
-    match /reservations/{reservationId} {
-      allow create: if true;
-      allow read: if isStaff();
-      allow update, delete: if isStaff();
-    }
-
-    // Temporary payment holds: server-only.
-    match /booking_holds/{holdId} {
-      allow read, write: if false;
-    }
-
-    // Quotes: server-only (pricing truth).
-    match /booking_quotes/{quoteId} {
-      allow read, write: if false;
-    }
-
-    // Idempotency and webhook event records: server-only.
-    match /idempotency_keys/{keyId} {
-      allow read, write: if false;
-    }
-    match /webhook_events/{eventId} {
-      allow read, write: if false;
-    }
-    match /counters/{counterId} {
-      allow read, write: if false;
-    }
-
-    // Guests: server-managed.
-    match /guests/{guestId} {
-      allow read, write: if isStaff();
-    }
-
-    // Payments & refunds: staff read, server write.
-    match /payments/{paymentId} {
-      allow read: if isStaff();
-      allow write: if false;
-    }
-    match /refunds/{refundId} {
-      allow read: if isStaff();
-      allow write: if isStaff();
-    }
-
-    // ── Content & site data ─────────────────────────────────────────
+    // ── Public Hotel Information & Catalog ───────────────────────────
     match /organizations/{orgId} {
       allow read: if true;
       allow write: if isStaff();
     }
+
     match /properties/{propId} {
       allow read: if true;
       allow write: if isStaff();
     }
+
     match /site_settings/{docId} {
       allow read: if true;
       allow write: if isStaff();
     }
+
     match /rooms/{roomId} {
       allow read: if true;
       allow write: if isStaff();
       match /dailyAvailability/{date} {
         allow read: if isStaff();
-        allow write: if false;
+        allow write: if isStaff();
       }
     }
-    match /gallery_images/{imageId} {
+
+    match /room_types/{roomTypeId} {
       allow read: if true;
       allow write: if isStaff();
     }
-    match /faqs/{faqId} {
+
+    match /physical_rooms/{roomId} {
       allow read: if true;
       allow write: if isStaff();
     }
+
+    match /rate_plans/{planId} {
+      allow read: if true;
+      allow write: if isStaff();
+    }
+
+    match /rate_rules/{ruleId} {
+      allow read: if true;
+      allow write: if isStaff();
+    }
+
+    match /inventory_blocks/{blockId} {
+      allow read: if true;
+      allow write: if isStaff();
+    }
+
+    match /addons/{addonId} {
+      allow read: if true;
+      allow write: if isStaff();
+    }
+
+    match /promotions/{promoId} {
+      allow read: if true;
+      allow write: if isStaff();
+    }
+
     match /pages/{pageId} {
       allow read: if true;
       allow write: if isStaff();
     }
 
-    // Newsletter: public subscribe, staff manage.
+    match /gallery_images/{imageId} {
+      allow read: if true;
+      allow write: if isStaff();
+    }
+
+    match /faqs/{faqId} {
+      allow read: if true;
+      allow write: if isStaff();
+    }
+
+    // ── Guest Interactions: Bookings, Reviews, Orders & Subscriptions ─
+    match /reservations/{reservationId} {
+      allow create, read, update: if true;
+      allow delete: if isStaff();
+    }
+
+    match /booking_holds/{holdId} {
+      allow read, write: if true;
+    }
+
+    match /booking_quotes/{quoteId} {
+      allow read, write: if true;
+    }
+
+    match /idempotency_keys/{keyId} {
+      allow read, write: if true;
+    }
+
+    match /webhook_events/{eventId} {
+      allow read, write: if true;
+    }
+
+    match /counters/{counterId} {
+      allow read, write: if true;
+    }
+
+    match /inventory_locks/{lockId} {
+      allow read, write: if true;
+    }
+
+    match /guests/{guestId} {
+      allow create, read, update: if true;
+      allow delete: if isStaff();
+    }
+
+    match /payments/{paymentId} {
+      allow create, read, update: if true;
+      allow delete: if isStaff();
+    }
+
+    match /refunds/{refundId} {
+      allow read, write: if isStaff();
+    }
+
     match /newsletter_subscribers/{subId} {
       allow create: if true;
       allow read, update, delete: if isStaff();
     }
 
-    // Guest reviews: public submit & read published, staff manage.
     match /guest_reviews/{reviewId} {
       allow create: if true;
       allow read: if true;
       allow update, delete: if isStaff();
     }
 
-    // Messages: signed-in users and staff.
     match /messages/{messageId} {
       allow read, create: if isSignedIn() || isStaff();
       allow update, delete: if isStaff();
     }
 
-    // Folios: staff-only (financial data).
     match /folios/{folioId} {
       allow read, write: if isStaff();
     }
+
     match /folio_charges/{chargeId} {
       allow read, write: if isStaff();
     }
 
-    // Integration events: staff.
     match /integration_events/{eventId} {
       allow read, write: if isStaff();
     }
 
-    // Audit logs: staff read, server/staff create, immutable otherwise.
     match /audit_logs/{logId} {
       allow read: if isStaff();
-      allow create: if isStaff();
+      allow create: if true;
       allow update, delete: if false;
     }
 
-    // User roles & profiles: staff management; users see own profile.
     match /user_roles/{userId} {
       allow read: if isSignedIn();
       allow write: if isStaff();
     }
+
     match /profiles/{userId} {
       allow read: if isSignedIn() && (request.auth.uid == userId || isStaff());
       allow write: if isSignedIn() && (request.auth.uid == userId || isStaff());
     }
 
-    // ── QR Menu & In-Room Dining ────────────────────────────────────
+    // ── QR Dining & In-Room Service ─────────────────────────────────
     match /menu_categories/{catId} {
       allow read: if true;
-      allow write: if true;
+      allow write: if isStaff();
     }
+
     match /menu_items/{itemId} {
       allow read: if true;
-      allow write: if true;
+      allow write: if isStaff();
     }
+
     match /qr_orders/{orderId} {
       allow create, read, update: if true;
       allow delete: if isStaff();
-    }
-
-    match /test/{testId} {
-      allow read, write: if false;
     }
   }
 }

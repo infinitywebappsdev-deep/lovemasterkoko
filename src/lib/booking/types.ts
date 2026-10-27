@@ -19,8 +19,9 @@ export type RoomType = {
   /** Authoritative base nightly rate in kobo (NGN minor units). */
   baseRate: number;
   maxOccupancy: number;
-  bed: string;
+  bed?: string;
   image: string;
+  images?: string[];
   blurb?: string;
   features?: string[];
   status: RoomStatus;
@@ -200,6 +201,7 @@ export type Reservation = {
   nights: number;
   adults: number;
   children: number;
+  roomCount?: number;
   requests?: string;
   status: ReservationStatus;
   paymentStatus: PaymentStatus;
@@ -276,6 +278,37 @@ export type BookingQuote = {
   cancellationDeadline?: string;
   createdAt: string;
   expiresAt: number; // epoch ms
+};
+
+/* ------------------------------------------------------------------ */
+/* Calendar Inventory & Availability                                  */
+/* ------------------------------------------------------------------ */
+
+export type DayInventoryStatus = "available" | "limited" | "sold_out" | "past";
+
+export type DayInventory = {
+  date: string; // YYYY-MM-DD
+  status: DayInventoryStatus;
+  availableRooms: number;
+  totalRooms: number;
+  minRate?: number; // kobo
+  hasEligibleRoom: boolean;
+};
+
+export type CalendarAvailabilityQuery = {
+  startDate: string; // YYYY-MM-DD
+  endDate: string; // YYYY-MM-DD
+  adults?: number;
+  children?: number;
+  roomCount?: number;
+  roomTypeId?: string;
+};
+
+export type CalendarAvailabilityResult = {
+  startDate: string;
+  endDate: string;
+  today: string;
+  days: Record<string, DayInventory>;
 };
 
 /* ------------------------------------------------------------------ */

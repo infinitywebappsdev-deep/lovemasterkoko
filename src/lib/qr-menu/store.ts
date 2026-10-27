@@ -205,6 +205,101 @@ export function subscribeMenuItems(
 }
 
 /**
+ * Update or add a Menu Category in Firestore & cache.
+ * If the category was renamed, cascades the new name to all menu items in that category.
+ */
+export async function updateMenuCategoryInDb(
+  category: MenuCategory,
+  previousName?: string
+): Promise<void> {
+  try {
+    const ref = doc(db, "menu_categories", category.id);
+    await setDoc(ref, category, { merge: true });
+
+    // If the category was renamed, cascade update to all items belonging to this category
+    if (previousName && previousName !== category.name) {
+      try {
+        const itemsCol = collection(db, "menu_items");
+        const itemsSnap = await getDocs(itemsCol);
+        const updates: Promise<unknown>[] = [];
+
+        itemsSnap.forEach((itemDoc) => {
+          const data = itemDoc.data() as MenuItem;
+          if (data.categoryId === category.id) {
+            updates.push(
+              updateDoc(doc(db, "menu_items", itemDoc.id), {
+                categoryName: category.name,
+                updatedAt: new Date().toISOString(),
+              })
+            );
+          }
+        });
+        await Promise.all(updates);
+      } catch (cascadeErr) {
+        console.warn("Failed to cascade category rename to menu items:", cascadeErr);
+      }
+    }
+  } catch (err) {
+    console.warn("Firestore category update error:", err);
+  }
+
+  // Update local cache so updates appear instantly
+  if (typeof window !== "undefined") {
+    try {
+      const cached = localStorage.getItem(LOCAL_STORAGE_CATS_KEY);
+      const cats: MenuCategory[] = cached ? JSON.parse(cached) : [...DEFAULT_CATEGORIES];
+      const index = cats.findIndex((c) => c.id === category.id);
+      if (index >= 0) {
+        cats[index] = category;
+      } else {
+        cats.push(category);
+      }
+      cats.sort((a, b) => (a.order || 0) - (b.order || 0));
+      localStorage.setItem(LOCAL_STORAGE_CATS_KEY, JSON.stringify(cats));
+
+      if (previousName && previousName !== category.name) {
+        const cachedItems = localStorage.getItem(LOCAL_STORAGE_ITEMS_KEY);
+        if (cachedItems) {
+          const items: MenuItem[] = JSON.parse(cachedItems);
+          let changed = false;
+          items.forEach((it) => {
+            if (it.categoryId === category.id) {
+              it.categoryName = category.name;
+              changed = true;
+            }
+          });
+          if (changed) {
+            localStorage.setItem(LOCAL_STORAGE_ITEMS_KEY, JSON.stringify(items));
+          }
+        }
+      }
+    } catch {}
+  }
+}
+
+/**
+ * Delete a menu category
+ */
+export async function deleteMenuCategoryFromDb(categoryId: string): Promise<void> {
+  try {
+    const ref = doc(db, "menu_categories", categoryId);
+    await deleteDoc(ref);
+  } catch (err) {
+    console.warn("Firestore delete category error:", err);
+  }
+
+  if (typeof window !== "undefined") {
+    try {
+      const cached = localStorage.getItem(LOCAL_STORAGE_CATS_KEY);
+      if (cached) {
+        const cats: MenuCategory[] = JSON.parse(cached).filter((c: MenuCategory) => c.id !== categoryId);
+        localStorage.setItem(LOCAL_STORAGE_CATS_KEY, JSON.stringify(cats));
+      }
+    } catch {}
+  }
+}
+
+/**
  * Update an individual menu item in Firestore & cache
  */
 export async function updateMenuItemInDb(item: MenuItem): Promise<void> {
@@ -385,3 +480,78 @@ export async function updateOrderStatusInDb(orderId: string, status: OrderStatus
     } catch {}
   }
 }
+
+/**
+ * Real-time listener for a single Order by ID (used for Live Guest Order Tracker)
+ */
+export function subscribeOrderById(
+  orderId: string,
+  onUpdate: (order: QrOrder | null) => void
+): () => void {
+  // Check local cache first
+  if (typeof window !== "undefined") {
+    try {
+      const cached = localStorage.getItem(LOCAL_STORAGE_ORDERS_KEY);
+      if (cached) {
+        const orders: QrOrder[] = JSON.parse(cached);
+        const found = orders.find((o) => o.id === orderId);
+        if (found) onUpdate(found);
+      }
+    } catch {}
+  }
+
+  try {
+    const ref = doc(db, "qr_orders", orderId);
+    const unsub = onSnapshot(
+      ref,
+      (docSnap) => {
+        if (docSnap.exists()) {
+          const data = { ...docSnap.data(), id: docSnap.id } as QrOrder;
+          onUpdate(data);
+        }
+      },
+      (err) => {
+        console.warn("Order by id snapshot error:", err.message);
+      }
+    );
+    return unsub;
+  } catch {
+    return () => {};
+  }
+}
+
+const LOCAL_STORAGE_SERVICE_KEY = "banky_qr_service_requests_cache";
+
+/**
+ * Submit Call Waiter or Request Bill
+ */
+export async function submitServiceRequest(
+  req: Omit<import("./types").ServiceRequest, "id" | "createdAt" | "status">
+): Promise<import("./types").ServiceRequest> {
+  const id = `srv_${Date.now()}_${Math.floor(100 + Math.random() * 900)}`;
+  const fullReq: import("./types").ServiceRequest = {
+    ...req,
+    id,
+    status: "pending",
+    createdAt: new Date().toISOString(),
+  };
+
+  try {
+    const ref = doc(db, "service_requests", id);
+    await setDoc(ref, fullReq);
+  } catch (err) {
+    console.warn("Firestore service request error:", err);
+  }
+
+  if (typeof window !== "undefined") {
+    try {
+      const cached = localStorage.getItem(LOCAL_STORAGE_SERVICE_KEY);
+      const list = cached ? JSON.parse(cached) : [];
+      list.unshift(fullReq);
+      localStorage.setItem(LOCAL_STORAGE_SERVICE_KEY, JSON.stringify(list));
+    } catch {}
+  }
+
+  return fullReq;
+}
+

@@ -26,8 +26,8 @@ export function BankyLogo({
     towerFill = "#1a1815";
     archFill = "#1a1815";
   } else if (variant === "gold") {
-    towerFill = "#c89e3a";
-    archFill = "#c89e3a";
+    towerFill = "#ffbf00";
+    archFill = "#ffbf00";
   } else if (variant === "currentColor") {
     towerFill = "currentColor";
     archFill = "currentColor";

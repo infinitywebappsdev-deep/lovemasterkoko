@@ -1,0 +1,12 @@
+{
+  "deluxe": {
+    "url": "/videos/deluxe-room.mp4",
+    "updatedAt": 1791273370486,
+    "size": 2586797
+  },
+  "standard-plus": {
+    "url": "/videos/standard-plus-room.mp4",
+    "updatedAt": 1791273388625,
+    "size": 2586797
+  }
+}

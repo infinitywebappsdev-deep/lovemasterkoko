@@ -1,5 +1,11 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import {
+  initializeFirestore,
+  getFirestore,
+  doc,
+  getDocFromServer,
+  Firestore,
+} from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import firebaseConfigData from "../../firebase-applet-config.json";
 
@@ -13,6 +19,51 @@ const firebaseConfig = {
 };
 
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
-export const db = getFirestore(app, firebaseConfigData?.firestoreDatabaseId);
+
+function initFirestore(): Firestore {
+  const databaseId = firebaseConfigData?.firestoreDatabaseId;
+  const isBrowser = typeof window !== "undefined";
+
+  if (isBrowser) {
+    try {
+      return initializeFirestore(
+        app,
+        {
+          experimentalForceLongPolling: true,
+          ignoreUndefinedProperties: true,
+        },
+        databaseId
+      );
+    } catch {
+      return getFirestore(app, databaseId);
+    }
+  }
+
+  try {
+    return initializeFirestore(
+      app,
+      {
+        ignoreUndefinedProperties: true,
+      },
+      databaseId
+    );
+  } catch {
+    return getFirestore(app, databaseId);
+  }
+}
+
+export const db = initFirestore();
 export const auth = getAuth(app);
 
+// Skill mandatory validation: boot probe to test live connection
+if (typeof window !== "undefined") {
+  (async function testConnection() {
+    try {
+      await getDocFromServer(doc(db, "test", "connection"));
+    } catch (error) {
+      if (error instanceof Error && error.message.includes("the client is offline")) {
+        console.error("Please check your Firebase configuration.");
+      }
+    }
+  })();
+}
