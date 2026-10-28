@@ -147,6 +147,7 @@ export type PaymentStatus = (typeof PAYMENT_STATUSES)[number];
 
 export type BookingSource =
   | "website"
+  | "whatsapp"
   | "admin"
   | "front_desk"
   | "phone"

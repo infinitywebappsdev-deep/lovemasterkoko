@@ -700,6 +700,9 @@ export type CreateBookingInput = {
   requests?: string;
   bookingSource?: BookingSource;
   idempotencyKey?: string;
+  /** Inventory hold length in minutes (default 30). WhatsApp bookings get a
+   *  longer courtesy hold because staff confirm them in conversation. */
+  holdMinutes?: number;
 };
 
 export type CreateBookingOutput = {
@@ -781,7 +784,10 @@ export async function createBooking(input: CreateBookingInput): Promise<ApiResul
 
   const reference = await nextReference();
   const now = new Date().toISOString();
-  const holdExpiryMs = Date.now() + 30 * 60 * 1000; // 30-minute payment hold
+  // Hold length: 30 minutes for online payment, longer for staff-confirmed
+  // channels. Clamped so no client can pin inventory indefinitely.
+  const holdMinutes = Math.min(240, Math.max(10, Math.floor(input.holdMinutes ?? 30)));
+  const holdExpiryMs = Date.now() + holdMinutes * 60 * 1000;
 
   try {
     const result = await db().runTransaction(async (tx) => {
@@ -1250,8 +1256,9 @@ export async function markPaymentFailed(reservationId: string, reason: string): 
       if (!resDoc.exists) return;
       const r = resDoc.data() as Reservation;
       if (r.paymentStatus === "successful") return; // never downgrade a real payment
-      tx.update(resRef, { paymentStatus: "failed", updatedAt: now });
+      // Read before write (Firestore transaction requirement).
       const paySnap = await tx.get(db().collection(COL.payments).where("reservationId", "==", reservationId));
+      tx.update(resRef, { paymentStatus: "failed", updatedAt: now });
       paySnap.docs.forEach((d: any) => tx.update(d.ref, { status: "failed", failureReason: reason, updatedAt: now }));
     });
     await releaseHoldsForReservation(reservationId);
@@ -1282,7 +1289,9 @@ export async function transitionReservation(
         throw new BookingError("INVALID_BOOKING_STATE", `Cannot move a reservation from ${r.status} to ${to}.`);
       }
 
-      // If transitioning to confirmed, re-verify inventory so manual admin confirmations cannot overbook
+      // If transitioning to confirmed, re-verify inventory so manual admin
+      // confirmations cannot overbook. Other guests' active holds must count:
+      // a hold reserves the last room for someone else just like a booking does.
       if (to === "confirmed" && r.status !== "confirmed") {
         const lockRef = db().collection(COL.inventoryLocks).doc(r.roomTypeId);
         await tx.get(lockRef);
@@ -1298,6 +1307,14 @@ export async function transitionReservation(
         const otherResSnap = await tx.get(
           db().collection(COL.reservations).where("roomTypeId", "==", r.roomTypeId),
         );
+        const otherHoldsSnap = await tx.get(
+          db()
+            .collection(COL.holds)
+            .where("roomTypeId", "==", r.roomTypeId)
+            .where("released", "==", false),
+        );
+        const nowMs = Date.now();
+
         for (const n of nights) {
           let nightBooked = 0;
           for (const od of otherResSnap.docs) {
@@ -1308,7 +1325,19 @@ export async function transitionReservation(
               nightBooked += otherR.roomCount || (otherR.rooms ? otherR.rooms.length : 1);
             }
           }
-          if (sellable - nightBooked < requiredRooms) {
+
+          // Other guests' unexpired holds (this reservation's own hold excluded —
+          // it is the very inventory we are converting into a confirmed booking).
+          let nightHeld = 0;
+          for (const hd of otherHoldsSnap.docs) {
+            const h = hd.data() as BookingHold;
+            if (h.reservationId === r.id || h.released || h.expiresAt < nowMs) continue;
+            if (overlapsRange({ checkIn: h.checkIn, checkOut: h.checkOut }, n, addDaysISO(n, 1))) {
+              nightHeld += h.roomCount ?? 1;
+            }
+          }
+
+          if (sellable - nightBooked - nightHeld < requiredRooms) {
             throw new BookingError(
               "ROOM_UNAVAILABLE",
               `Cannot confirm reservation: ${roomType.name} is fully booked on ${n}.`,
@@ -1316,6 +1345,13 @@ export async function transitionReservation(
           }
         }
       }
+
+      // Read this reservation's own holds BEFORE any write: Firestore requires
+      // every read in a transaction to happen before the first write, otherwise
+      // the whole transition fails at runtime.
+      const ownHoldsSnap = await tx.get(
+        db().collection(COL.holds).where("reservationId", "==", reservationId),
+      );
 
       const now = new Date().toISOString();
       const patch: Record<string, unknown> = { status: to, updatedAt: now };
@@ -1328,9 +1364,12 @@ export async function transitionReservation(
       }
       tx.update(ref, patch);
 
-      if (to === "cancelled" || to === "no_show") {
-        const holdSnap = await tx.get(db().collection(COL.holds).where("reservationId", "==", reservationId));
-        holdSnap.docs.forEach((d: any) => tx.update(d.ref, { released: true, releasedAt: now }));
+      // Release the reservation's own hold whenever it stops being a soft hold
+      // and becomes real inventory: on confirmation the booking itself now
+      // consumes the room, so leaving the hold active would double-count it and
+      // under-report availability to every other guest.
+      if (to === "confirmed" || to === "cancelled" || to === "no_show") {
+        ownHoldsSnap.docs.forEach((d: any) => tx.update(d.ref, { released: true, releasedAt: now }));
       }
 
       const auditRef = db().collection(COL.auditLogs).doc();
@@ -1447,6 +1486,9 @@ export async function cancelBooking(
       );
       if (!calc.allowed) throw new BookingError("CANCELLATION_NOT_ALLOWED", calc.reason ?? "Cancellation is not allowed.");
 
+      // All reads happen before any write (Firestore transaction requirement).
+      const holdSnap = await tx.get(db().collection(COL.holds).where("reservationId", "==", reservationId));
+
       const now = new Date().toISOString();
       tx.update(ref, {
         status: "cancelled",
@@ -1473,7 +1515,6 @@ export async function cancelBooking(
         });
       }
 
-      const holdSnap = await tx.get(db().collection(COL.holds).where("reservationId", "==", reservationId));
       holdSnap.docs.forEach((d: any) => tx.update(d.ref, { released: true, releasedAt: now }));
 
       const auditRef = db().collection(COL.auditLogs).doc();

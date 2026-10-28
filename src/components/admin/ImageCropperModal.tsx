@@ -15,6 +15,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { ROOMS } from "@/lib/hotel";
+import { adminFetch } from "@/lib/admin-auth";
 
 interface ImageCropperModalProps {
   isOpen: boolean;
@@ -22,7 +23,7 @@ interface ImageCropperModalProps {
   imageSrc: string | null;
   fileName: string;
   defaultRoomSlug?: string;
-  onCropComplete: (savedResult: { fileName: string; url: string }) => void;
+  onCropComplete: (savedResult: { fileName: string; url: string; roomSlug: string }) => void;
   onSkipCrop?: () => void;
 }
 
@@ -146,7 +147,7 @@ export function ImageCropperModal({
       const croppedBase64 = canvas.toDataURL("image/jpeg", 0.92);
 
       // Save via API
-      const res = await fetch("/api/admin/media/crop-save", {
+      const res = await adminFetch("/api/admin/media/crop-save", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -158,7 +159,10 @@ export function ImageCropperModal({
 
       const data = await res.json();
       if (data.ok) {
-        onCropComplete({ fileName: data.fileName, url: data.url });
+        // Report the room the user actually picked in this modal — the parent
+        // registers the image against it, otherwise the picture lands in the
+        // category that was guessed from the filename.
+        onCropComplete({ fileName: data.fileName, url: data.url, roomSlug: selectedRoomSlug });
         onClose();
       } else {
         throw new Error(data.message || "Failed to save cropped image");

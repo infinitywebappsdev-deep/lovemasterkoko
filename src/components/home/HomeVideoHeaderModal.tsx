@@ -19,6 +19,7 @@ import {
   RefreshCw,
   Play,
 } from "lucide-react";
+import { adminFetch } from "@/lib/admin-auth";
 import {
   HomepageMediaConfig,
   saveHomepageMedia,
@@ -113,7 +114,7 @@ export function HomeVideoHeaderModal({
     const fetchServerVideos = async () => {
       setLoadingVideos(true);
       try {
-        const res = await fetch("/api/admin/home-media");
+        const res = await adminFetch("/api/admin/home-media");
         const data = await res.json();
         if (data.ok && Array.isArray(data.availableVideos)) {
           setServerVideos(data.availableVideos);
@@ -155,7 +156,7 @@ export function HomeVideoHeaderModal({
       setUploadStep("Uploading video file to server...");
       setUploadPercent(45);
 
-      const res = await fetch("/api/admin/home-media/upload", {
+      const res = await adminFetch("/api/admin/home-media/upload", {
         method: "POST",
         body: formData,
       });

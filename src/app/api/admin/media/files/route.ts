@@ -4,8 +4,11 @@ import path from "path";
 import { ROOMS } from "@/lib/hotel";
 import { getRoomTypes } from "@/lib/booking/engine";
 import type { RoomType } from "@/lib/booking/types";
+import { requireStaff, jsonError } from "@/lib/booking/auth";
 
-export async function GET() {
+export async function GET(req: Request) {
+  const auth = await requireStaff(req);
+  if (!auth.ok) return jsonError(auth.error, auth.message, 401);
   try {
     const imagesDir = path.join(process.cwd(), "public", "images");
     await fs.mkdir(imagesDir, { recursive: true });

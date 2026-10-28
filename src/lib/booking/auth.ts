@@ -21,8 +21,16 @@ export async function requireStaff(req: Request): Promise<ApiResult<StaffActor>>
     const uid = decoded.uid;
     const email = (decoded.email ?? "").toLowerCase();
 
-    const roleDoc = await serverDb().collection("user_roles").doc(uid).get();
-    const roleFromDoc = (roleDoc.data()?.role as string | undefined) ?? "";
+    // The token is verified above, so a failed role lookup must not reject a
+    // valid session (e.g. no service account configured server-side). Fall back
+    // to the staff email allowlist instead.
+    let roleFromDoc = "";
+    try {
+      const roleDoc = await serverDb().collection("user_roles").doc(uid).get();
+      roleFromDoc = (roleDoc.data()?.role as string | undefined) ?? "";
+    } catch (err) {
+      console.warn("user_roles lookup failed; falling back to email allowlist:", err);
+    }
     const allowlist = [
       "bankyhotelado@gmail.com",
       "chrisbllack@gmail.com",

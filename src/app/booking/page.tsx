@@ -107,6 +107,8 @@ function BookingFlow() {
   const [confirmed, setConfirmed] = useState(false);
   const [checkingPayment, setCheckingPayment] = useState(false);
   const [copiedBank, setCopiedBank] = useState(false);
+  // Which channel created this reservation — WhatsApp is the primary path.
+  const [reservedVia, setReservedVia] = useState<"website" | "whatsapp">("website");
 
   // Global payment settings (real-time from Firestore)
   const { paystackEnabled, settings: paymentSettings } = usePaymentSettings();
@@ -288,7 +290,33 @@ function BookingFlow() {
     [quote, addonSelection, checkIn, checkOut, adults, children, roomCount, ratePlanId],
   );
 
-  const createBooking = useCallback(async () => {
+  // Message handed to WhatsApp once the room is held (reference included so
+  // staff can match the conversation to the reservation instantly).
+  const whatsappReservationMessage = useCallback(() => {
+    if (!quote || !reference) return "";
+    return [
+      `Hello ${HOTEL.name}, I just reserved a room and would like to confirm.`,
+      "",
+      `Reference: ${reference}`,
+      `Room: ${quote.roomTypeName} (${roomCount} room${roomCount > 1 ? "s" : ""})`,
+      `Dates: ${checkIn} to ${checkOut} (${quote.nights} night${quote.nights > 1 ? "s" : ""})`,
+      `Guests: ${adults} adult${adults > 1 ? "s" : ""}${
+        children ? `, ${children} child${children > 1 ? "ren" : ""}` : ""
+      }`,
+      `Name: ${name.trim()}`,
+      `Phone: ${phone.trim()}`,
+      `Total: ${naira(quote.pricing.grandTotal / 100)}`,
+      "",
+      "Please confirm the room and send payment instructions. Thank you.",
+    ].join("\n");
+  }, [quote, reference, checkIn, checkOut, adults, children, roomCount, name, phone]);
+
+  const openWhatsAppReservation = useCallback(() => {
+    const msg = whatsappReservationMessage();
+    if (msg) window.open(whatsappLink(msg), "_blank", "noopener,noreferrer");
+  }, [whatsappReservationMessage]);
+
+  const createBooking = useCallback(async (channel: "website" | "whatsapp" = "website") => {
     const trimmedName = name.trim();
     const trimmedEmail = email.trim();
     const trimmedPhone = phone.trim();
@@ -345,6 +373,7 @@ function BookingFlow() {
           guest: { name: trimmedName, email: trimmedEmail, phone: trimmedPhone },
           requests: requests.trim() || undefined,
           idempotencyKey,
+          channel,
         },
       );
 
@@ -360,8 +389,32 @@ function BookingFlow() {
 
       setReservationId(res.data.reservationId);
       setReference(res.data.reference);
+      setReservedVia(channel);
       setStep(3);
       setMaxStepReached((prev) => Math.max(prev, 3));
+
+      // WhatsApp is the primary channel: hand the guest straight into the
+      // chat with their reference already filled in.
+      if (channel === "whatsapp" && typeof window !== "undefined") {
+        setTimeout(() => {
+          const msg = [
+            `Hello ${HOTEL.name}, I just reserved a room and would like to confirm.`,
+            "",
+            `Reference: ${res.data.reference}`,
+            `Room: ${quote?.roomTypeName ?? ""} (${roomCount} room${roomCount > 1 ? "s" : ""})`,
+            `Dates: ${checkIn} to ${checkOut}`,
+            `Guests: ${adults} adult${adults > 1 ? "s" : ""}${
+              children ? `, ${children} child${children > 1 ? "ren" : ""}` : ""
+            }`,
+            `Name: ${trimmedName}`,
+            `Phone: ${trimmedPhone}`,
+            `Total: ${quote ? naira(quote.pricing.grandTotal / 100) : ""}`,
+            "",
+            "Please confirm the room and send payment instructions. Thank you.",
+          ].join("\n");
+          window.open(whatsappLink(msg), "_blank", "noopener,noreferrer");
+        }, 350);
+      }
 
       // Smooth scroll to top of booking flow container
       if (typeof window !== "undefined") {
@@ -942,23 +995,47 @@ function BookingFlow() {
               )}
             </div>
 
-            <div className="flex gap-3">
-              <button
-                type="button"
-                onClick={() => jumpToStep(1)}
-                className="px-5 py-3 rounded-xl border border-stone-300 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800 text-xs font-semibold text-stone-700 dark:text-stone-300 inline-flex items-center gap-2 transition-colors cursor-pointer"
-              >
-                <ArrowLeft className="h-4 w-4" /> Back to Rooms
-              </button>
-              <button
-                type="button"
-                onClick={createBooking}
-                disabled={!name || !email || !phone || busy}
-                className="btn-gold flex-1 min-h-[50px] text-xs sm:text-sm font-semibold inline-flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer shadow-sm"
-              >
-                {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Lock className="h-4 w-4" />}
-                <span>{busy ? "Securing suite hold…" : "Continue to Payment"}</span>
-              </button>
+            <div className="space-y-3">
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <button
+                  type="button"
+                  onClick={() => jumpToStep(1)}
+                  className="px-5 py-3 rounded-xl border border-stone-300 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800 text-xs font-semibold text-stone-700 dark:text-stone-300 inline-flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                >
+                  <ArrowLeft className="h-4 w-4" /> Back to Rooms
+                </button>
+
+                {/* PRIMARY CHANNEL: WhatsApp */}
+                <button
+                  type="button"
+                  onClick={() => createBooking("whatsapp")}
+                  disabled={!name || !email || !phone || busy}
+                  className="flex-1 min-h-[50px] rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs sm:text-sm font-semibold inline-flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer shadow-sm transition-colors"
+                >
+                  {busy ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <MessageCircle className="h-4 w-4" />
+                  )}
+                  <span>{busy ? "Holding your room…" : "Reserve on WhatsApp"}</span>
+                </button>
+
+                {/* Alternative: instant online payment */}
+                <button
+                  type="button"
+                  onClick={() => createBooking("website")}
+                  disabled={!name || !email || !phone || busy}
+                  className="flex-1 min-h-[50px] rounded-xl border border-stone-300 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800 text-xs sm:text-sm font-semibold text-stone-700 dark:text-stone-300 inline-flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer transition-colors"
+                >
+                  <Lock className="h-4 w-4" />
+                  <span>Book & Pay Online</span>
+                </button>
+              </div>
+              <p className="text-[11px] text-stone-500 dark:text-stone-400 leading-relaxed">
+                <strong className="text-stone-700 dark:text-stone-200">Recommended:</strong>{" "}
+                reserve on WhatsApp — your room is held for 2 hours, no card needed, and our
+                team confirms your stay in minutes.
+              </p>
             </div>
           </section>
         )}
@@ -978,7 +1055,8 @@ function BookingFlow() {
                   <div className="flex items-center gap-2">
                     <ShieldCheck className="h-4 w-4 text-emerald-600 shrink-0" />
                     <span>
-                      Room held for 30 minutes · Booking Reference: <strong className="font-mono">{reference}</strong>
+                      Room held for {reservedVia === "whatsapp" ? "2 hours" : "30 minutes"} · Booking Reference:{" "}
+                      <strong className="font-mono">{reference}</strong>
                     </span>
                   </div>
                 </div>
@@ -999,6 +1077,39 @@ function BookingFlow() {
                   <span className="block text-emerald-600 dark:text-emerald-400 font-medium">All taxes &amp; fees included</span>
                 </div>
               </div>
+
+              {/* PRIMARY CHANNEL: WhatsApp confirmation */}
+              {reservedVia === "whatsapp" && (
+                <div className="p-5 rounded-2xl border border-[#25D366]/40 bg-[#25D366]/5 space-y-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-sm font-semibold text-stone-900 dark:text-white flex items-center gap-2">
+                      <MessageCircle className="h-4 w-4 text-[#25D366]" />
+                      <span>Finish on WhatsApp</span>
+                    </span>
+                    <span className="text-[10px] uppercase font-condensed tracking-wider font-semibold text-[#128C4A] dark:text-[#4ade80]">
+                      Room held · No card needed
+                    </span>
+                  </div>
+                  <p className="text-xs text-stone-600 dark:text-stone-300 leading-relaxed">
+                    Your room is reserved under reference{' '}
+                    <strong className="font-mono">{reference}</strong> and held for 2 hours. Send
+                    the prepared message and our team will confirm your stay and share payment
+                    options — you can also pay online below instead.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={openWhatsAppReservation}
+                    className="w-full min-h-[50px] rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs sm:text-sm font-semibold inline-flex items-center justify-center gap-2 cursor-pointer shadow-sm transition-colors"
+                  >
+                    <MessageCircle className="h-4 w-4" />
+                    <span>Open WhatsApp & Send</span>
+                  </button>
+                </div>
+              )}
+
+              <p className="text-[11px] uppercase font-condensed tracking-wider text-stone-400 dark:text-stone-500 pt-1">
+                Optional — pay online now, or pay after confirming on WhatsApp
+              </p>
 
               {/* PAYMENT OPTION 1: PAYSTACK ONLINE */}
               {paystackEnabled ? (

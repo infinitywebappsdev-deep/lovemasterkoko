@@ -5,12 +5,15 @@ import os from "os";
 import { execFile } from "child_process";
 import { promisify } from "util";
 import { ROOMS } from "@/lib/hotel";
+import { requireStaff, jsonError } from "@/lib/booking/auth";
 
 const execFileAsync = promisify(execFile);
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
+  const auth = await requireStaff(req);
+  if (!auth.ok) return jsonError(auth.error, auth.message, 401);
   try {
     const videosDir = path.join(process.cwd(), "public", "videos");
     await fs.mkdir(videosDir, { recursive: true });
@@ -100,6 +103,8 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const auth = await requireStaff(req);
+  if (!auth.ok) return jsonError(auth.error, auth.message, 401);
   try {
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
@@ -239,6 +244,8 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
+  const auth = await requireStaff(req);
+  if (!auth.ok) return jsonError(auth.error, auth.message, 401);
   try {
     const rawSlug = req.nextUrl.searchParams.get("slug");
     let slug = rawSlug ? rawSlug.trim().toLowerCase().replace(/\s+/g, "-").replace(/_/g, "-") : "";

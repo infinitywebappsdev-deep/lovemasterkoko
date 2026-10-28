@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
+import { requireStaff, jsonError } from "@/lib/booking/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -12,6 +13,8 @@ export const dynamic = "force-dynamic";
  * - slug?: string (e.g. "deluxe", "executive")
  */
 export async function POST(req: NextRequest) {
+  const auth = await requireStaff(req);
+  if (!auth.ok) return jsonError(auth.error, auth.message, 401);
   try {
     const body = await req.json().catch(() => ({}));
     const type = (body.type || req.nextUrl.searchParams.get("type") || "image") as "image" | "video";
@@ -32,41 +35,48 @@ export async function POST(req: NextRequest) {
       const videosDir = path.join(process.cwd(), "public", "videos");
       await fs.mkdir(videosDir, { recursive: true });
 
-      const filesToDelete: string[] = [];
+      const cleanSlug = slug ? sanitize(slug).toLowerCase().replace(/\s+/g, "-") : "";
+      const exact = filename ? sanitize(filename) : "";
+      const noHyphen = cleanSlug.replace(/-/g, "");
 
-      if (slug) {
-        const cleanSlug = sanitize(slug).toLowerCase().replace(/\s+/g, "-");
-        filesToDelete.push(`${cleanSlug}-room.mp4`);
-        filesToDelete.push(`${cleanSlug}.mp4`);
-        filesToDelete.push(`${cleanSlug.replace(/-/g, "")}-room.mp4`);
-        filesToDelete.push(`${cleanSlug.replace(/-/g, "")}.mp4`);
-      }
+      // Scan the directory instead of guessing a single filename: uploads can
+      // produce <slug>-room.mp4, <slug>.mp4, alias symlinks or timestamped
+      // hero/stitched files, and all of them belong to the same asset.
+      const isMatch = (name: string): boolean => {
+        const lower = name.toLowerCase();
+        if (exact && lower === exact.toLowerCase()) return true;
+        if (!cleanSlug) return false;
+        return (
+          lower === `${cleanSlug}-room.mp4` ||
+          lower === `${cleanSlug}.mp4` ||
+          lower === `${noHyphen}-room.mp4` ||
+          lower === `${noHyphen}.mp4` ||
+          (lower.startsWith(`${cleanSlug}-`) && lower.endsWith(".mp4")) ||
+          (lower.startsWith(`${cleanSlug}_`) && lower.endsWith(".mp4"))
+        );
+      };
 
-      if (filename) {
-        const cleanFilename = sanitize(filename);
-        if (cleanFilename.endsWith(".mp4") || cleanFilename.endsWith(".webm") || cleanFilename.endsWith(".mov")) {
-          filesToDelete.push(cleanFilename);
-        }
-      }
+      const entries = await fs.readdir(videosDir, { withFileTypes: true });
+      const deleted: string[] = [];
 
-      let deletedCount = 0;
-      for (const f of Array.from(new Set(filesToDelete))) {
-        const targetPath = path.join(videosDir, f);
+      for (const entry of entries) {
+        if (!entry.isFile()) continue;
+        if (!/\.(mp4|webm|mov|m4v)$/.test(entry.name)) continue;
+        if (!isMatch(entry.name)) continue;
         try {
-          await fs.unlink(targetPath);
-          deletedCount++;
+          await fs.unlink(path.join(videosDir, entry.name));
+          deleted.push(entry.name);
         } catch {
-          // File may not exist or already unlinked
+          // file may have been removed concurrently
         }
       }
 
       // Update manifest.json if slug was specified
-      if (slug) {
+      if (cleanSlug) {
         try {
           const manifestPath = path.join(videosDir, "manifest.json");
           const manifestData = await fs.readFile(manifestPath, "utf-8");
           const manifest = JSON.parse(manifestData);
-          const cleanSlug = sanitize(slug).toLowerCase().replace(/\s+/g, "-");
           if (manifest[cleanSlug]) {
             delete manifest[cleanSlug];
             await fs.writeFile(manifestPath, JSON.stringify(manifest, null, 2));
@@ -76,10 +86,17 @@ export async function POST(req: NextRequest) {
         }
       }
 
+      // Idempotent: a repeat delete (or a file that was already gone) is a
+      // success — the asset is no longer served either way.
       return NextResponse.json({
+        ok: true,
         success: true,
-        deletedCount,
-        message: `Video asset(s) deleted successfully.`,
+        deletedCount: deleted.length,
+        deleted,
+        message:
+          deleted.length > 0
+            ? `Deleted ${deleted.length} video file(s).`
+            : "No matching video file was present — it was already removed.",
       });
     }
 
@@ -113,15 +130,20 @@ export async function POST(req: NextRequest) {
       await fs.unlink(targetPath);
     } catch (err: any) {
       if (err.code === "ENOENT") {
-        return NextResponse.json(
-          { error: `File not found: ${cleanFilename}` },
-          { status: 404 }
-        );
+        // Already gone — treat as success so references still get cleaned up.
+        return NextResponse.json({
+          ok: true,
+          success: true,
+          filename: cleanFilename,
+          alreadyGone: true,
+          message: `${cleanFilename} was already removed.`,
+        });
       }
       throw err;
     }
 
     return NextResponse.json({
+      ok: true,
       success: true,
       filename: cleanFilename,
       message: `Image ${cleanFilename} was permanently deleted from public/images/.`,
@@ -136,5 +158,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
+  const auth = await requireStaff(req);
+  if (!auth.ok) return jsonError(auth.error, auth.message, 401);
   return POST(req);
 }

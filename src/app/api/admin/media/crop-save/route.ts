@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
+import { requireStaff, jsonError } from "@/lib/booking/auth";
 
 export async function POST(req: NextRequest) {
+  const auth = await requireStaff(req);
+  if (!auth.ok) return jsonError(auth.error, auth.message, 401);
   try {
     const contentType = req.headers.get("content-type") || "";
     const imagesDir = path.join(process.cwd(), "public", "images");

@@ -39,6 +39,21 @@ import { UsageAuditReport } from "@/components/admin/UsageAuditReport";
 import { VideoStitcherModal } from "@/components/admin/VideoStitcherModal";
 import { RoomVideoUploadModal } from "@/components/admin/RoomVideoUploadModal";
 import { ConfirmDeleteModal } from "@/components/admin/ConfirmDeleteModal";
+import { adminFetch } from "@/lib/admin-auth";
+import { subscribeRooms } from "@/lib/rooms-data";
+import {
+  registerImagesForRoom,
+  registerVideoForRoom,
+  deregisterMediaFile,
+} from "@/lib/media-library";
+
+/** Filenames rooms used before they were seeded into Firestore — fallback only. */
+const LEGACY_ROOM_IMAGES: Record<string, string[]> = {
+  deluxe: ["DELUXE MAIN1.jpeg", "DELUXE MAIN2.jpeg"],
+  executive: ["EXECUTIVE Main.jpeg", "EXECUTIVE MAIN2.jpeg"],
+  "standard-plus": ["Standard PLUS.jpeg", "STANDARD PLUS MAIN .jpeg"],
+  standard: ["Standard room.jpg", "standard.jpg"],
+};
 
 interface UploadedFile {
   name: string;
@@ -74,6 +89,12 @@ export default function AdminMediaPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cropUploadInputRef = useRef<HTMLInputElement>(null);
 
+  // Live room documents from Firestore — the source of truth for the grids
+  // below, so uploads and deletions reflect without reloading the page.
+  const [liveRooms, setLiveRooms] = useState<Room[]>(ROOMS);
+
+  useEffect(() => subscribeRooms(setLiveRooms), []);
+
   // Media files & Usage Audit data
   const [allMediaFiles, setAllMediaFiles] = useState<MediaFileItem[]>([]);
   const [auditSummary, setAuditSummary] = useState<any>(null);
@@ -85,6 +106,9 @@ export default function AdminMediaPage() {
   const [cropFileName, setCropFileName] = useState("");
   const [cropDefaultRoomSlug, setCropDefaultRoomSlug] = useState("deluxe");
   const pendingFilesRef = useRef<File[]>([]);
+  // The original file behind the open cropper, kept so "Skip Crop" can really
+  // upload it instead of just closing the dialog and losing the photo.
+  const pendingOriginalRef = useRef<{ file: File; slug: string } | null>(null);
 
   // Batch Renamer Modal state
   const [batchRenamerOpen, setBatchRenamerOpen] = useState(false);
@@ -127,7 +151,7 @@ export default function AdminMediaPage() {
     if (!fileToDelete) return;
     setIsDeletingMedia(true);
     try {
-      const res = await fetch("/api/admin/media/delete", {
+      const res = await adminFetch("/api/admin/media/delete", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(fileToDelete),
@@ -147,6 +171,9 @@ export default function AdminMediaPage() {
             setPlayingVideoMap((prev) => ({ ...prev, [fileToDelete.slug!]: false }));
           }
         } else {
+          // Drop the deleted file from the room documents, otherwise the
+          // public site keeps referencing a file that no longer exists.
+          await deregisterMediaFile(fileToDelete.filename);
           await fetchMediaData();
         }
       } else {
@@ -165,7 +192,7 @@ export default function AdminMediaPage() {
   const fetchVideoStatuses = useCallback(async () => {
     setLoadingVideos(true);
     try {
-      const res = await fetch("/api/upload-video");
+      const res = await adminFetch("/api/upload-video");
       const data = await res.json();
       if (data.ok && data.videos) {
         setServerVideoMap(data.videos);
@@ -191,7 +218,7 @@ export default function AdminMediaPage() {
   const fetchMediaData = useCallback(async () => {
     setLoadingFiles(true);
     try {
-      const res = await fetch("/api/admin/media/files");
+      const res = await adminFetch("/api/admin/media/files");
       const data = await res.json();
       if (data.ok) {
         setAllMediaFiles(data.files || []);
@@ -235,59 +262,50 @@ export default function AdminMediaPage() {
   // Helper to sort images within a room's image grid
   const getSortedRoomImages = useCallback(
     (room: Room) => {
-      let imagesList: { url: string; label: string; name: string }[] = [];
+      // The live Firestore document wins over the static catalog, so uploads
+      // and deletions made in this session show up immediately.
+      const source = liveRooms.find((r) => r.slug === room.slug) ?? room;
+      const files: string[] =
+        source.images && source.images.length > 0
+          ? source.images
+          : source.image
+          ? [source.image]
+          : [];
 
-      // Determine images for this room
-      if (room.slug === "deluxe") {
-        imagesList = [
-          { url: `/images/DELUXE MAIN1.jpeg?t=${refreshKey}`, label: "MAIN1", name: "DELUXE MAIN1.jpeg" },
-          { url: `/images/DELUXE MAIN2.jpeg?t=${refreshKey}`, label: "MAIN2", name: "DELUXE MAIN2.jpeg" },
-        ];
-      } else if (room.slug === "executive") {
-        imagesList = [
-          { url: `/images/EXECUTIVE Main.jpeg?t=${refreshKey}`, label: "MAIN1", name: "EXECUTIVE Main.jpeg" },
-          { url: `/images/EXECUTIVE MAIN2.jpeg?t=${refreshKey}`, label: "MAIN2", name: "EXECUTIVE MAIN2.jpeg" },
-        ];
-      } else if (room.slug === "standard-plus") {
-        imagesList = [
-          { url: `/images/Standard PLUS.jpeg?t=${refreshKey}`, label: "MAIN1", name: "Standard PLUS.jpeg" },
-          { url: `/images/STANDARD PLUS MAIN .jpeg?t=${refreshKey}`, label: "MAIN2", name: "STANDARD PLUS MAIN .jpeg" },
-        ];
-      } else if (room.slug === "standard") {
-        imagesList = [
-          { url: `/images/Standard room.jpg?t=${refreshKey}`, label: "MAIN1", name: "Standard room.jpg" },
-          { url: `/images/standard.jpg?t=${refreshKey}`, label: "MAIN2", name: "standard.jpg" },
-        ];
-      } else if (room.images && room.images.length > 0) {
-        imagesList = room.images.map((img, i) => ({
-          url: `${img}?t=${refreshKey}`,
-          label: i === 0 ? "MAIN1" : `SLOT ${i + 1}`,
-          name: img.replace("/images/", ""),
-        }));
-      } else if (room.image) {
-        imagesList = [
-          {
-            url: `${room.image}?t=${refreshKey}`,
-            label: "MAIN1",
-            name: room.image.replace("/images/", ""),
-          },
-        ];
+      const imagesList: { url: string; label: string; name: string }[] = files.map(
+        (img, i) => {
+          const pathOnly = img.split("?")[0];
+          return {
+            url: `${pathOnly}?t=${refreshKey}`,
+            label: i === 0 ? "MAIN1" : `SLOT ${i + 1}`,
+            name: decodeURIComponent(pathOnly.replace("/images/", "")),
+          };
+        }
+      );
+
+      // Fallback for rooms that have never been seeded into Firestore.
+      if (imagesList.length === 0 && LEGACY_ROOM_IMAGES[room.slug]) {
+        for (const name of LEGACY_ROOM_IMAGES[room.slug]) {
+          imagesList.push({
+            url: `/images/${encodeURIComponent(name)}?t=${refreshKey}`,
+            label: imagesList.length === 0 ? "MAIN1" : `SLOT ${imagesList.length + 1}`,
+            name,
+          });
+        }
       }
 
-      // Sort images based on sortOption
       if (sortOption === "name_asc") {
         return [...imagesList].sort((a, b) => a.name.localeCompare(b.name));
       }
-
-      // Default or custom order: hero/primary slot first
       return imagesList;
     },
-    [sortOption, refreshKey]
+    [sortOption, refreshKey, liveRooms]
   );
 
   // 2. Upload and Cropping Workflow
   // When an image is dropped or uploaded, open the Image Cropper for the first image
   const startCropperForFile = (file: File, defaultSlug = "deluxe") => {
+    pendingOriginalRef.current = { file, slug: defaultSlug };
     const reader = new FileReader();
     reader.onload = (e) => {
       if (e.target?.result) {
@@ -301,16 +319,17 @@ export default function AdminMediaPage() {
   };
 
   // Upload without crop (e.g. when user clicks "Skip Crop" or uploads batch directly)
-  const uploadFilesDirectly = async (files: File[]) => {
+  const uploadFilesDirectly = async (files: File[], slug?: string) => {
     if (files.length === 0) return;
     setUploading(true);
     setStatusMessage(null);
 
     const formData = new FormData();
     files.forEach((f) => formData.append("files", f));
+    if (slug) formData.append("slug", slug);
 
     try {
-      const res = await fetch("/api/upload-room-image", {
+      const res = await adminFetch("/api/upload-room-image", {
         method: "POST",
         body: formData,
       });
@@ -334,7 +353,13 @@ export default function AdminMediaPage() {
           };
         });
         setRecentUploads((prev) => [...newUploads, ...prev]);
+        // Record the new files on the room documents so the public site and
+        // these grids pick them up straight away.
+        if (slug && Array.isArray(data.urls)) {
+          await registerImagesForRoom(slug, data.urls);
+        }
         setRefreshKey(Date.now());
+        fetchMediaData();
       } else {
         setStatusMessage(`Upload failed: ${data.error || "Unknown error"}`);
       }
@@ -350,59 +375,79 @@ export default function AdminMediaPage() {
     if (!fileList || fileList.length === 0) return;
     const files = Array.from(fileList);
 
-    // If an image was selected, trigger the 16:10 cropping tool immediately
     const firstImage = files.find((f) => f.type.startsWith("image/"));
+
+    // Guess the target room from the filename — shared by both paths so a
+    // non-cropped upload still registers against the right room.
+    const probe = (firstImage || files[0]).name.toUpperCase();
+    let slug = "deluxe";
+    if (probe.includes("EXEC")) slug = "executive";
+    else if (probe.includes("PLUS")) slug = "standard-plus";
+    else if (probe.includes("STAND")) slug = "standard";
+    else if (probe.includes("SIGN") || probe.includes("LUXURY-SUITE")) slug = "luxury-suite";
+    else if (probe.includes("LUX") || probe.includes("PRES")) slug = "luxury";
+
     if (firstImage) {
       pendingFilesRef.current = files.slice(1);
-      // Determine probable room slug from name
-      let slug = "deluxe";
-      const u = firstImage.name.toUpperCase();
-      if (u.includes("EXEC")) slug = "executive";
-      else if (u.includes("PLUS")) slug = "standard-plus";
-      else if (u.includes("STAND")) slug = "standard";
-      else if (u.includes("SIGN") || u.includes("LUXURY-SUITE")) slug = "luxury-suite";
-      else if (u.includes("LUX") || u.includes("PRES")) slug = "luxury";
-
       startCropperForFile(firstImage, slug);
     } else {
-      uploadFilesDirectly(files);
+      uploadFilesDirectly(files, slug);
     }
   };
 
-  const handleCropComplete = (result: { fileName: string; url: string }) => {
-    setStatusMessage(`Saved 16:10 cropped photo "${result.fileName}" to public/images/!`);
+  const handleCropComplete = (result: { fileName: string; url: string; roomSlug?: string }) => {
+    // The cropper reports the category the user actually selected — fall back
+    // to the filename guess only when it wasn't provided.
+    const targetSlug = result.roomSlug || cropDefaultRoomSlug;
+    pendingOriginalRef.current = null;
+
+    setStatusMessage(`Saved 16:10 cropped photo "${result.fileName}" to ${targetSlug}!`);
     setRecentUploads((prev) => [
       {
         name: result.fileName,
         size: 0,
         url: result.url,
-        roomMatch: cropDefaultRoomSlug,
+        roomMatch: targetSlug,
       },
       ...prev,
     ]);
-    setRecentlyUpdatedSlugs((prev) => [cropDefaultRoomSlug, ...prev.filter((s) => s !== cropDefaultRoomSlug)]);
+    setRecentlyUpdatedSlugs((prev) => [targetSlug, ...prev.filter((s) => s !== targetSlug)]);
     setRefreshKey(Date.now());
 
-    // If there were additional pending files, upload them
+    // Attach the cropped photo to its room so it renders on the live site.
+    if (result.url) {
+      registerImagesForRoom(targetSlug, [result.url]).then(() =>
+        fetchMediaData()
+      );
+    }
+
+    // If there were additional pending files, upload them to the same category
     if (pendingFilesRef.current.length > 0) {
       const rest = [...pendingFilesRef.current];
       pendingFilesRef.current = [];
-      uploadFilesDirectly(rest);
+      uploadFilesDirectly(rest, targetSlug);
     }
   };
 
   const handleSkipCrop = () => {
     setCropperOpen(false);
-    // Find file from state
-    if (cropFileName) {
-      setStatusMessage("Crop skipped; uploading original uncropped image.");
-      // We trigger standard direct upload
+    const pending = pendingOriginalRef.current;
+    pendingOriginalRef.current = null;
+
+    if (pending) {
+      // Actually upload the original (plus any batched files) to its category.
+      const rest = [...pendingFilesRef.current];
+      pendingFilesRef.current = [];
+      setStatusMessage("Crop skipped — uploading the original photo.");
+      uploadFilesDirectly([pending.file, ...rest], pending.slug);
+    } else {
       fetchMediaData();
     }
   };
 
-  // Open cropper for an existing image
+  // Open cropper for an existing (already uploaded) image — nothing to upload
   const handleCropExistingImage = (imageUrl: string, fileName: string, slug: string) => {
+    pendingOriginalRef.current = null;
     setCropImageSrc(imageUrl);
     setCropFileName(fileName);
     setCropDefaultRoomSlug(slug);
@@ -433,7 +478,7 @@ export default function AdminMediaPage() {
       formData.append("file", file);
       formData.append("slug", slug);
 
-      const res = await fetch("/api/upload-video", {
+      const res = await adminFetch("/api/upload-video", {
         method: "POST",
         body: formData,
       });
@@ -446,6 +491,7 @@ export default function AdminMediaPage() {
           setActiveVideoMap((prev) => ({ ...prev, [slug]: data.url }));
           setVideoPlaybackErrors((prev) => ({ ...prev, [slug]: false }));
         }
+        if (data.url) await registerVideoForRoom(slug, data.url);
         setRefreshKey(Date.now());
         setRecentlyUpdatedSlugs((prev) => [slug, ...prev.filter((s) => s !== slug)]);
         await fetchVideoStatuses();

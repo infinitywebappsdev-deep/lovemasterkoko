@@ -21,6 +21,7 @@ export function normalizeRoom(data: any, id: string): Room {
     name: data.name || "Unnamed Room",
     rate: Number(data.rate) || 30000,
     qty: Number(data.qty) || 1,
+    status: data.status === "disabled" ? "disabled" : "active",
     occupancy: data.occupancy || "2 Guests",
     bed: data.bed || "King Bed",
     image: data.image || "/images/Standard room.jpg",
@@ -141,11 +142,13 @@ export async function fetchRooms(): Promise<Room[]> {
  */
 export async function saveRoomCategory(room: Room): Promise<void> {
   const cleanSlug = (room.slug || room.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")).trim();
+  const roomStatus = room.status === "disabled" ? "disabled" : "active";
   const roomData = {
     slug: cleanSlug,
     name: room.name.trim(),
     rate: Number(room.rate) || 30000,
     qty: Number(room.qty) || 1,
+    status: roomStatus,
     occupancy: room.occupancy || "2 Guests",
     bed: room.bed || "King Bed",
     image: room.image || "/images/Standard room.jpg",
@@ -177,7 +180,7 @@ export async function saveRoomCategory(room: Room): Promise<void> {
         video: roomData.video,
         blurb: roomData.blurb,
         features: roomData.features,
-        status: "active",
+        status: roomStatus,
         updatedAt: new Date().toISOString(),
       },
       { merge: true }

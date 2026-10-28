@@ -4,6 +4,7 @@ import path from "path";
 import os from "os";
 import { execFile } from "child_process";
 import { promisify } from "util";
+import { requireStaff, jsonError } from "@/lib/booking/auth";
 
 const execFileAsync = promisify(execFile);
 
@@ -128,6 +129,8 @@ async function resizeAndOptimizeImage(
 }
 
 export async function POST(req: NextRequest) {
+  const auth = await requireStaff(req);
+  if (!auth.ok) return jsonError(auth.error, auth.message, 401);
   try {
     const formData = await req.formData();
     const files = formData.getAll("files") as File[];

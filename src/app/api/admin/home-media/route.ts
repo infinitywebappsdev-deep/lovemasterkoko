@@ -2,12 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
 import { DEFAULT_HOMEPAGE_MEDIA, HomepageMediaConfig, normalizeHomepageMedia } from "@/lib/homepage-media";
+import { requireStaff, jsonError } from "@/lib/booking/auth";
 
 export const dynamic = "force-dynamic";
 
 const BACKUP_FILE = path.join(process.cwd(), "public", "homepage-media.json");
 
-export async function GET() {
+export async function GET(req: Request) {
+  const auth = await requireStaff(req);
+  if (!auth.ok) return jsonError(auth.error, auth.message, 401);
   try {
     const imagesDir = path.join(process.cwd(), "public", "images");
     const videosDir = path.join(process.cwd(), "public", "videos");
@@ -85,6 +88,8 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  const auth = await requireStaff(req);
+  if (!auth.ok) return jsonError(auth.error, auth.message, 401);
   try {
     const body = await req.json();
     const config = normalizeHomepageMedia(body);

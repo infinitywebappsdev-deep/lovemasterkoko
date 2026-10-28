@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { X, Trash2, Upload, Loader2, Image as ImageIcon, ExternalLink, CheckCircle2 } from "lucide-react";
 import { Room } from "@/lib/hotel";
 import { ConfirmDeleteModal } from "./ConfirmDeleteModal";
+import { adminFetch } from "@/lib/admin-auth";
+import { deregisterMediaFile } from "@/lib/media-library";
 
 interface RoomPhotoItem {
   url: string;
@@ -88,7 +90,7 @@ export function RoomPhotosModal({
     setIsDeleting(true);
 
     try {
-      const res = await fetch("/api/admin/media/delete", {
+      const res = await adminFetch("/api/admin/media/delete", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -100,6 +102,9 @@ export function RoomPhotosModal({
 
       const data = await res.json();
       if (data.success) {
+        // Drop the deleted file from the room document too, otherwise the
+        // category keeps listing a file that no longer exists.
+        await deregisterMediaFile(photoToDelete.name).catch(() => 0);
         setDeletedNames((prev) => new Set([...prev, photoToDelete.name]));
         setToastMessage(`Image "${photoToDelete.name}" deleted successfully.`);
         onPhotoDeleted?.(photoToDelete.name);

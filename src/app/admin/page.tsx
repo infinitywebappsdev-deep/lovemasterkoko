@@ -25,6 +25,7 @@ import {
   MonthMetadata,
 } from "@/components/admin/RevenueTrendChart";
 import { usePaymentSettings } from "@/lib/settings/usePaymentSettings";
+import { adminFetch } from "@/lib/admin-auth";
 
 function StatCard({ icon: Icon, label, value, color }: { icon: typeof CalendarRange; label: string; value: string | number; color: string }) {
   return (
@@ -54,7 +55,7 @@ export default function AdminOverview() {
   const { paystackEnabled, isUpdating: isUpdatingPayment, togglePaystack } = usePaymentSettings();
 
   useEffect(() => {
-    fetch("/api/admin/stats")
+    adminFetch("/api/admin/stats")
       .then((r) => r.json())
       .then((j) => (j.ok ? setStats(j.data) : null))
       .catch(() => {})

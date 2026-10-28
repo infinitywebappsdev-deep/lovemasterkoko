@@ -4,12 +4,15 @@ import path from "path";
 import os from "os";
 import { execFile } from "child_process";
 import { promisify } from "util";
+import { requireStaff, jsonError } from "@/lib/booking/auth";
 
 const execFileAsync = promisify(execFile);
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
+  const auth = await requireStaff(req);
+  if (!auth.ok) return jsonError(auth.error, auth.message, 401);
   const tempDir = path.join(
     os.tmpdir(),
     `stitch_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`

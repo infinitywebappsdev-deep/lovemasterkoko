@@ -20,6 +20,8 @@ export default function RoomsPage() {
   }, []);
 
   const filteredRooms = rooms.filter((r) => {
+    // CMS switch: disabled categories are removed from the public catalog.
+    if (r.status === "disabled") return false;
     if (activeFilter === "all") return true;
     const nameLower = r.name.toLowerCase();
     if (activeFilter === "suites") {
@@ -91,7 +93,7 @@ export default function RoomsPage() {
                     : "bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700"
                 }`}
               >
-                All Categories ({rooms.length})
+                All Categories ({rooms.filter((r) => r.status !== "disabled").length})
               </button>
               <button
                 type="button"

@@ -15,6 +15,9 @@ export type Room = {
   name: string;
   rate: number;
   qty: number;
+  /** CMS switch: "disabled" rooms are hidden from the public site and
+   *  filtered out of the booking engine (which queries status == "active"). */
+  status?: "active" | "disabled";
   occupancy?: string;
   bed?: string;
   image: string;

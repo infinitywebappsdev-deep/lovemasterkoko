@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
 import { DEFAULT_HOMEPAGE_MEDIA, HomepageMediaConfig, normalizeHomepageMedia } from "@/lib/homepage-media";
+import { requireStaff, jsonError } from "@/lib/booking/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -13,6 +14,8 @@ interface RenameItem {
 }
 
 export async function POST(req: NextRequest) {
+  const auth = await requireStaff(req);
+  if (!auth.ok) return jsonError(auth.error, auth.message, 401);
   try {
     const body = await req.json();
     const type = (body.type || "image") as "image" | "video";

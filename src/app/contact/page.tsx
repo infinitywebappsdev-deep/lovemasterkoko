@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import Image from "next/image";
 import { HOTEL, whatsappLink, bookingMessage } from "@/lib/hotel";
 import { Mail, MapPin } from "lucide-react";
@@ -6,6 +7,35 @@ import { PhoneSolidIcon } from "@/components/icons/PhoneSolidIcon";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 
 export default function ContactPage() {
+  const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.name.trim() || !form.message.trim()) {
+      setError("Please add your name and a message so we can reply to you.");
+      return;
+    }
+    setError(null);
+    const text = [
+      `Hello ${HOTEL.name},`,
+      "",
+      form.message.trim(),
+      "",
+      `Name: ${form.name.trim()}`,
+      form.email.trim() ? `Email: ${form.email.trim()}` : null,
+      form.phone.trim() ? `Phone: ${form.phone.trim()}` : null,
+    ]
+      .filter(Boolean)
+      .join("\n");
+    window.open(whatsappLink(text), "_blank", "noopener,noreferrer");
+    setSent(true);
+  };
+
+  const field =
+    "w-full border-b border-[#ece6dd] dark:border-[#2e2b26] py-2.5 text-sm bg-transparent outline-none placeholder:text-stone-400 text-[#222] dark:text-[#f4efe6] focus:border-[var(--accent)] transition-colors";
+
   return (
     <>
       <section className="relative pt-32 pb-20 sm:pt-40 sm:pb-28 bg-[#1b1b1b] dark:bg-[#1a1a1d]">
@@ -87,12 +117,48 @@ export default function ContactPage() {
             </div>
             <div className="bg-[#f8f5f0] dark:bg-[#1c1a17] p-8 border border-[#ece6dd] dark:border-[#2e2b26]">
               <h3 className="font-display text-xl text-[#222] dark:text-[#f4efe6] mb-6">Send Us a Message</h3>
-              <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
-                <input placeholder="Your Name" className="w-full border-b border-[#ece6dd] dark:border-[#2e2b26] py-2.5 text-sm bg-transparent outline-none placeholder:text-stone-400 text-[#222] dark:text-[#f4efe6]" />
-                <input type="email" placeholder="Email Address" className="w-full border-b border-[#ece6dd] dark:border-[#2e2b26] py-2.5 text-sm bg-transparent outline-none placeholder:text-stone-400 text-[#222] dark:text-[#f4efe6]" />
-                <input type="tel" placeholder="Phone Number" className="w-full border-b border-[#ece6dd] dark:border-[#2e2b26] py-2.5 text-sm bg-transparent outline-none placeholder:text-stone-400 text-[#222] dark:text-[#f4efe6]" />
-                <textarea rows={4} placeholder="Your Message" className="w-full border-b border-[#ece6dd] dark:border-[#2e2b26] py-2.5 text-sm bg-transparent outline-none resize-none placeholder:text-stone-400 text-[#222] dark:text-[#f4efe6]" />
+              <form className="space-y-4" onSubmit={handleSubmit}>
+                <input
+                  placeholder="Your Name"
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  className={field}
+                />
+                <input
+                  type="email"
+                  placeholder="Email Address"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  className={field}
+                />
+                <input
+                  type="tel"
+                  placeholder="Phone Number"
+                  value={form.phone}
+                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                  className={field}
+                />
+                <textarea
+                  rows={4}
+                  placeholder="Your Message"
+                  value={form.message}
+                  onChange={(e) => setForm({ ...form, message: e.target.value })}
+                  className={`${field} resize-none`}
+                />
+                {error && (
+                  <p role="alert" className="text-xs text-red-600 dark:text-red-400">
+                    {error}
+                  </p>
+                )}
+                {sent && (
+                  <p role="status" className="text-xs text-green-700 dark:text-green-400">
+                    WhatsApp is open with your message — press send there and our team will reply right away.
+                  </p>
+                )}
                 <button type="submit" className="btn-gold w-full py-3.5 text-xs">Send Message</button>
+                <p className="text-xs text-[#666] dark:text-[#a8a29e] text-center">
+                  Opens WhatsApp so our team can respond instantly, 24 hours a day.
+                </p>
               </form>
             </div>
           </div>

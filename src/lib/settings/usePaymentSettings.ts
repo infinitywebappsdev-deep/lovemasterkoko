@@ -125,7 +125,9 @@ export function usePaymentSettings() {
             ...partial.thermalPrinter,
           });
         }
-        const res = await fetch("/api/settings/payment", {
+        // Payment settings are writable by staff only — attach the Firebase ID token.
+        const { adminFetch } = await import("@/lib/admin-auth");
+        const res = await adminFetch("/api/settings/payment", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(partial),

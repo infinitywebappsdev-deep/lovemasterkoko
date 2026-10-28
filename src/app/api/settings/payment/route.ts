@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getPaymentSettings, updatePaymentSettings } from "@/lib/settings/payment";
+import { requireStaff, jsonError } from "@/lib/booking/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -32,6 +33,8 @@ export async function GET() {
  * Updates payment settings (e.g. toggles paystackEnabled, updates bank details).
  */
 export async function POST(req: Request) {
+  const auth = await requireStaff(req);
+  if (!auth.ok) return jsonError(auth.error, auth.message, 401);
   try {
     const body = await req.json();
 

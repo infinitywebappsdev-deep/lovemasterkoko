@@ -10,6 +10,8 @@ import { RoomVideoUploadModal } from "@/components/admin/RoomVideoUploadModal";
 import { ConfirmDeleteModal } from "@/components/admin/ConfirmDeleteModal";
 import { RoomPhotosModal } from "@/components/admin/RoomPhotosModal";
 import { RoomCategoryModal } from "@/components/admin/RoomCategoryModal";
+import { adminFetch } from "@/lib/admin-auth";
+import { registerImagesForRoom, registerVideoForRoom } from "@/lib/media-library";
 
 export default function AdminRooms() {
   const [rooms, setRooms] = useState<Room[]>(ROOMS);
@@ -48,7 +50,7 @@ export default function AdminRooms() {
     if (!videoToDelete) return;
     setIsDeletingVideo(true);
     try {
-      const res = await fetch("/api/admin/media/delete", {
+      const res = await adminFetch("/api/admin/media/delete", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ type: "video", slug: videoToDelete.slug }),
@@ -150,6 +152,23 @@ export default function AdminRooms() {
     return list;
   }, [rooms, sortOption, recentlyUpdatedSlugs]);
 
+  /** CMS switch: hide a room from the public site and booking engine, or bring it back. */
+  const toggleRoomStatus = async (room: Room) => {
+    const next = room.status === "disabled" ? "active" : "disabled";
+    try {
+      await saveRoomCategory({ ...room, status: next });
+      setSuccessMsg(
+        next === "disabled"
+          ? `${room.name} is now hidden from the public site and booking engine.`
+          : `${room.name} is live again on the public site and booking engine.`
+      );
+      setTimeout(() => setSuccessMsg(null), 5000);
+    } catch (err) {
+      console.error("Failed to update room status:", err);
+      alert("Could not update this room's status. Please try again.");
+    }
+  };
+
   const handleSaveCategory = async (savedRoom: Room) => {
     await saveRoomCategory(savedRoom);
     setSuccessMsg(`Room category "${savedRoom.name}" saved with rate ${naira(savedRoom.rate)}.`);
@@ -194,13 +213,18 @@ export default function AdminRooms() {
       }
       formData.append("slug", slug);
 
-      const res = await fetch("/api/upload-room-image", {
+      const res = await adminFetch("/api/upload-room-image", {
         method: "POST",
         body: formData,
       });
 
       const data = await res.json();
       if (data.success) {
+        // Record the new photos on the room document — writing the files alone
+        // never makes them show up in the category or on the public site.
+        if (Array.isArray(data.urls) && data.urls.length > 0) {
+          await registerImagesForRoom(slug, data.urls);
+        }
         setSuccessMsg(`Successfully uploaded ${files.length} photo(s) for ${slug}!`);
         setRecentlyUpdatedSlugs((prev) => [slug, ...prev.filter((s) => s !== slug)]);
         setTimeout(() => setSuccessMsg(null), 5000);
@@ -225,13 +249,15 @@ export default function AdminRooms() {
       formData.append("file", file);
       formData.append("slug", slug);
 
-      const res = await fetch("/api/upload-video", {
+      const res = await adminFetch("/api/upload-video", {
         method: "POST",
         body: formData,
       });
 
       const data = await res.json();
       if (data.success) {
+        // Point the room document at the new video header as well.
+        if (data.url) await registerVideoForRoom(slug, data.url);
         setSuccessMsg(`Successfully saved and activated video header for ${slug}!`);
         setRecentlyUpdatedSlugs((prev) => [slug, ...prev.filter((s) => s !== slug)]);
         setVideoTimestamp(Date.now());
@@ -356,6 +382,13 @@ export default function AdminRooms() {
                   alt={room.name}
                   className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
+
+                {/* Disabled badge */}
+                {room.status === "disabled" && (
+                  <span className="absolute top-3 left-3 z-10 px-2.5 py-1 rounded-md bg-rose-600/95 text-white text-[10px] font-condensed uppercase tracking-wider font-bold">
+                    Hidden from site
+                  </span>
+                )}
 
                 {/* Active Live Video Header */}
                 {!isPhotoOnly && (
@@ -582,6 +615,22 @@ export default function AdminRooms() {
                       <span className="text-xs px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 font-medium">
                         {room.qty} units
                       </span>
+                      <button
+                        type="button"
+                        onClick={() => toggleRoomStatus(room)}
+                        className={`text-[11px] px-2 py-0.5 rounded-full border font-medium transition-colors cursor-pointer ${
+                          room.status === "disabled"
+                            ? "bg-rose-50 text-rose-700 border-rose-300 hover:bg-rose-100"
+                            : "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100"
+                        }`}
+                        title={
+                          room.status === "disabled"
+                            ? `Publish ${room.name} on the public site and booking engine`
+                            : `Hide ${room.name} from the public site and booking engine`
+                        }
+                      >
+                        {room.status === "disabled" ? "Disabled" : "Live"}
+                      </button>
                       <button
                         type="button"
                         onClick={() => {

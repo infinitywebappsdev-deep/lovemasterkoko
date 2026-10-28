@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { ROOMS } from "@/lib/hotel";
+import { adminFetch } from "@/lib/admin-auth";
 
 interface RoomVideoUploadModalProps {
   isOpen: boolean;
@@ -58,7 +59,7 @@ export function RoomVideoUploadModal({
   useEffect(() => {
     if (!isOpen) return;
     let cancelled = false;
-    fetch(`/api/upload-video?slug=${targetSlug}`)
+    adminFetch(`/api/upload-video?slug=${targetSlug}`)
       .then((r) => r.json())
       .then((data) => {
         if (!cancelled && data.ok && data.video?.url) {
@@ -143,7 +144,7 @@ export function RoomVideoUploadModal({
       formData.append("file", selectedFile);
       formData.append("slug", targetSlug);
 
-      const res = await fetch("/api/upload-video", {
+      const res = await adminFetch("/api/upload-video", {
         method: "POST",
         body: formData,
       });

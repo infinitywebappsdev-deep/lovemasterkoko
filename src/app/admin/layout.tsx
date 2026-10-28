@@ -1,7 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import type { User } from "firebase/auth";
 import {
   LayoutDashboard,
   CalendarRange,
@@ -13,8 +14,11 @@ import {
   Image as ImageIcon,
   ReceiptText,
   Film,
+  Loader2,
+  LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { subscribeAdminUser, adminSignOut } from "@/lib/admin-auth";
 
 const NAV = [
   { to: "/admin", label: "Overview", icon: LayoutDashboard },
@@ -27,9 +31,41 @@ const NAV = [
   { to: "/admin/settings", label: "Payment & Settings", icon: Settings },
 ];
 
+const LOGIN_PATH = "/admin/login";
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [checking, setChecking] = useState(true);
   const pathname = usePathname();
+  const router = useRouter();
+
+  // Track the Firebase staff session. `checking` stays true until Firebase has
+  // restored any persisted session, so we never bounce a signed-in user.
+  useEffect(() => subscribeAdminUser((next) => {
+    setUser(next);
+    setChecking(false);
+  }), []);
+
+  // Server-side APIs already reject anonymous callers; this gate just keeps
+  // the UI out of sight until the staff member signs in.
+  useEffect(() => {
+    if (checking) return;
+    if (!user && pathname !== LOGIN_PATH) router.replace(LOGIN_PATH);
+    if (user && pathname === LOGIN_PATH) router.replace("/admin");
+  }, [checking, user, pathname, router]);
+
+  // The login page renders full-screen, without the admin chrome.
+  if (pathname === LOGIN_PATH) return <>{children}</>;
+
+  if (checking || !user) {
+    return (
+      <div className="min-h-screen bg-[#1b1b1b] flex flex-col items-center justify-center gap-3 text-stone-400">
+        <Loader2 className="h-6 w-6 animate-spin text-[#ffbf00]" />
+        <p className="text-sm">Verifying staff access…</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#f8f5f0] pt-0">
@@ -58,8 +94,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             );
           })}
         </nav>
-        <div className="p-4 border-t border-white/10">
-          <Link href="/" className="text-xs text-stone-500 hover:text-white transition-colors">← Back to Site</Link>
+        <div className="p-4 border-t border-white/10 space-y-3">
+          <p className="text-[11px] text-stone-500 truncate" title={user.email ?? ""}>
+            Signed in as <span className="text-stone-300">{user.email}</span>
+          </p>
+          <div className="flex items-center justify-between gap-2">
+            <Link href="/" className="text-xs text-stone-500 hover:text-white transition-colors">← Back to Site</Link>
+            <button
+              type="button"
+              onClick={() => adminSignOut()}
+              className="inline-flex items-center gap-1.5 text-xs text-stone-400 hover:text-[#ffbf00] transition-colors"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+              Sign out
+            </button>
+          </div>
         </div>
       </aside>
 

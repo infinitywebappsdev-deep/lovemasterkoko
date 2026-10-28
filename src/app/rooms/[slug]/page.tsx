@@ -26,6 +26,7 @@ export default function RoomDetail({ params }: { params: Promise<{ slug: string 
   const [allRooms, setAllRooms] = useState<Room[]>(ROOMS);
   const [isMuted, setIsMuted] = useState(true);
   const [videoLoaded, setVideoLoaded] = useState(false);
+  const [videoFailed, setVideoFailed] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   // Subscribe to live room data from Firestore (reflecting backend category edits & additions)
@@ -37,14 +38,15 @@ export default function RoomDetail({ params }: { params: Promise<{ slug: string 
   }, []);
 
   // Find active room by slug (with aliases for presidential & signature suite)
-  const room =
+  const found =
     allRooms.find(
       (r) =>
         r.slug === slug ||
         (slug === "signature-suite" && r.slug === "luxury-suite") ||
         (slug === "presidential-suite" && r.slug === "luxury")
-    ) ||
-    allRooms[0];
+    ) || null;
+  const room = found || allRooms[0];
+  const roomDisabled = !!found && found.status === "disabled";
 
   const defaultRoomImages = room.images && room.images.length > 0 ? room.images : [room.image];
   const roomImages = defaultRoomImages;
@@ -54,6 +56,8 @@ export default function RoomDetail({ params }: { params: Promise<{ slug: string 
 
   // Autoplay video muted smoothly on mount
   useEffect(() => {
+    setVideoFailed(false);
+    setVideoLoaded(false);
     const video = videoRef.current;
     if (video) {
       video.muted = true;
@@ -70,6 +74,38 @@ export default function RoomDetail({ params }: { params: Promise<{ slug: string 
 
   // Other accommodations to explore
   const otherRooms = allRooms.filter((r) => r.slug !== room.slug).slice(0, 3);
+
+  // Disabled from the admin CMS: hide the room and its booking CTAs.
+  if (roomDisabled) {
+    return (
+      <div className="min-h-screen bg-white dark:bg-[#202023] flex items-center justify-center px-4">
+        <div className="max-w-md text-center space-y-5 py-24">
+          <span className="eyebrow text-[var(--accent)] block">Currently Unavailable</span>
+          <h1 className="font-display text-4xl text-stone-900 dark:text-white">{room.name}</h1>
+          <p className="text-sm text-stone-600 dark:text-stone-300 leading-relaxed">
+            This room type is not accepting bookings right now. Have a look at our
+            other rooms and suites, or get in touch and we&apos;ll let you know when it
+            returns.
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+            <Link
+              href="/rooms"
+              className="btn-gold px-7 py-3.5 text-xs inline-flex items-center gap-2"
+            >
+              <span>View Other Rooms</span>
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+            <Link
+              href="/contact"
+              className="px-7 py-3.5 text-xs inline-flex items-center gap-2 rounded-xl border border-stone-300 dark:border-stone-700 text-stone-700 dark:text-stone-200 hover:border-[var(--accent)] transition-colors"
+            >
+              Contact Us
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white dark:bg-[#202023] text-stone-900 dark:text-stone-100">
@@ -91,8 +127,9 @@ export default function RoomDetail({ params }: { params: Promise<{ slug: string 
           className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none"
         />
 
-        {/* Ambient Video Header Tour */}
-        {videoSrc && (
+        {/* Ambient Video Header Tour — hidden when the file is missing so the
+            poster photo stays visible instead of a broken/black frame */}
+        {videoSrc && !videoFailed && (
           <video
             ref={videoRef}
             key={videoSrc}
@@ -103,6 +140,7 @@ export default function RoomDetail({ params }: { params: Promise<{ slug: string 
             muted={isMuted}
             playsInline
             preload="auto"
+            onError={() => setVideoFailed(true)}
             onLoadedData={() => setVideoLoaded(true)}
             className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-700 ${
               videoLoaded ? "opacity-90" : "opacity-0"
@@ -277,25 +315,25 @@ export default function RoomDetail({ params }: { params: Promise<{ slug: string 
                 </div>
               </div>
 
-              {/* Action Buttons */}
+              {/* Action Buttons — WhatsApp is the primary booking channel */}
               <div className="space-y-3 pt-2">
-                <Link
-                  href={`/booking?room=${room.slug}`}
-                  className="w-full py-3.5 px-4 rounded-xl bg-[#ffbf00] hover:bg-[#e09e00] text-white font-semibold text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-md transition-all cursor-pointer"
-                >
-                  <span>Book This Room</span>
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-
                 <a
                   href={whatsappLink(bookingMessage({ room: room.name, rate: room.rate }))}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full py-3.5 px-4 rounded-xl border-2 border-[#ffbf00] text-[#ffbf00] hover:bg-[#ffbf00] hover:text-white font-semibold text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer"
+                  className="w-full py-3.5 px-4 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-semibold text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-md transition-all cursor-pointer"
                 >
                   <MessageSquare className="h-4 w-4" />
-                  <span>WhatsApp Inquiry</span>
+                  <span>Book This Room on WhatsApp</span>
                 </a>
+
+                <Link
+                  href={`/booking?room=${room.slug}`}
+                  className="w-full py-3.5 px-4 rounded-xl border-2 border-[#ffbf00] text-[#ffbf00] hover:bg-[#ffbf00] hover:text-white font-semibold text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer"
+                >
+                  <span>Check Dates & Pay Online</span>
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
 
                 <a
                   href={`tel:${HOTEL.phone}`}

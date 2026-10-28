@@ -25,6 +25,7 @@ import {
   Compass,
 } from "lucide-react";
 import { ROOMS } from "@/lib/hotel";
+import { adminFetch } from "@/lib/admin-auth";
 
 interface ClipItem {
   id: string;
@@ -146,7 +147,7 @@ export function VideoStitcherModal({
 
       setStatusMessage("Applying cinematic warm luxury grade & subtle dissolves...");
 
-      const res = await fetch("/api/admin/media/stitch-video", {
+      const res = await adminFetch("/api/admin/media/stitch-video", {
         method: "POST",
         body: formData,
       });

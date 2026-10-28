@@ -15,6 +15,8 @@ import {
   Sliders,
 } from "lucide-react";
 import { ROOMS } from "@/lib/hotel";
+import { adminFetch } from "@/lib/admin-auth";
+import { renameMediaReference } from "@/lib/media-library";
 
 export interface MediaFileItem {
   name: string;
@@ -119,7 +121,7 @@ export function BatchRenamerModal({
     setResultMsg(null);
 
     try {
-      const res = await fetch("/api/admin/media/batch-rename", {
+      const res = await adminFetch("/api/admin/media/batch-rename", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -132,6 +134,22 @@ export function BatchRenamerModal({
 
       const data = await res.json();
       if (data.ok) {
+        // Keep every room's gallery pointing at the renamed files — otherwise
+        // categories keep the old paths and show broken pictures.
+        try {
+          const done: { oldName: string; newName: string }[] = (data.results ?? [])
+            .filter((r: { success: boolean }) => r.success)
+            .map((r: { oldName: string; newName: string }) => ({
+              oldName: r.oldName,
+              newName: r.newName,
+            }));
+          for (const r of done) {
+            await renameMediaReference(r.oldName, r.newName);
+          }
+        } catch (e) {
+          console.warn("Could not rewrite room references after rename:", e);
+        }
+
         setResultMsg(`Successfully renamed ${data.count} file(s)!`);
         setTimeout(() => {
           onRenameSuccess();

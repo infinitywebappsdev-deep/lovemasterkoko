@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ROOMS as DEFAULT_ROOMS, Room } from "@/lib/hotel";
+import { requireStaff, jsonError } from "@/lib/booking/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -7,7 +8,9 @@ export const dynamic = "force-dynamic";
  * GET /api/admin/rooms
  * Returns all room categories
  */
-export async function GET() {
+export async function GET(req: Request) {
+  const auth = await requireStaff(req);
+  if (!auth.ok) return jsonError(auth.error, auth.message, 401);
   try {
     return NextResponse.json({
       success: true,
@@ -26,6 +29,8 @@ export async function GET() {
  * Validates and processes a room category save request
  */
 export async function POST(req: NextRequest) {
+  const auth = await requireStaff(req);
+  if (!auth.ok) return jsonError(auth.error, auth.message, 401);
   try {
     const body = await req.json();
     const { name, rate, slug, qty, blurb, features, image, images, video } = body;

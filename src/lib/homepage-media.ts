@@ -339,9 +339,10 @@ export async function saveHomepageMedia(config: HomepageMediaConfig): Promise<vo
     console.warn("Failed to write homepage_media to Firestore:", err);
   }
 
-  // Also notify server-side fallback
+  // Also notify server-side fallback (requires a signed-in staff session)
   try {
-    await fetch("/api/admin/home-media", {
+    const { adminFetch } = await import("@/lib/admin-auth");
+    await adminFetch("/api/admin/home-media", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updated),

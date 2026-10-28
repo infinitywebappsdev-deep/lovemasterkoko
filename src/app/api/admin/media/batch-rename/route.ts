@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
+import { requireStaff, jsonError } from "@/lib/booking/auth";
 
 type RenameItem = {
   oldName: string;
@@ -8,6 +9,8 @@ type RenameItem = {
 };
 
 export async function POST(req: NextRequest) {
+  const auth = await requireStaff(req);
+  if (!auth.ok) return jsonError(auth.error, auth.message, 401);
   try {
     const body = await req.json();
     const renames: RenameItem[] = body?.renames;

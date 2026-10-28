@@ -41,6 +41,7 @@ import {
   Laptop,
   HardDrive,
 } from "lucide-react";
+import { adminFetch } from "@/lib/admin-auth";
 import {
   HomepageMediaConfig,
   DEFAULT_HOMEPAGE_MEDIA,
@@ -127,7 +128,7 @@ export default function HomeMediaManagementPage() {
   const loadServerAssets = async () => {
     setIsLoadingAssets(true);
     try {
-      const res = await fetch("/api/admin/home-media");
+      const res = await adminFetch("/api/admin/home-media");
       const data = await res.json();
       if (data.ok) {
         if (data.availableImages) setAvailableImages(data.availableImages);
@@ -280,7 +281,7 @@ export default function HomeMediaManagementPage() {
       if (title) formData.append("title", title);
 
       setUploadProgress(`Uploading & applying final progressive compression...`);
-      const res = await fetch("/api/admin/home-media/upload", {
+      const res = await adminFetch("/api/admin/home-media/upload", {
         method: "POST",
         body: formData,
       });
@@ -393,7 +394,7 @@ export default function HomeMediaManagementPage() {
       formData.append("title", "Home Video Header");
 
       setUploadProgress("Optimizing video with +faststart & extracting instant poster frame...");
-      const res = await fetch("/api/admin/home-media/upload", {
+      const res = await adminFetch("/api/admin/home-media/upload", {
         method: "POST",
         body: formData,
       });
@@ -441,7 +442,7 @@ export default function HomeMediaManagementPage() {
 
     try {
       const filenames = config.gallery.map((g) => g.url.split("/").pop()).filter(Boolean) as string[];
-      const res = await fetch("/api/admin/home-media/resize", {
+      const res = await adminFetch("/api/admin/home-media/resize", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ filenames, maxWidth: 1280 }),
@@ -463,7 +464,7 @@ export default function HomeMediaManagementPage() {
   // Single photo on-demand resize
   const handleResizeSingleImage = async (imgUrl: string) => {
     try {
-      const res = await fetch("/api/admin/home-media/resize", {
+      const res = await adminFetch("/api/admin/home-media/resize", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url: imgUrl, maxWidth: 1280 }),
@@ -602,7 +603,7 @@ export default function HomeMediaManagementPage() {
         })),
       };
 
-      const res = await fetch("/api/admin/home-media/bulk-rename", {
+      const res = await adminFetch("/api/admin/home-media/bulk-rename", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -638,16 +639,36 @@ export default function HomeMediaManagementPage() {
     setPickerOpen(true);
   };
 
+  // Persist a config mutation immediately: the live homepage reads this
+  // config straight from Firestore, so a change that only lives in local state
+  // would look applied in the admin but never reach the site.
+  const applyConfig = (
+    next: HomepageMediaConfig,
+    message?: string,
+    type: "success" | "error" | "info" = "success"
+  ) => {
+    setConfig(next);
+    saveHomepageMedia(next)
+      .then(() => {
+        if (message) showToast(message, type);
+      })
+      .catch((err: any) => {
+        showToast(`Failed to save: ${err?.message || "Unknown error"}`, "error");
+      });
+  };
+
   // Select asset from picker
   const handleSelectAsset = (asset: PublicAsset) => {
+    let next: HomepageMediaConfig | null = null;
+
     if (pickerTarget === "hero-video") {
-      setConfig((prev) => ({ ...prev, hero: { ...prev.hero, videoUrl: asset.url, isVideoEnabled: true } }));
+      next = { ...config, hero: { ...config.hero, videoUrl: asset.url, isVideoEnabled: true } };
     } else if (pickerTarget === "hero-poster") {
-      setConfig((prev) => ({ ...prev, hero: { ...prev.hero, posterImage: asset.url } }));
+      next = { ...config, hero: { ...config.hero, posterImage: asset.url } };
     } else if (pickerTarget === "about-1") {
-      setConfig((prev) => ({ ...prev, about: { ...prev.about, image1: asset.url } }));
+      next = { ...config, about: { ...config.about, image1: asset.url } };
     } else if (pickerTarget === "about-2") {
-      setConfig((prev) => ({ ...prev, about: { ...prev.about, image2: asset.url } }));
+      next = { ...config, about: { ...config.about, image2: asset.url } };
     } else if (pickerTarget === "gallery-add") {
       const newItem: GalleryItem = {
         id: `gal-${Date.now()}`,
@@ -657,43 +678,52 @@ export default function HomeMediaManagementPage() {
         active: true,
         order: (config.gallery?.length || 0) + 1,
       };
-      setConfig((prev) => ({ ...prev, gallery: [...prev.gallery, newItem] }));
+      next = { ...config, gallery: [...config.gallery, newItem] };
     } else if (pickerTarget.startsWith("exp-")) {
       const index = parseInt(pickerTarget.replace("exp-", ""), 10);
-      setConfig((prev) => {
-        const nextExps = [...prev.experiences];
-        if (nextExps[index]) {
-          nextExps[index] = { ...nextExps[index], img: asset.url };
-        }
-        return { ...prev, experiences: nextExps };
-      });
+      const nextExps = [...config.experiences];
+      if (nextExps[index]) {
+        nextExps[index] = { ...nextExps[index], img: asset.url };
+        next = { ...config, experiences: nextExps };
+      }
     }
 
     setPickerOpen(false);
-    showToast(`Applied ${asset.name} to home page.`, "info");
+    if (next) {
+      applyConfig(next, `Applied ${asset.name} to the home page.`, "success");
+    } else {
+      showToast(`Could not apply ${asset.name}.`, "error");
+    }
   };
 
   // Gallery Item Controls: Add, Remove, Toggle, Reorder
   const handleRemoveFromGallery = (id: string) => {
-    setConfig((prev) => ({
-      ...prev,
-      gallery: prev.gallery.filter((g) => g.id !== id),
-    }));
-    showToast("Photo removed from home page gallery.", "info");
+    applyConfig(
+      { ...config, gallery: config.gallery.filter((g) => g.id !== id) },
+      "Photo removed from home page gallery."
+    );
   };
 
   const handleToggleGalleryActive = (id: string) => {
-    setConfig((prev) => ({
-      ...prev,
-      gallery: prev.gallery.map((g) => (g.id === id ? { ...g, active: !g.active } : g)),
-    }));
+    const target = config.gallery.find((g) => g.id === id);
+    applyConfig(
+      {
+        ...config,
+        gallery: config.gallery.map((g) => (g.id === id ? { ...g, active: !g.active } : g)),
+      },
+      target
+        ? target.active
+          ? `"${target.title}" hidden from the home page.`
+          : `"${target.title}" is now visible on the home page.`
+        : "Gallery updated."
+    );
   };
 
   const handleUpdateGalleryField = (id: string, field: keyof GalleryItem, value: any) => {
-    setConfig((prev) => ({
-      ...prev,
-      gallery: prev.gallery.map((g) => (g.id === id ? { ...g, [field]: value } : g)),
-    }));
+    applyConfig({
+      ...config,
+      gallery: config.gallery.map((g) => (g.id === id ? { ...g, [field]: value } : g)),
+    });
   };
 
   const handleMoveGalleryItem = (index: number, direction: "up" | "down") => {
@@ -710,7 +740,7 @@ export default function HomeMediaManagementPage() {
       item.order = idx + 1;
     });
 
-    setConfig((prev) => ({ ...prev, gallery: newItems }));
+    applyConfig({ ...config, gallery: newItems });
   };
 
   // Permanent Delete confirmation dialog
@@ -723,7 +753,7 @@ export default function HomeMediaManagementPage() {
     if (!fileToDelete) return;
     setIsSaving(true);
     try {
-      const res = await fetch("/api/admin/home-media/delete", {
+      const res = await adminFetch("/api/admin/home-media/delete", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -737,20 +767,36 @@ export default function HomeMediaManagementPage() {
         throw new Error(data.error || "Failed to delete file from disk");
       }
 
-      // If it was part of gallery, remove it from list
-      if (fileToDelete.galleryId) {
-        setConfig((prev) => ({
-          ...prev,
-          gallery: prev.gallery.filter((g) => g.id !== fileToDelete.galleryId),
-        }));
+      // Mirror the disk change in the homepage config and persist it — without
+      // this the live site keeps referencing the file that was just removed
+      // (gallery tiles, hero video, about images all live in this config).
+      const target = fileToDelete.url;
+      const next: HomepageMediaConfig = {
+        ...config,
+        gallery: config.gallery.filter(
+          (g) => g.id !== fileToDelete.galleryId && g.url !== target
+        ),
+        featuredVideos: (config.featuredVideos || []).filter(
+          (v) => v.url !== target
+        ),
+      };
+
+      if (config.hero.videoUrl === target) {
+        next.hero = { ...config.hero, videoUrl: "", isVideoEnabled: false };
+      }
+      if (next.hero.posterImage === target) {
+        next.hero = { ...next.hero, posterImage: "" };
+      }
+      if (config.about.image1 === target) {
+        next.about = { ...config.about, image1: "" };
+      }
+      if (config.about.image2 === target) {
+        next.about = { ...config.about, image2: "" };
       }
 
-      // If it was hero video, clear or fallback
-      if (config.hero.videoUrl === fileToDelete.url) {
-        setConfig((prev) => ({
-          ...prev,
-          hero: { ...prev.hero, videoUrl: "/videos/hero.mp4" },
-        }));
+      if (JSON.stringify(next) !== JSON.stringify(config)) {
+        setConfig(next);
+        await saveHomepageMedia(next);
       }
 
       showToast(`Permanently deleted ${fileToDelete.name} from server.`, "success");

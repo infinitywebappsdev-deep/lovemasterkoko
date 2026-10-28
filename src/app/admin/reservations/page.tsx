@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { naira } from "@/lib/hotel";
 import type { Reservation } from "@/lib/booking/types";
+import { adminFetch } from "@/lib/admin-auth";
 
 const STATUS_STYLES: Record<string, string> = {
   pending: "bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-300 dark:border-amber-800",
@@ -52,7 +53,7 @@ export default function AdminReservations() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/admin/reservations?limit=200");
+      const res = await adminFetch("/api/admin/reservations?limit=200");
       const j = await res.json();
       if (j.ok) setReservations(j.data.reservations);
       else if (j.error === "UNAUTHORIZED") setAuthError(true);
@@ -72,7 +73,7 @@ export default function AdminReservations() {
       setBusyId(reservationId);
       setMessage(null);
       try {
-        const res = await fetch("/api/admin/reservations/actions", {
+        const res = await adminFetch("/api/admin/reservations/actions", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ reservationId, ...body }),

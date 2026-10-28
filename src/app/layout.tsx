@@ -89,9 +89,9 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  alternates: {
-    canonical: SITE_URL,
-  },
+  // NOTE: no site-wide `alternates.canonical` here — a canonical declared in the
+  // root layout is inherited by every child route, which would tell search engines
+  // that all pages are duplicates of the homepage. Each route sets its own.
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

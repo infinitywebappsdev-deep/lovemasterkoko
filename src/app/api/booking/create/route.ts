@@ -6,7 +6,11 @@ type Body = {
   guest?: { name?: string; email?: string; phone?: string; country?: string };
   requests?: string;
   idempotencyKey?: string;
+  channel?: string;
 };
+
+/** Booking channels a client may declare. Anything else falls back to website. */
+const ALLOWED_CHANNELS = new Set(["website", "whatsapp"]);
 
 /** POST /api/booking/create — creates a pending reservation + payment hold. */
 export async function POST(req: Request) {
@@ -21,6 +25,10 @@ export async function POST(req: Request) {
     return jsonError("VALIDATION_ERROR", "quoteId and guest details are required.");
   }
 
+  const channel = ALLOWED_CHANNELS.has(String(body.channel ?? ""))
+    ? String(body.channel)
+    : "website";
+
   const result = await createBooking({
     quoteId: String(body.quoteId),
     guest: {
@@ -30,7 +38,10 @@ export async function POST(req: Request) {
       country: body.guest.country ? String(body.guest.country) : undefined,
     },
     requests: body.requests ? String(body.requests) : undefined,
-    bookingSource: "website",
+    bookingSource: channel as "website" | "whatsapp",
+    // WhatsApp reservations are confirmed by staff in chat, so the room stays
+    // held longer than the 30-minute online-payment window.
+    holdMinutes: channel === "whatsapp" ? 120 : 30,
     idempotencyKey: body.idempotencyKey ? String(body.idempotencyKey) : undefined,
   });
 

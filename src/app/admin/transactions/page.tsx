@@ -36,6 +36,7 @@ import {
 } from "lucide-react";
 import { naira } from "@/lib/hotel";
 import type { TransactionAuditItem, TransactionAuditSummary } from "@/lib/booking/audit";
+import { adminFetch } from "@/lib/admin-auth";
 import {
   TransactionDateRangePicker,
   type DateRange,
@@ -75,7 +76,7 @@ export default function TransactionAuditPage() {
       if (search.trim()) params.set("search", search.trim());
       params.set("limit", "100");
 
-      const res = await fetch(`/api/admin/transactions?${params.toString()}`);
+      const res = await adminFetch(`/api/admin/transactions?${params.toString()}`);
       const json = await res.json();
       if (json.ok && json.data) {
         setItems(json.data.items || []);
@@ -107,7 +108,7 @@ export default function TransactionAuditPage() {
 
     setActionBusy(true);
     try {
-      const res = await fetch("/api/admin/transactions", {
+      const res = await adminFetch("/api/admin/transactions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
