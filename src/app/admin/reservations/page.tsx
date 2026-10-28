@@ -16,6 +16,7 @@ import {
   Hash,
   Copy,
   Check,
+  BadgeCheck,
 } from "lucide-react";
 import { naira } from "@/lib/hotel";
 import type { Reservation } from "@/lib/booking/types";
@@ -362,6 +363,31 @@ export default function AdminReservations() {
                           <Loader2 className="h-4 w-4 animate-spin text-[var(--accent)]" />
                         ) : (
                           <>
+                            {r.status === "pending" && r.paymentStatus !== "successful" && (
+                              <button
+                                onClick={() => {
+                                  const due = Math.round(r.pricing.grandTotal / 100);
+                                  const answer = window.prompt(
+                                    `Record payment received — amount in ₦ (amount due: ₦${due.toLocaleString("en-NG")}):`,
+                                    String(due)
+                                  );
+                                  if (answer === null) return;
+                                  const amt = Number(answer.replace(/[^\d.]/g, ""));
+                                  if (!amt || amt <= 0) {
+                                    setMessage("Enter a valid amount in ₦.");
+                                    return;
+                                  }
+                                  act(r.id, {
+                                    action: "confirm_payment",
+                                    amountKobo: Math.round(amt * 100),
+                                  });
+                                }}
+                                title="Record payment & confirm reservation"
+                                className="p-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:text-emerald-300 transition-colors"
+                              >
+                                <BadgeCheck className="h-3.5 w-3.5" />
+                              </button>
+                            )}
                             {r.status === "confirmed" && (
                               <button
                                 onClick={() => act(r.id, { action: "transition", status: "checked_in" })}

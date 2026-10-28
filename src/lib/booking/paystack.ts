@@ -30,16 +30,11 @@ export async function initiatePayment(params: {
 }): Promise<InitiatePaymentResult> {
   const secretKey = paystackSecretKey();
   if (!secretKey) {
-    // Seamless fallback when secret key is not yet configured in environment:
-    // Routes directly to callbackUrl so user is never stuck
-    const fallbackUrl = params.callbackUrl.includes("?")
-      ? `${params.callbackUrl}&paid=1&ps=demo`
-      : `${params.callbackUrl}?paid=1&ps=demo`;
-    return {
-      authorizationUrl: fallbackUrl,
-      accessCode: `BHS_${Date.now()}`,
-      reference: params.reference,
-    };
+    // NEVER fake a successful payment flow. Without a configured gateway the
+    // caller must route the guest to bank transfer / front-desk settlement.
+    throw new Error(
+      "PAYMENT_NOT_CONFIGURED: Online payment is not configured. Please pay by bank transfer or at the front desk."
+    );
   }
 
   const res = await fetch(`${PAYSTACK_BASE}/transaction/initialize`, {
@@ -90,15 +85,10 @@ export type PaystackVerification = {
 export async function verifyTransaction(reference: string): Promise<PaystackVerification> {
   const secretKey = paystackSecretKey();
   if (!secretKey) {
-    return {
-      status: "success",
-      amount: 0,
-      currency: "NGN",
-      reference,
-      channel: "front_desk_settlement",
-      paidAt: new Date().toISOString(),
-      paid: true,
-    };
+    // FAIL CLOSED: never report a payment as verified without the gateway.
+    throw new Error(
+      "PAYMENT_NOT_CONFIGURED: Payment verification is not configured — cannot confirm this payment."
+    );
   }
 
   const res = await fetch(`${PAYSTACK_BASE}/transaction/verify/${encodeURIComponent(reference)}`, {

@@ -1,4 +1,4 @@
-import { initiatePayment } from "@/lib/booking/paystack";
+import { initiatePayment, paystackSecretKey } from "@/lib/booking/paystack";
 import { getReservationById, isRoomAvailable, refreshHoldForReservation } from "@/lib/booking/engine";
 import { serverDb, COL } from "@/lib/booking/server";
 import { jsonError, jsonOk } from "@/lib/booking/auth";
@@ -17,6 +17,16 @@ export async function POST(req: Request) {
     return jsonError(
       "PAYSTACK_DISABLED",
       "Online Paystack payment is currently paused across the hotel. Please complete your reservation via Direct Bank Transfer or settle at the front desk.",
+      403
+    );
+  }
+
+  // Hard gate: without a gateway key no payment can ever be taken or verified,
+  // so we refuse up-front instead of pretending to start a payment.
+  if (!paystackSecretKey()) {
+    return jsonError(
+      "PAYMENT_NOT_CONFIGURED",
+      "Online card payment is not configured yet. Please complete your reservation via Direct Bank Transfer or settle at the front desk — your room stays held while our team confirms your payment.",
       403
     );
   }
