@@ -148,12 +148,12 @@ export function Header() {
             <Link href="/" onClick={() => setOpen(false)} className="flex items-center group shrink-0" aria-label="Banky Hotel & Suites Home">
               <span className="shrink-0 flex items-center justify-center bg-transparent p-0 h-12 sm:h-14">
                 <Image
-                  src="/images/banky-desktop-logo.png"
-                  alt="Banky Hotel & Suites"
-                  width={150}
-                  height={56}
-                  referrerPolicy="no-referrer"
-                  className="h-full w-auto object-contain bg-transparent select-none drop-shadow-sm"
+                src="/images/Banky_Hotel___Suites_Main_Logo_plus-1793190474245.png"
+                alt="Banky Hotel & Suites"
+                width={150}
+                height={56}
+                referrerPolicy="no-referrer"
+                className="h-full w-auto object-contain bg-transparent select-none drop-shadow-sm"
                 />
               </span>
             </Link>
