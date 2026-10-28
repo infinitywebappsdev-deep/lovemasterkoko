@@ -55,11 +55,18 @@ export default function AdminOverview() {
   const { paystackEnabled, isUpdating: isUpdatingPayment, togglePaystack } = usePaymentSettings();
 
   useEffect(() => {
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 5000);
     adminFetch("/api/admin/stats")
       .then((r) => r.json())
       .then((j) => (j.ok ? setStats(j.data) : null))
       .catch(() => {})
-      .finally(() => setLoading(false));
+      .finally(() => {
+        clearTimeout(timeout);
+        setLoading(false);
+      });
+    return () => clearTimeout(timeout);
   }, []);
 
   const statusStyles: Record<string, string> = {
