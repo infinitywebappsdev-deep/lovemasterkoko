@@ -79,7 +79,7 @@ export function Header() {
       <div className={`transition-all duration-[400ms] ease-in-out ${scrolled ? "bg-[#0a2777]/40 backdrop-blur-md shadow-[0_4px_12px_rgba(0,0,0,0.18)]" : "bg-transparent"}`}>
         <div className={`container-x flex items-center justify-between transition-all duration-[400ms] ease-in-out ${scrolled ? "py-0.5" : "py-0.5 sm:py-1"}`}>
           {/* Left — Hamburger on mobile & tablet; Phone on desktop */}
-          <div className="flex-1 flex items-center justify-start">
+          <div className="flex items-center justify-start">
             {/* Mobile & Tablet: Hamburger menu icon at top-left with no border and no background */}
             <button
               onClick={() => setOpen(!open)}
@@ -99,23 +99,8 @@ export function Header() {
             </a>
           </div>
 
-          {/* Center — Header logo using banky-desktop-logo in public/images/ exactly as it is */}
-          <Link href="/" className="flex items-center group shrink-0" aria-label="Banky Hotel & Suites Home">
-            <span className="shrink-0 flex items-center justify-center w-auto h-[54px] sm:h-[64px] lg:h-[72px] xl:h-[78px] bg-transparent border-none p-0 transition-all duration-[400ms] ease-in-out group-hover:scale-105">
-              <Image
-                src="/images/banky-desktop-logo.png"
-                alt="Banky Hotel & Suites"
-                width={180}
-                height={78}
-                priority
-                referrerPolicy="no-referrer"
-                className="h-full w-auto max-w-[130px] sm:max-w-[155px] lg:max-w-[180px] object-contain bg-transparent select-none drop-shadow-sm"
-              />
-            </span>
-          </Link>
-
           {/* Right — Day/Night toggle on mobile & tablet; Reserve + Day/Night + Menu on desktop */}
-          <div className="flex-1 flex items-center justify-end gap-2 sm:gap-3">
+          <div className="flex items-center justify-end gap-2 sm:gap-3">
             {/* Mobile & Tablet Mode: Day or Night toggle button at the top-right */}
             <button
               suppressHydrationWarning
