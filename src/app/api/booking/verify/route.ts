@@ -1,4 +1,4 @@
-import { verifyTransaction } from "@/lib/booking/paystack";
+import { verifyTransaction, paystackSecretKey } from "@/lib/booking/paystack";
 import {
   verifyAndConfirmPayment,
   getReservationByReference,
@@ -79,6 +79,15 @@ export async function POST(req: Request) {
       "PAYMENT_PENDING",
       "No pending payment found for this reference. If you completed payment, wait a moment and try again.",
       202,
+    );
+  }
+
+  // Fail closed: without a gateway key we can NEVER claim a payment is verified.
+  if (!paystackSecretKey()) {
+    return jsonError(
+      "PAYMENT_NOT_CONFIGURED",
+      "Payment verification is not configured for this hotel yet. Your reservation stays on hold — please contact the front desk to complete payment and confirmation.",
+      503
     );
   }
 

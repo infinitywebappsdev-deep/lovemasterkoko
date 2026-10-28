@@ -385,17 +385,47 @@ export default function BookingConfirmationPage() {
           {state === "confirmed" && (
             <div className="space-y-6">
               {/* Quick Action Bar for Instant PDF Itinerary Download */}
-              <div className="p-4 sm:p-5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm print-hide">
+              <div
+                className={`p-4 sm:p-5 rounded-2xl border flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm print-hide ${
+                  isWhatsApp || isBankTransfer
+                    ? "bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800/60"
+                    : "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800/60"
+                }`}
+              >
                 <div className="flex items-center gap-3.5 text-left">
-                  <div className="h-10 w-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm">
-                    <CheckCircle2 className="h-6 w-6" />
+                  <div
+                    className={`h-10 w-10 rounded-xl text-white flex items-center justify-center shrink-0 shadow-sm ${
+                      isWhatsApp || isBankTransfer ? "bg-amber-500" : "bg-emerald-600"
+                    }`}
+                  >
+                    {isWhatsApp || isBankTransfer ? (
+                      <Info className="h-6 w-6" />
+                    ) : (
+                      <CheckCircle2 className="h-6 w-6" />
+                    )}
                   </div>
                   <div>
-                    <h3 className="text-sm sm:text-base font-semibold text-emerald-950 dark:text-emerald-100">
-                      Payment &amp; Stay Verified
+                    <h3
+                      className={`text-sm sm:text-base font-semibold ${
+                        isWhatsApp || isBankTransfer
+                          ? "text-amber-950 dark:text-amber-100"
+                          : "text-emerald-950 dark:text-emerald-100"
+                      }`}
+                    >
+                      {isWhatsApp || isBankTransfer
+                        ? "Hold Secured — Awaiting Payment Confirmation"
+                        : "Payment & Stay Verified"}
                     </h3>
-                    <p className="text-xs text-emerald-700 dark:text-emerald-300">
-                      Save or print your official guest itinerary for effortless check-in upon arrival.
+                    <p
+                      className={`text-xs ${
+                        isWhatsApp || isBankTransfer
+                          ? "text-amber-700 dark:text-amber-300"
+                          : "text-emerald-700 dark:text-emerald-300"
+                      }`}
+                    >
+                      {isWhatsApp || isBankTransfer
+                        ? "Your room is held. Our staff will confirm your payment and send final confirmation shortly — keep your reference ready."
+                        : "Save or print your official guest itinerary for effortless check-in upon arrival."}
                     </p>
                   </div>
                 </div>

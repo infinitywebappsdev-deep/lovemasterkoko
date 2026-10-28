@@ -1246,6 +1246,106 @@ export async function verifyAndConfirmPayment(input: VerifyPaymentInput): Promis
   }
 }
 
+/**
+ * Staff-recorded manual settlement (bank transfer, cash, POS, front desk).
+ * Records the payment AND confirms the reservation atomically — the full
+ * amount due must be received before the room becomes fully reserved.
+ * Reuses verifyAndConfirmPayment's capacity re-check, hold release,
+ * idempotency and audit trail, then adds a staff-attributed audit entry.
+ */
+export async function confirmManualPayment(input: {
+  reservationId: string;
+  amountPaidKobo?: number;
+  channel?: string;
+  actor: { uid: string; role: string };
+}): Promise<
+  ApiResult<{
+    status: ReservationStatus;
+    paymentStatus: string;
+    amountPaid: number;
+    balanceDue: number;
+  }>
+> {
+  const existing = await getReservationById(input.reservationId);
+  if (!existing) {
+    return { ok: false, error: "RESERVATION_NOT_FOUND", message: "Reservation not found." };
+  }
+  if (existing.status === "cancelled") {
+    return {
+      ok: false,
+      error: "INVALID_BOOKING_STATE",
+      message: "Cannot record payment for a cancelled reservation.",
+    };
+  }
+  // Idempotent: already paid & confirmed
+  if (existing.status === "confirmed" && existing.paymentStatus === "successful") {
+    return {
+      ok: true,
+      data: {
+        status: existing.status,
+        paymentStatus: existing.paymentStatus,
+        amountPaid: existing.pricing.amountPaid,
+        balanceDue: existing.pricing.balanceDue,
+      },
+    };
+  }
+
+  const expected = existing.pricing.grandTotal || existing.pricing.depositDue;
+  const amount = input.amountPaidKobo ?? expected;
+  const naira = (kobo: number) => `₦${Math.round(kobo / 100).toLocaleString("en-NG")}`;
+
+  if (!Number.isFinite(amount) || amount <= 0) {
+    return { ok: false, error: "VALIDATION_ERROR", message: "Enter the amount received." };
+  }
+  if (amount < expected) {
+    return {
+      ok: false,
+      error: "PAYMENT_REQUIRED",
+      message: `Full payment of ${naira(expected)} must be received before this reservation can be confirmed. Recorded so far: ${naira(amount)}.`,
+    };
+  }
+
+  const now = new Date().toISOString();
+  const channel = input.channel || "bank_transfer";
+  const result = await verifyAndConfirmPayment({
+    reservationId: input.reservationId,
+    paystackReference: `MANUAL-${channel.toUpperCase().replace(/[^A-Z0-9]+/g, "")}-${Date.now().toString(36).toUpperCase()}`,
+    amountPaid: amount,
+    channel,
+    paidAt: now,
+  });
+  if (!result.ok) return result;
+
+  // Staff-attributed audit entry (verifyAndConfirmPayment logs as system)
+  try {
+    await db()
+      .collection(COL.auditLogs)
+      .add({
+        actor: input.actor.uid,
+        actorType: "staff",
+        role: input.actor.role,
+        action: "manual_payment_recorded",
+        entity: "reservation",
+        entityId: input.reservationId,
+        newValue: { status: "confirmed", paymentStatus: "successful", amount, channel },
+        createdAt: now,
+      });
+  } catch (e) {
+    console.warn("manual payment audit write failed:", e);
+  }
+
+  const updated = await getReservationById(input.reservationId);
+  return {
+    ok: true,
+    data: {
+      status: updated?.status ?? "confirmed",
+      paymentStatus: updated?.paymentStatus ?? "successful",
+      amountPaid: updated?.pricing.amountPaid ?? amount,
+      balanceDue: updated?.pricing.balanceDue ?? 0,
+    },
+  };
+}
+
 /** Mark payment failed (from webhook) and release inventory. */
 export async function markPaymentFailed(reservationId: string, reason: string): Promise<ApiResult<null>> {
   const now = new Date().toISOString();
@@ -1287,6 +1387,17 @@ export async function transitionReservation(
       const r = doc.data() as Reservation;
       if (!canTransition(r.status, to)) {
         throw new BookingError("INVALID_BOOKING_STATE", `Cannot move a reservation from ${r.status} to ${to}.`);
+      }
+
+      // Payment gate: a reservation may only become "confirmed" once its
+      // payment is actually recorded (gateway-verified online, or a staff
+      // settlement via confirm_payment). Rooms are never fully reserved on
+      // an unverified payment.
+      if (to === "confirmed" && r.status !== "confirmed" && r.paymentStatus !== "successful") {
+        throw new BookingError(
+          "PAYMENT_REQUIRED",
+          "Payment has not been confirmed for this reservation. Record the settlement with 'Confirm payment' before confirming the booking.",
+        );
       }
 
       // If transitioning to confirmed, re-verify inventory so manual admin

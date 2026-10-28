@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useMemo, useCallback } from "react";
+import { DEFAULT_BRAND_IDENTITY } from "@/lib/brand-identity";
 import {
   Upload,
   CheckCircle2,
@@ -61,6 +62,19 @@ interface UploadedFile {
   url: string;
   roomMatch?: string;
 }
+
+  // Build logo config from current brand identity (updated on upload)
+  const getLogoConfig = () => {
+    const catalog = DEFAULT_BRAND_IDENTITY?.assetCatalog || [];
+    return catalog.map((item, i) => ({
+      url: item.url,
+      filename: item.filename,
+      label: item.label,
+      description: item.description,
+      kind: item.kind,
+      active: item.active,
+    }));
+  }
 
 export default function AdminMediaPage() {
   // Navigation tabs: "photography" | "videos" | "audit"
@@ -915,109 +929,39 @@ export default function AdminMediaPage() {
               <span className="text-xs text-stone-400 font-mono">Original Brand Marks</span>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-3">
-              {/* Logo 1 */}
-              <div className="border border-stone-200 dark:border-stone-700 rounded-2xl p-4 bg-stone-50/50 dark:bg-stone-900/40 space-y-3">
+            {getLogoConfig().map((logo, index) => (
+              <div key={logo.filename} className="border border-stone-200 dark:border-stone-700 rounded-2xl p-4 bg-stone-50/50 dark:bg-stone-900/40 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-semibold text-stone-800 dark:text-stone-200">
-                    Full Brand Logo
+                    {logo.label}
                   </span>
                   <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-300 font-medium">
-                    Color + Text
+                    {logo.kind === "full" ? "Color + Text" : logo.kind === "mark" ? "Color Icon" : "Monochrome"}
                   </span>
                 </div>
                 <div className="aspect-[16/10] rounded-xl overflow-hidden bg-white border border-stone-200 p-3 flex items-center justify-center relative">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={`/images/Banky Hotel & Suites Main Logo plus..png?t=${refreshKey}`}
-                    alt="Banky Full Brand Logo"
+                    src={logo.url}
+                    alt={logo.label}
                     loading="lazy"
                     decoding="async"
                     className="relative z-10 max-h-full max-w-full object-contain"
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src = `/images/banky-desktop-logo.png?t=${refreshKey}`;
+                      (e.target as HTMLImageElement).src = "/images/banky-desktop-logo.png?t=" + refreshKey;
                     }}
                   />
                 </div>
                 <div className="space-y-1">
                   <p className="text-[11px] font-mono text-stone-700 dark:text-stone-300 font-medium truncate">
-                    Banky Hotel &amp; Suites Main Logo plus..png
+                    {logo.filename}
                   </p>
                   <p className="text-[10px] text-stone-500">
-                    Towers + crescent arch + &quot;BANKY HOTEL &amp; SUITES&quot;
+                    {logo.description}
                   </p>
                 </div>
               </div>
-
-              {/* Logo 2 */}
-              <div className="border border-stone-200 dark:border-stone-700 rounded-2xl p-4 bg-stone-50/50 dark:bg-stone-900/40 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-stone-800 dark:text-stone-200">
-                    Architectural Mark
-                  </span>
-                  <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 font-medium">
-                    Color Icon
-                  </span>
-                </div>
-                <div className="aspect-[16/10] rounded-xl overflow-hidden bg-white border border-stone-200 p-3 flex items-center justify-center relative">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={`/images/Banky Hotel & Suites Main Logo plus.png?t=${refreshKey}`}
-                    alt="Banky 3-Tower Icon Mark"
-                    loading="lazy"
-                    decoding="async"
-                    className="relative z-10 max-h-full max-w-full object-contain"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = `/images/Banky Hotel & Suites Main Logo 1.png?t=${refreshKey}`;
-                    }}
-                  />
-                </div>
-                <div className="space-y-1">
-                  <p className="text-[11px] font-mono text-stone-700 dark:text-stone-300 font-medium truncate">
-                    Banky Hotel &amp; Suites Main Logo plus.png
-                  </p>
-                  <p className="text-[10px] text-stone-500">
-                    Royal blue 3-tower skyline with golden horizon crescent
-                  </p>
-                </div>
-              </div>
-
-              {/* Logo 3 */}
-              <div className="border border-stone-200 dark:border-stone-700 rounded-2xl p-4 bg-stone-50/50 dark:bg-stone-900/40 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-stone-800 dark:text-stone-200">
-                    White Silhouette Mark
-                  </span>
-                  <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-stone-900 dark:bg-stone-800 text-stone-100 font-medium">
-                    Monochrome
-                  </span>
-                </div>
-                <div className="aspect-[16/10] rounded-xl overflow-hidden bg-[#14120f] border border-stone-800 p-3 flex items-center justify-center relative">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={`/images/Banky Hotel & Suites Main Logo 2 plus..png?t=${refreshKey}`}
-                    alt="Banky White Silhouette Logo"
-                    loading="lazy"
-                    decoding="async"
-                    className="relative z-10 max-h-full max-w-full object-contain"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = `/images/Banky Hotel & Suites Main Logo 2 plus.png?t=${refreshKey}`;
-                    }}
-                  />
-                </div>
-                <div className="space-y-1">
-                  <p className="text-[11px] font-mono text-stone-700 dark:text-stone-300 font-medium truncate">
-                    Banky Hotel &amp; Suites Main Logo 2 plus..png
-                  </p>
-                  <p className="text-[10px] text-stone-500">
-                    Pure white silhouette mark for dark backdrops &amp; footer
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Recent Uploads Table */}
+            ))/* Recent Uploads Table */}
           {recentUploads.length > 0 && (
             <div className="bg-white dark:bg-[#201d19] border border-[#ece6dd] dark:border-stone-800 rounded-3xl p-6 shadow-sm">
               <h3 className="font-display text-lg text-stone-900 dark:text-white mb-4">

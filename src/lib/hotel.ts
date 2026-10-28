@@ -3,6 +3,11 @@ export const HOTEL = {
   tagline: "Quiet Luxury in the Heart of Ado-Ekiti",
   address: "Km 5 NDLEA Junction Ado-Iworoko Road, Adebayo, Ado-Ekiti, Ekiti State, Nigeria",
   phone: "+2349035879708",
+  phones: [
+    "+2349035879708",
+    "+17742959237",
+    "+2347015079484"
+  ],
   whatsapp: "2349035879708",
   email: "reservations@bankyhotelandsuites.com",
   website: "https://bankyhotelandsuites.com",
