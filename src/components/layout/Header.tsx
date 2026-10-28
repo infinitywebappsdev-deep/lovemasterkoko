@@ -5,7 +5,8 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Menu, X, Calendar, Sun, Moon } from "lucide-react";
 import { PhoneSolidIcon } from "@/components/icons/PhoneSolidIcon";
-import { HOTEL } from "@/lib/hotel";
+import { HOTEL, PHONE_NUMBERS } from "@/lib/hotel";
+import { DEFAULT_BRAND_IDENTITY } from "@/lib/brand-identity";
 import { useTheme } from "@/lib/ThemeContext";
 
 const NAV = [
@@ -97,13 +98,11 @@ export function Header() {
             <PhoneSolidIcon className="h-3.5 w-3.5" style={{ color: "var(--accent)" }} />
             <span>+234 903 587 9708</span>
           </a>
-        </div>
-
-        {/* Center — Header logo */}
+        </div>          {/* Center — Header logo uses centralized brand-identity.ts config */}
         <Link href="/" className="flex items-center group shrink-0" aria-label="Banky Hotel & Suites Home">
           <span className="shrink-0 flex items-center justify-center w-auto h-[54px] sm:h-[64px] lg:h-[72px] xl:h-[78px] bg-transparent border-none p-0 transition-all duration-[400ms] ease-in-out group-hover:scale-105">
             <Image
-              src="/images/Banky_Hotel___Suites_Main_Logo_plus-1793190474245.png"
+              src={DEFAULT_BRAND_IDENTITY.activeLogoUrl}
               alt="Banky Hotel & Suites"
               width={180}
               height={78}
@@ -163,7 +162,7 @@ export function Header() {
             <Link href="/" onClick={() => setOpen(false)} className="flex items-center group shrink-0" aria-label="Banky Hotel & Suites Home">
               <span className="shrink-0 flex items-center justify-center bg-transparent p-0 h-12 sm:h-14">
                 <Image
-                src="/images/Banky_Hotel___Suites_Main_Logo_plus-1793190474245.png"
+                src={DEFAULT_BRAND_IDENTITY.activeLogoUrl}
                 alt="Banky Hotel & Suites"
                 width={150}
                 height={56}
