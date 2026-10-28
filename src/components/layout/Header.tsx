@@ -79,7 +79,7 @@ export function Header() {
       <div className={`transition-all duration-[400ms] ease-in-out ${scrolled ? "bg-[#0a2777]/40 backdrop-blur-md shadow-[0_4px_12px_rgba(0,0,0,0.18)]" : "bg-transparent"}`}>
         <div className={`container-x flex items-center justify-between transition-all duration-[400ms] ease-in-out ${scrolled ? "py-0.5" : "py-0.5 sm:py-1"}`}>
           {/* Left — Hamburger on mobile & tablet; Phone on desktop */}
-          <div className="flex items-center justify-start">
+          <div className="flex-1 flex items-center justify-start">
             {/* Mobile & Tablet: Hamburger menu icon at top-left with no border and no background */}
             <button
               onClick={() => setOpen(!open)}
@@ -89,18 +89,33 @@ export function Header() {
               {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
 
-            {/* Desktop: Phone number */}
-            <a
-              href={`tel:${HOTEL.phone}`}
-              className={`hidden lg:inline-flex items-center gap-2 font-condensed text-[0.76rem] tracking-[0.16em] uppercase font-medium py-1 px-2.5 transition-colors duration-[400ms] ease-in-out ${scrolled ? "text-white/90 hover:text-white" : "text-white/90 hover:text-white"}`}
-            >
-              <PhoneSolidIcon className="h-3.5 w-3.5" style={{ color: "var(--accent)" }} />
-              <span>+234 903 587 9708</span>
-            </a>
-          </div>
+          {/* Desktop: Phone number */}
+          <a
+            href={`tel:${HOTEL.phone}`}
+            className={`hidden lg:inline-flex items-center gap-2 font-condensed text-[0.76rem] tracking-[0.16em] uppercase font-medium py-1 px-2.5 transition-colors duration-[400ms] ease-in-out ${scrolled ? "text-white/90 hover:text-white" : "text-white/90 hover:text-white"}`}
+          >
+            <PhoneSolidIcon className="h-3.5 w-3.5" style={{ color: "var(--accent)" }} />
+            <span>+234 903 587 9708</span>
+          </a>
+        </div>
 
-          {/* Right — Day/Night toggle on mobile & tablet; Reserve + Day/Night + Menu on desktop */}
-          <div className="flex items-center justify-end gap-2 sm:gap-3">
+        {/* Center — Header logo */}
+        <Link href="/" className="flex items-center group shrink-0" aria-label="Banky Hotel & Suites Home">
+          <span className="shrink-0 flex items-center justify-center w-auto h-[54px] sm:h-[64px] lg:h-[72px] xl:h-[78px] bg-transparent border-none p-0 transition-all duration-[400ms] ease-in-out group-hover:scale-105">
+            <Image
+              src="/images/Banky_Hotel___Suites_Main_Logo_plus-1793190474245.png"
+              alt="Banky Hotel & Suites"
+              width={180}
+              height={78}
+              priority
+              referrerPolicy="no-referrer"
+              className="h-full w-auto max-w-[130px] sm:max-w-[155px] lg:max-w-[180px] object-contain bg-transparent select-none drop-shadow-sm"
+            />
+          </span>
+        </Link>
+
+        {/* Right — Day/Night toggle on mobile & tablet; Reserve + Day/Night + Menu on desktop */}
+        <div className="flex items-center justify-end gap-2 sm:gap-3">
             {/* Mobile & Tablet Mode: Day or Night toggle button at the top-right */}
             <button
               suppressHydrationWarning
