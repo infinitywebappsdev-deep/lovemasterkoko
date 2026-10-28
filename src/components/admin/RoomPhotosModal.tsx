@@ -35,44 +35,21 @@ export function RoomPhotosModal({
 
   if (!isOpen || !room) return null;
 
-  // Build the list of images for this room
+  // Build the list of images for this room - use room.images as source of truth
   let initialImages: RoomPhotoItem[] = [];
-  if (room.slug === "deluxe") {
-    initialImages = [
-      { url: "/images/DELUXE MAIN1.jpeg", name: "DELUXE MAIN1.jpeg", label: "MAIN1" },
-      { url: "/images/DELUXE MAIN2.jpeg", name: "DELUXE MAIN2.jpeg", label: "MAIN2" },
-      { url: "/images/deluxe-main-1.jpg", name: "deluxe-main-1.jpg", label: "SLOT 3" },
-      { url: "/images/deluxe.jpg", name: "deluxe.jpg", label: "HERO" },
-    ];
-  } else if (room.slug === "executive") {
-    initialImages = [
-      { url: "/images/EXECUTIVE Main.jpeg", name: "EXECUTIVE Main.jpeg", label: "MAIN1" },
-      { url: "/images/EXECUTIVE MAIN2.jpeg", name: "EXECUTIVE MAIN2.jpeg", label: "MAIN2" },
-      { url: "/images/executive.jpg", name: "executive.jpg", label: "HERO" },
-    ];
-  } else if (room.slug === "standard-plus") {
-    initialImages = [
-      { url: "/images/Standard PLUS.jpeg", name: "Standard PLUS.jpeg", label: "MAIN1" },
-      { url: "/images/STANDARD PLUS MAIN .jpeg", name: "STANDARD PLUS MAIN .jpeg", label: "MAIN2" },
-      { url: "/images/Standard Plus.jpg", name: "Standard Plus.jpg", label: "SLOT 3" },
-    ];
-  } else if (room.slug === "standard") {
-    initialImages = [
-      { url: "/images/Standard room.jpg", name: "Standard room.jpg", label: "MAIN1" },
-      { url: "/images/standard.jpg", name: "standard.jpg", label: "HERO" },
-      { url: "/images/Standard roomx.jpg", name: "Standard roomx.jpg", label: "SLOT 2" },
-    ];
-  } else if (room.images && room.images.length > 0) {
-    initialImages = room.images.map((img, i) => {
-      const cleanName = img.replace("/images/", "");
-      return {
-        url: img,
-        name: cleanName,
-        label: i === 0 ? "HERO" : `SLOT ${i + 1}`,
-      };
-    });
+  if (room.images && room.images.length > 0) {
+    initialImages = room.images
+      .filter(Boolean)
+      .map((img, i) => {
+        const cleanName = img.replace("/images/", "").split("?")[0];
+        return {
+          url: img,
+          name: cleanName,
+          label: i === 0 ? "HERO" : `SLOT ${i + 1}`,
+        };
+      });
   } else if (room.image) {
-    const cleanName = room.image.replace("/images/", "");
+    const cleanName = room.image.replace("/images/", "").split("?")[0];
     initialImages = [
       {
         url: room.image,
