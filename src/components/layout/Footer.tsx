@@ -72,10 +72,12 @@ export function Footer() {
           <div className="lg:col-span-4 space-y-5">
             <h4 className="font-condensed text-xs uppercase tracking-[0.25em] font-medium mb-6" style={{ color: "var(--accent-light)" }}>Contact</h4>
             <div className="space-y-4">
-              <a href={`tel:${HOTEL.phone}`} className="flex items-start gap-3 text-sm text-stone-200 hover:text-white font-normal transition-colors">
-                <PhoneSolidIcon className="h-4 w-4 mt-0.5 shrink-0" style={{ color: "var(--accent-light)" }} />
-                <span>{HOTEL.phone}</span>
-              </a>
+              {HOTEL.phones.map((phone) => (
+                <a key={phone} href={`tel:${phone}`} className="flex items-start gap-3 text-sm text-stone-200 hover:text-white font-normal transition-colors">
+                  <PhoneSolidIcon className="h-4 w-4 mt-0.5 shrink-0" style={{ color: "var(--accent-light)" }} />
+                  <span>{phone}</span>
+                </a>
+              ))}
               <a href={`mailto:${HOTEL.email}`} className="flex items-start gap-3 text-sm text-stone-200 hover:text-white font-normal transition-colors">
                 <Mail className="h-4 w-4 mt-0.5 shrink-0" style={{ color: "var(--accent-light)" }} />
                 <span className="break-all">{HOTEL.email}</span>
