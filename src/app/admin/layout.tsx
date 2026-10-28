@@ -42,10 +42,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   // Track the Firebase staff session. `checking` stays true until Firebase has
   // restored any persisted session, so we never bounce a signed-in user.
-  useEffect(() => subscribeAdminUser((next) => {
-    setUser(next);
-    setChecking(false);
-  }), []);
+  useEffect(() => {
+    const unsubscribe = subscribeAdminUser((next) => {
+      setUser(next);
+      setChecking(false);
+    });
+    // Fallback timeout to prevent infinite loading if auth state doesn't resolve
+    const timeout = setTimeout(() => {
+      setChecking(false);
+    }, 3000);
+    return () => {
+      unsubscribe();
+      clearTimeout(timeout);
+    };
+  }, []);
 
   // Server-side APIs already reject anonymous callers; this gate just keeps
   // the UI out of sight until the staff member signs in.
