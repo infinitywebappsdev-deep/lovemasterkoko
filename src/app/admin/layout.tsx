@@ -16,6 +16,7 @@ import {
   Film,
   Loader2,
   LogOut,
+  ScanLine,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { subscribeAdminUser, adminSignOut } from "@/lib/admin-auth";
@@ -27,6 +28,7 @@ const NAV = [
   { to: "/admin/transactions", label: "Transaction Audit", icon: ReceiptText },
   { to: "/admin/rooms", label: "Rooms", icon: BedDouble },
   { to: "/admin/media", label: "Room Photos & Media", icon: ImageIcon },
+  { to: "/admin/qr-codes", label: "QR Code Manager", icon: ScanLine },
   { to: "/admin/qr-orders", label: "Kitchen / Bar Orders", icon: BellRing },
   { to: "/admin/settings", label: "Payment & Settings", icon: Settings },
 ];

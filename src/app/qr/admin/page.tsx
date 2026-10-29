@@ -17,15 +17,17 @@ import {
   ShieldCheck,
   AlertTriangle,
   ChevronRight,
+  ChevronLeft,
   Sparkles,
   Printer,
   Sliders,
   Download,
 } from "lucide-react";
-import { QrOrder, MenuItem, OrderStatus } from "@/lib/qr-menu/types";
+import { QrOrder, MenuItem } from "@/lib/qr-menu/types";
 import {
   subscribeOrders,
   subscribeMenuItems,
+  subscribeOrderStats,
   updateOrderStatusInDb,
   toggleItemAvailabilityInDb,
   playOrderChime,
@@ -42,6 +44,15 @@ export default function QrAdminKitchenStation() {
   const [passcode, setPasscode] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authError, setAuthError] = useState("");
+
+  const [stats, setStats] = useState<{ pending: number; inProgress: number; fulfilled: number; totalRevenue: number; ordersToday: number }>({ pending: 0, inProgress: 0, fulfilled: 0, totalRevenue: 0, ordersToday: 0 });
+
+  // Live kitchen stats (updated in real-time via Firestore)
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    const unsub = subscribeOrderStats((s) => setStats({ pending: s.pending, inProgress: s.inProgress, fulfilled: s.fulfilled, totalRevenue: s.totalRevenue, ordersToday: s.ordersToday }));
+    return () => unsub();
+  }, [isAuthenticated]);
 
   const [activeTab, setActiveTab] = useState<"orders" | "stock">("orders");
   const [orders, setOrders] = useState<QrOrder[]>([]);
@@ -158,7 +169,7 @@ export default function QrAdminKitchenStation() {
         const itemsBreakdown = order.items
           .map(
             (item) =>
-              `${item.quantity}x ${item.title} (₦${item.price.toLocaleString("en-NG")})${
+              `${item.quantity}x ${item.title} (₦${item.priceAtOrder ? item.priceAtOrder.toLocaleString("en-NG") : formatNaira(item.subtotal)})${
                 item.notes ? ` [Note: ${item.notes}]` : ""
               }`
           )
@@ -322,6 +333,12 @@ export default function QrAdminKitchenStation() {
 
         {/* Station Navigation Tabs */}
         <div className="max-w-5xl mx-auto mt-3 flex items-center gap-2 border-t border-stone-800 pt-2">
+          <div className="flex items-center gap-3 text-[10px] font-mono text-stone-400 mr-2">
+            <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-amber-500" />{stats.pending} pending</span>
+            <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-blue-500" />{stats.inProgress} cooking</span>
+            <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />{stats.fulfilled} done</span>
+            <span className="flex items-center gap-1 ml-1 text-[#ffbf00]">{formatNaira(stats.totalRevenue)} today</span>
+          </div>
           <button
             onClick={() => setActiveTab("orders")}
             className={`px-4 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-2 transition-colors ${
@@ -425,11 +442,24 @@ export default function QrAdminKitchenStation() {
                                 <strong>{i.quantity}×</strong> {i.title}
                               </span>
                               <span className="text-stone-400 font-mono">
-                                {formatNaira(i.subtotal)}
+                                {formatNaira(i.priceAtOrder ? i.priceAtOrder : i.subtotal)}
                               </span>
                             </div>
                           ))}
                         </div>
+                        {/* Preparation Timeline */}
+                        {o.kitchenStartedAt && (
+                          <div className="flex items-center gap-3 text-[10px] text-stone-400 mb-2">
+                            <Clock className="h-3 w-3 text-blue-400" />
+                            <span>Kitchen started <span className="font-mono text-stone-500">{new Date(o.kitchenStartedAt).toLocaleTimeString("en-GB", { timeZone: "Africa/Lagos", hour: "2-digit", minute: "2-digit" })}</span></span>
+                          </div>
+                        )}
+                        {o.fulfilledAt && (
+                          <div className="flex items-center gap-3 text-[10px] text-stone-400 mb-2">
+                            <CheckCircle2 className="h-3 w-3 text-emerald-400" />
+                            <span>Delivered <span className="font-mono text-stone-500">{new Date(o.fulfilledAt).toLocaleTimeString("en-GB", { timeZone: "Africa/Lagos", hour: "2-digit", minute: "2-digit" })}</span></span>
+                          </div>
+                        )}
                       </div>
 
                       {/* Total & Action */}

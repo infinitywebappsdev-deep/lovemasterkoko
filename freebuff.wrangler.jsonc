@@ -6,7 +6,7 @@
   "compatibility_flags": [
     "nodejs_compat",
     "global_fetch_strictly_public",
-    "disable_ctx_exports"
+    "enable_ctx_exports"
   ],
   "assets": {
     "directory": "freebuff-sites-build/assets",

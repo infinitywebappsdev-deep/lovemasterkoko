@@ -304,21 +304,13 @@ function QrMenuContent() {
     setIsSubmitting(true);
 
     try {
-      const orderItems = Object.values(cart).map((ci) => {
-        const unit = ci.unitPrice || ci.item.price;
-        const addonsText = ci.selectedAddons && ci.selectedAddons.length > 0
-          ? ` (+${ci.selectedAddons.map((a) => a.name).join(", ")})`
-          : "";
-        return {
-          id: ci.item.id,
-          title: `${ci.item.title}${addonsText}`,
-          categoryName: ci.item.categoryName,
-          price: unit,
-          quantity: ci.quantity,
-          subtotal: unit * ci.quantity,
-          notes: ci.notes,
-        };
-      });
+      // Build line items with ID, quantity, and notes — prices are snapshotted
+      // server-side via submitGuestOrder so menu price changes never alter orders.
+      const orderLines = Object.values(cart).map((ci) => ({
+        id: ci.item.id,
+        quantity: ci.quantity,
+        notes: ci.notes,
+      }));
 
       const newOrder = await submitGuestOrder({
         roomOrTable: roomOrTable.trim(),
@@ -326,7 +318,7 @@ function QrMenuContent() {
         guestName: guestName.trim() || undefined,
         guestPhone: guestPhone.trim() || undefined,
         specialInstructions: specialInstructions.trim() || undefined,
-        items: orderItems,
+        items: orderLines,
         totalAmount,
         totalItems: totalItemsCount,
       });

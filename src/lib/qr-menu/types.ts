@@ -53,9 +53,19 @@ export interface ServiceRequest {
   paymentMethod?: string;
   createdAt: string;
   status: "pending" | "resolved";
-}
+}export type OrderStatus = "pending" | "in_progress" | "fulfilled" | "cancelled";
 
-export type OrderStatus = "pending" | "in_progress" | "fulfilled" | "cancelled";
+/** Timestamped snapshot of an ordered menu item, so menu price changes
+ *  never alter an already-placed order (FoodApp-style OrderItem pattern). */
+export interface OrderedItemSnapshot {
+  id: string;
+  title: string;
+  categoryName: string;
+  priceAtOrder: number;
+  quantity: number;
+  subtotal: number;
+  notes?: string;
+}
 
 export interface QrOrder {
   id: string;
@@ -65,18 +75,16 @@ export interface QrOrder {
   guestName?: string;
   guestPhone?: string;
   specialInstructions?: string;
-  items: {
-    id: string;
-    title: string;
-    categoryName: string;
-    price: number;
-    quantity: number;
-    subtotal: number;
-    notes?: string;
-  }[];
+  /** Snapshot of item details at the moment of order — prices never change after placement. */
+  items: OrderedItemSnapshot[];
   totalAmount: number;
   totalItems: number;
   status: OrderStatus;
+  /** When the guest submitted the order (Firestore Timestamp ISO). */
   createdAt: string;
+  /** When kitchen moved the order to in_progress, if applicable. */
+  kitchenStartedAt?: string;
+  /** When kitchen marked the order fulfilled, if applicable. */
+  fulfilledAt?: string;
   updatedAt?: string;
 }

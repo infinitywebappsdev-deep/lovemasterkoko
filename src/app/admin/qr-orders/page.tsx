@@ -256,10 +256,13 @@ export default function AdminQrOrdersPage() {
 
         const itemsBreakdown = order.items
           .map(
-            (item) =>
-              `${item.quantity}x ${item.title} (₦${item.price.toLocaleString("en-NG")})${
+            (item) => {
+              const snapshot = item as { priceAtOrder?: number };
+              const displayPrice = snapshot.priceAtOrder ?? item.subtotal;
+              return `${item.quantity}x ${item.title} (₦${displayPrice.toLocaleString("en-NG")})${
                 item.notes ? ` [Note: ${item.notes}]` : ""
-              }`
+              }`;
+            }
           )
           .join("; ");
 
