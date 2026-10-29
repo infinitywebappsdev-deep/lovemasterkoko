@@ -20,7 +20,7 @@ const config: Config = {
       animation: {
         rise: "rise 0.8s cubic-bezier(0.16,1,0.3,1) both",
         ticker: "ticker 36s linear infinite",
-        "fade-in": "fadeIn 0.6s ease-out",
+        "fade-in": "fadeIn 0.18s ease-out",
       },
       keyframes: {
         rise: { from: { opacity: "0", transform: "translateY(16px)" }, to: { opacity: "1", transform: "none" } },

@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
   },
+  // The Freebuff preview panel serves the dev server through this host.
+  // Without it Next.js blocks all dev resources (HMR websocket, dev overlay,
+  // source maps) as cross-origin, which leaves the page un-hydrated: every
+  // button — hamburger menu, theme toggle, calendar — renders but is dead.
+  allowedDevOrigins: ["pv-f7f0f1098227-248d2dc5-d27e-4c11-b9ba-1ea9b9e00e0d.style.dev"],
   experimental: {
     optimizePackageImports: ["lucide-react"],
     // Cap build workers — the sandbox enforces a 2 GB memory limit and

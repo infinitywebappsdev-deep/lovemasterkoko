@@ -1,0 +1,7 @@
+Package: linux-entra-sso
+Description-md5: 98296b2b88abbe7ae623e6aceb4f86fa
+Description-en: Entra ID SSO via Himmelblau or Microsoft Identity Broker on Linux
+ Local native host messaging connector for Firefox/Chromium/Chrome extension to
+ implement Entra ID SSO Conditional Access, connecting to the Identity Broker
+ via D-Bus. Supports the open source Himmelblau stack or the Microsoft stack.
+

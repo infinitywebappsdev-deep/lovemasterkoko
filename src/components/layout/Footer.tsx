@@ -78,10 +78,16 @@ export function Footer() {
                   <span>{phone}</span>
                 </a>
               ))}
-              <a href={`mailto:${HOTEL.email}`} className="flex items-start gap-3 text-sm text-stone-200 hover:text-white font-normal transition-colors">
-                <Mail className="h-4 w-4 mt-0.5 shrink-0" style={{ color: "var(--accent-light)" }} />
-                <span className="break-all">{HOTEL.email}</span>
-              </a>
+              <div className="space-y-2">
+                <a href={`mailto:${HOTEL.email}`} className="flex items-start gap-3 text-sm text-stone-200 hover:text-white font-normal transition-colors">
+                  <Mail className="h-4 w-4 mt-0.5 shrink-0" style={{ color: "var(--accent-light)" }} />
+                  <span className="break-all">{HOTEL.email}</span>
+                </a>
+                <a href="mailto:bankyhotelandsuitesintlltd@gmail.com" className="flex items-start gap-3 text-sm text-stone-200 hover:text-white font-normal transition-colors">
+                  <Mail className="h-4 w-4 mt-0.5 shrink-0" style={{ color: "var(--accent-light)" }} />
+                  <span className="break-all">bankyhotelandsuitesintlltd@gmail.com</span>
+                </a>
+              </div>
               <div className="flex items-start gap-3 text-sm text-stone-200 font-normal">
                 <MapPin className="h-4 w-4 mt-0.5 shrink-0" style={{ color: "var(--accent-light)" }} />
                 <span>{HOTEL.address}</span>
