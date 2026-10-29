@@ -8,7 +8,6 @@ import {
   RefreshCw,
   Sparkles,
   AlertCircle,
-  Moon,
   Ban,
   Check,
   Flame,
@@ -65,6 +64,17 @@ function nightsCount(inDate: string, outDate: string): number {
   const d1 = new Date(inDate + "T12:00:00Z").getTime();
   const d2 = new Date(outDate + "T12:00:00Z").getTime();
   return Math.round((d2 - d1) / 86400000);
+}
+
+/* "2026-11-15" → "Sat, 15 Nov" for the stay summary cards */
+function formatDayLabel(iso: string): string {
+  const d = new Date(iso + "T12:00:00");
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString("en-NG", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+  });
 }
 
 export function BookingCalendarDatePicker({
@@ -346,23 +356,23 @@ export function BookingCalendarDatePicker({
 
       const isDisabled = Boolean(isPast || (isSoldOut && !checkIn) || isBlockedBySoldOutNight);
 
-      // Background and border styling
-      let containerClasses = "relative h-14 sm:h-16 flex flex-col items-center justify-between p-1.5 transition-all text-xs select-none rounded-lg border ";
+      // Background and border styling — clean, borderless cells with pill selection
+      let containerClasses = "relative h-14 sm:h-16 flex flex-col items-center justify-between p-1.5 transition-all duration-150 text-xs select-none rounded-xl border border-transparent ";
 
       if (isCheckIn || isCheckOut) {
-        containerClasses += "bg-[var(--accent)] text-white border-[var(--accent)] shadow-md z-10 font-semibold ";
+        containerClasses += "bg-[var(--accent)] text-white border-transparent shadow-[0_8px_18px_-8px_var(--accent)] z-10 font-bold scale-[1.03] ";
       } else if (isInRange) {
-        containerClasses += "bg-[var(--accent)]/15 dark:bg-[var(--accent)]/25 text-stone-900 dark:text-stone-100 border-transparent rounded-none ";
+        containerClasses += "bg-[var(--accent)]/15 dark:bg-[var(--accent)]/25 text-stone-800 dark:text-stone-100 rounded-none ";
       } else if (isHoveredRange) {
-        containerClasses += "bg-[var(--accent)]/10 dark:bg-[var(--accent)]/20 text-stone-800 dark:text-stone-200 border-dashed border-[var(--accent)]/40 rounded-none ";
+        containerClasses += "bg-[var(--accent)]/10 dark:bg-[var(--accent)]/20 text-stone-700 dark:text-stone-200 rounded-none ";
       } else if (isPast) {
-        containerClasses += "bg-stone-50/50 dark:bg-stone-900/30 text-stone-300 dark:text-stone-600 border-transparent cursor-not-allowed ";
+        containerClasses += "bg-transparent text-stone-300 dark:text-stone-600 cursor-not-allowed ";
       } else if (isSoldOut) {
-        containerClasses += "bg-rose-50/60 dark:bg-rose-950/20 text-stone-400 dark:text-stone-500 border-rose-100/50 dark:border-rose-900/20 cursor-not-allowed ";
+        containerClasses += "bg-rose-50/70 dark:bg-rose-950/25 text-stone-400 dark:text-stone-500 cursor-not-allowed ";
       } else if (isLimited) {
-        containerClasses += "bg-amber-50/70 dark:bg-amber-950/20 text-stone-800 dark:text-stone-200 border-amber-200/60 dark:border-amber-800/40 hover:border-[var(--accent)] hover:bg-[var(--accent)]/5 cursor-pointer ";
+        containerClasses += "bg-amber-50 dark:bg-amber-950/30 text-stone-800 dark:text-stone-200 hover:bg-amber-100 dark:hover:bg-amber-950/50 hover:shadow-sm cursor-pointer ";
       } else {
-        containerClasses += "bg-white dark:bg-stone-900/60 text-stone-800 dark:text-stone-200 border-stone-100 dark:border-stone-800 hover:border-[var(--accent)] hover:bg-[var(--accent)]/5 cursor-pointer ";
+        containerClasses += "bg-stone-50/70 dark:bg-stone-900/50 text-stone-800 dark:text-stone-200 hover:bg-white dark:hover:bg-stone-800 hover:shadow-[0_6px_16px_-8px_rgba(0,0,0,0.3)] hover:-translate-y-0.5 cursor-pointer ";
       }
 
       cells.push(
@@ -398,7 +408,7 @@ export function BookingCalendarDatePicker({
           {/* Top row: day number and status badge */}
           <div className="w-full flex items-center justify-between">
             <span
-              className={`text-xs font-mono font-medium ${
+              className={`text-[13px] font-semibold tabular-nums ${
                 isCheckIn || isCheckOut
                   ? "text-white"
                   : isPast
@@ -414,12 +424,12 @@ export function BookingCalendarDatePicker({
             )}
 
             {isCheckIn && (
-              <span className="text-[9px] uppercase tracking-wider font-sans font-bold bg-white/20 px-1 rounded text-white">
+              <span className="text-[9px] uppercase tracking-wider font-bold bg-white/25 backdrop-blur-sm px-1.5 py-0.5 rounded-full text-white">
                 In
               </span>
             )}
             {isCheckOut && (
-              <span className="text-[9px] uppercase tracking-wider font-sans font-bold bg-white/20 px-1 rounded text-white">
+              <span className="text-[9px] uppercase tracking-wider font-bold bg-white/25 backdrop-blur-sm px-1.5 py-0.5 rounded-full text-white">
                 Out
               </span>
             )}
@@ -564,19 +574,21 @@ export function BookingCalendarDatePicker({
 
       {/* Month Navigation Header */}
       <div className="flex items-center justify-between border-b border-[#ece6dd]/80 dark:border-stone-800 pb-3">
-        <div className="flex items-center gap-2">
-          <CalendarIcon className="h-4 w-4 text-[var(--accent)]" />
+        <div className="flex items-center gap-2.5">
+          <span className="h-8 w-8 rounded-full bg-[var(--accent)]/10 flex items-center justify-center">
+            <CalendarIcon className="h-4 w-4 text-[var(--accent)]" />
+          </span>
           <h4 className="text-sm font-semibold uppercase tracking-wider text-stone-900 dark:text-white font-condensed">
             Select Travel Dates
           </h4>
         </div>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1.5">
           <button
             type="button"
             onClick={handlePrevMonth}
             disabled={isPrevDisabled}
-            className="p-1.5 rounded-lg border border-[#ece6dd] dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 disabled:opacity-30 disabled:pointer-events-none transition-colors"
+            className="h-9 w-9 rounded-full border border-[#ece6dd] dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 disabled:opacity-30 disabled:pointer-events-none transition-all flex items-center justify-center"
             aria-label="Previous month"
           >
             <ChevronLeft className="h-4 w-4" />
@@ -584,7 +596,7 @@ export function BookingCalendarDatePicker({
           <button
             type="button"
             onClick={handleNextMonth}
-            className="p-1.5 rounded-lg border border-[#ece6dd] dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 transition-colors"
+            className="h-9 w-9 rounded-full border border-[#ece6dd] dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 transition-all flex items-center justify-center"
             aria-label="Next month"
           >
             <ChevronRight className="h-4 w-4" />
@@ -597,7 +609,7 @@ export function BookingCalendarDatePicker({
         {/* Month 1 */}
         <div className="space-y-3">
           <div className="text-center">
-            <h5 className="font-display text-base font-medium text-stone-900 dark:text-white">
+            <h5 className="font-display text-lg font-medium tracking-tight text-stone-900 dark:text-white">
               {MONTH_NAMES[viewMonth]} {viewYear}
             </h5>
           </div>
@@ -623,7 +635,7 @@ export function BookingCalendarDatePicker({
         {/* Month 2 (Desktop / Tablet view) */}
         <div className="space-y-3 hidden md:block">
           <div className="text-center">
-            <h5 className="font-display text-base font-medium text-stone-900 dark:text-white">
+            <h5 className="font-display text-lg font-medium tracking-tight text-stone-900 dark:text-white">
               {MONTH_NAMES[nextMonth]} {nextMonthYear}
             </h5>
           </div>
@@ -648,23 +660,41 @@ export function BookingCalendarDatePicker({
       </div>
 
       {/* Stay Summary Bar & Interactive Status */}
-      <div className="p-4 rounded-xl border border-[#ece6dd] dark:border-stone-800 bg-white/80 dark:bg-stone-900/80 backdrop-blur-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-condensed uppercase tracking-wider text-stone-500 dark:text-stone-400">
-              Selected Stay:
+      <div className="p-4 rounded-2xl border border-[#ece6dd] dark:border-stone-800 bg-white/80 dark:bg-stone-900/80 backdrop-blur-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          {/* Check-in card */}
+          <div className="px-3.5 py-2 rounded-xl bg-stone-50 dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 min-w-[7.5rem]">
+            <span className="text-[10px] uppercase tracking-[0.15em] text-stone-400 dark:text-stone-500 block font-condensed font-semibold">
+              Check-in
             </span>
-            {totalNights > 0 && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--accent)]/15 text-[var(--accent)]">
-                <Moon className="h-3 w-3" /> {totalNights} night{totalNights > 1 ? "s" : ""}
-              </span>
-            )}
+            <span className={`text-sm font-semibold block mt-0.5 ${checkIn ? "text-stone-900 dark:text-white" : "text-stone-400 dark:text-stone-500 font-normal"}`}>
+              {checkIn ? formatDayLabel(checkIn) : "Add date"}
+            </span>
           </div>
 
-          <div className="text-sm font-medium text-stone-900 dark:text-white flex items-center gap-2">
-            <span>{checkIn ? checkIn : "Choose Check-in"}</span>
-            <span className="text-stone-400">→</span>
-            <span>{checkOut ? checkOut : checkIn ? "Choose Check-out" : "Choose Departure"}</span>
+          {/* Nights pill */}
+          <div className="flex flex-col items-center gap-1">
+            <span className="h-px w-6 sm:w-10 bg-stone-200 dark:bg-stone-700" />
+            <span
+              className={`text-[10px] uppercase font-condensed tracking-wider font-bold px-2 py-1 rounded-full whitespace-nowrap ${
+                totalNights > 0
+                  ? "bg-[var(--accent)] text-white shadow-[0_6px_14px_-8px_var(--accent)]"
+                  : "bg-stone-100 dark:bg-stone-800 text-stone-400"
+              }`}
+            >
+              {totalNights > 0 ? `${totalNights} nt${totalNights > 1 ? "s" : ""}` : "—"}
+            </span>
+            <span className="h-px w-6 sm:w-10 bg-stone-200 dark:bg-stone-700" />
+          </div>
+
+          {/* Check-out card */}
+          <div className="px-3.5 py-2 rounded-xl bg-stone-50 dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 min-w-[7.5rem]">
+            <span className="text-[10px] uppercase tracking-[0.15em] text-stone-400 dark:text-stone-500 block font-condensed font-semibold">
+              Check-out
+            </span>
+            <span className={`text-sm font-semibold block mt-0.5 ${checkOut ? "text-stone-900 dark:text-white" : "text-stone-400 dark:text-stone-500 font-normal"}`}>
+              {checkOut ? formatDayLabel(checkOut) : "Add date"}
+            </span>
           </div>
         </div>
 

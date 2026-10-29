@@ -961,13 +961,16 @@ export default function AdminMediaPage() {
                   </p>
                 </div>
               </div>
-            ))/* Recent Uploads Table */}
-          {recentUploads.length > 0 && (
-            <div className="bg-white dark:bg-[#201d19] border border-[#ece6dd] dark:border-stone-800 rounded-3xl p-6 shadow-sm">
-              <h3 className="font-display text-lg text-stone-900 dark:text-white mb-4">
-                Files Saved in this Session
-              </h3>
-              <div className="divide-y divide-stone-100 dark:divide-stone-800">
+            ))}
+          </div>
+
+        {/* Recent Uploads Table */}
+        {recentUploads.length > 0 && (
+          <div className="bg-white dark:bg-[#201d19] border border-[#ece6dd] dark:border-stone-800 rounded-3xl p-6 shadow-sm">
+            <h3 className="font-display text-lg text-stone-900 dark:text-white mb-4">
+              Files Saved in this Session
+            </h3>
+            <div className="divide-y divide-stone-100 dark:divide-stone-800">
                 {recentUploads.map((f, i) => (
                   <div key={i} className="py-3 flex items-center justify-between text-sm">
                     <div className="flex items-center gap-3">

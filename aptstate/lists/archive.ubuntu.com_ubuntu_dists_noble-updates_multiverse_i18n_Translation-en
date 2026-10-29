@@ -1,0 +1,3671 @@
+Package: clamav-testfiles-rar
+Description-md5: b543a48c75c4b07d1924eccf1275d8a5
+Description-en: anti-virus utility for Unix - test files
+ Clam AntiVirus is an anti-virus toolkit for Unix. The main purpose of
+ this software is the integration with mail servers (attachment
+ scanning). The package provides a flexible and scalable
+ multi-threaded daemon in the clamav-daemon package, a command-line
+ scanner in the clamav package, and a tool for automatic updating via
+ the Internet in the clamav-freshclam package. The programs are based
+ on libclamav, which can be used by other software.
+ .
+ This package contains files 'infected' with a test signature. The test
+ signature (ClamAV-Test-Signature) should be detectable by all
+ anti-virus programs. The files are limited to .rar files.
+
+Package: cuda-drivers-fabricmanager-460
+Description-md5: c746aee8cee32a07762f629e3f8575a9
+Description-en: Transitional package for cuda-drivers-fabricmanager-470
+ This is a transitional package for cuda-drivers-fabricmanager-470, and can be
+ safely removed after the installation is complete.
+
+Package: cuda-drivers-fabricmanager-470
+Description-md5: 90de5de7a10dbf7421b14c262b371c52
+Description-en: Transitional package cuda-drivers-fabricmanager-470
+ This is a transitional package for cuda-drivers-fabricmanager-470, and can be
+ safely removed after the installation is complete.
+
+Package: cuda-drivers-fabricmanager-535
+Description-md5: 79d09248104f4f2ac9d5cef6b9817c8f
+Description-en: Meta-package for FM and Driver (transitional package)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: cuda-drivers-fabricmanager-550
+Description-md5: 422a8dd6a788c30060f1f95db55487dc
+Description-en: Meta-package for FM and Driver
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: cuda-drivers-fabricmanager-565
+Description-md5: 79d09248104f4f2ac9d5cef6b9817c8f
+Description-en: Meta-package for FM and Driver (transitional package)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: cuda-drivers-fabricmanager-570
+Description-md5: 422a8dd6a788c30060f1f95db55487dc
+Description-en: Meta-package for FM and Driver
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: cuda-drivers-fabricmanager-575
+Description-md5: 422a8dd6a788c30060f1f95db55487dc
+Description-en: Meta-package for FM and Driver
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: cuda-drivers-fabricmanager-580
+Description-md5: 6715a1a6e39ab2cdf04d9fe216556c20
+Description-en: Meta-package for FM and Driver
+ Convenience meta-package for installing fabricmanager and the cuda-drivers
+ meta-package simultaneously while keeping version equivalence. This meta-
+ package is branch-specific.
+
+Package: cuda-drivers-fabricmanager-590
+Description-md5: 422a8dd6a788c30060f1f95db55487dc
+Description-en: Meta-package for FM and Driver
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: cuda-drivers-fabricmanager-595
+Description-md5: 6715a1a6e39ab2cdf04d9fe216556c20
+Description-en: Meta-package for FM and Driver
+ Convenience meta-package for installing fabricmanager and the cuda-drivers
+ meta-package simultaneously while keeping version equivalence. This meta-
+ package is branch-specific.
+
+Package: cuda-drivers-fabricmanager-615
+Description-md5: 6715a1a6e39ab2cdf04d9fe216556c20
+Description-en: Meta-package for FM and Driver
+ Convenience meta-package for installing fabricmanager and the cuda-drivers
+ meta-package simultaneously while keeping version equivalence. This meta-
+ package is branch-specific.
+
+Package: firmware-b43-installer
+Description-md5: fbf19b0bd8832c67a8571b7aa54263d9
+Description-en: firmware installer for the b43 driver
+ This package downloads and installs the firmware needed by the b43
+ kernel driver for some Broadcom 43xx wireless network cards.
+ .
+ Supported chipsets:
+ * BCM4306/3 (chip revision 3 only);
+ * BCM4311 (NOT PCI Id 14e4:4313);
+ * BCM4312;
+ * BCM43131;
+ * BCM4318;
+ * BCM4321 (only partial support, not all versions tested);
+ * BCM43217;
+ * BCM4322 (only partial support for some versions, not all versions tested);
+ * BCM43222 (not all versions tested);
+ * BCM43224 (not all versions tested);
+ * BCM43225;
+ * BCM43227;
+ * BCM43228;
+ * BCM4331;
+ * BCM47xx (detection not reliable, may not support all versions).
+
+Package: firmware-b43legacy-installer
+Description-md5: 30babf0d03afae054de847e6591c2383
+Description-en: firmware installer for the b43legacy driver
+ This package downloads and installs the firmware needed by the b43legacy
+ kernel driver for some Broadcom 43xx wireless network cards.
+ .
+ Supported chipsets:
+ * BCM4301;
+ * BCM4306/2;
+ * BCM4306.
+
+Package: i965-va-driver-shaders
+Description-md5: 1c21b843fa3884b61a07129912acd897
+Description-en: VAAPI driver for Intel G45 & HD Graphics family
+ The VA-API (Video Acceleration API) enables hardware accelerated video
+ decode/encode at various entry-points (VLD, IDCT, Motion Compensation
+ etc.) for the prevailing coding standards today (MPEG-2, MPEG-4
+ ASP/H.263, MPEG-4 AVC/H.264, and VC-1/WMV3). It provides an interface
+ to fully expose the video decode capabilities in today's GPUs.
+ .
+ This package contains the video decode and encode driver backend for the
+ Intel G45 chipsets and Intel HD Graphics for the Intel Core processor family.
+ The supported platforms include:
+ * Cantiga, Intel GMA 4500MHD (GM45)
+ * Ironlake, Intel HD Graphics for 2010 Intel Core processor family
+ * Sandy Bridge, Intel HD Graphics for 2011 Intel Core processor family
+ * Ivy Bridge
+ * Haswell
+ * Broadwell
+ * Skylake
+ * Kaby Lake
+ * Coffee Lake
+ * Cannon Lake
+ .
+ This package contains also contains the non-free encode shaders for VP8, VP9,
+ HEVC and AVC for generation 7.5 hardware or newer.
+
+Package: libclamunrar
+Description-md5: cf0a518e1367a7cff81c7549b758d9d4
+Description-en: anti-virus utility for Unix - unrar support
+ Clam AntiVirus is an anti-virus toolkit for Unix. The main purpose of
+ this software is the integration with mail servers (attachment
+ scanning). The package provides a flexible and scalable
+ multi-threaded daemon in the clamav-daemon package, a command-line
+ scanner in the clamav package, and a tool for automatic updating via
+ the Internet in the clamav-freshclam package. The programs are based
+ on libclamav11, which can be used by other software.
+ .
+ This metapackage depends on the current libclamunrarX binary library to
+ ensure a new libclamunrarY will be installed after a soname update.
+
+Package: libclamunrar12
+Description-md5: 917a2a3c171f190c6df62b894d3d9153
+Description-en: anti-virus utility for Unix - unrar support
+ Clam AntiVirus is an anti-virus toolkit for Unix. The main purpose of
+ this software is the integration with mail servers (attachment
+ scanning). The package provides a flexible and scalable
+ multi-threaded daemon in the clamav-daemon package, a command-line
+ scanner in the clamav package, and a tool for automatic updating via
+ the Internet in the clamav-freshclam package. The programs are based
+ on libclamav11, which can be used by other software.
+ .
+ This package provides support for RAR packaged files or mail attachments.
+ Support will be available once this package is installed and clamd or a local
+ clamscan is restarted.
+
+Package: libnvidia-cfg1-550-server
+Description-md5: 3b5e1a4a7f3d3880281559c9ee2d1da5
+Description-en: NVIDIA binary OpenGL/GLX configuration library
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: libnvidia-cfg1-575
+Description-md5: 3b5e1a4a7f3d3880281559c9ee2d1da5
+Description-en: NVIDIA binary OpenGL/GLX configuration library
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: libnvidia-cfg1-575-server
+Description-md5: 3b5e1a4a7f3d3880281559c9ee2d1da5
+Description-en: NVIDIA binary OpenGL/GLX configuration library
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: libnvidia-cfg1-595-server
+Description-md5: 7dce7edcd194e980223937b38f49e8b9
+Description-en: NVIDIA binary OpenGL/GLX configuration library
+ The NVIDIA binary driver provides optimized hardware acceleration of
+ OpenGL/GLX/EGL/GLES applications via a direct-rendering X Server
+ for graphics cards using NVIDIA chip sets.
+ .
+ This package contains the libnvidia-cfg.so.1 runtime library.
+
+Package: libnvidia-cfg1-610
+Description-md5: 1b0942f0bc26563bcb3b81e8cf5ccdac
+Description-en: NVIDIA binary OpenGL/GLX configuration library (transitional package)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: libnvidia-cfg1-615
+Description-md5: 7dce7edcd194e980223937b38f49e8b9
+Description-en: NVIDIA binary OpenGL/GLX configuration library
+ The NVIDIA binary driver provides optimized hardware acceleration of
+ OpenGL/GLX/EGL/GLES applications via a direct-rendering X Server
+ for graphics cards using NVIDIA chip sets.
+ .
+ This package contains the libnvidia-cfg.so.1 runtime library.
+
+Package: libnvidia-cfg1-615-server
+Description-md5: 7dce7edcd194e980223937b38f49e8b9
+Description-en: NVIDIA binary OpenGL/GLX configuration library
+ The NVIDIA binary driver provides optimized hardware acceleration of
+ OpenGL/GLX/EGL/GLES applications via a direct-rendering X Server
+ for graphics cards using NVIDIA chip sets.
+ .
+ This package contains the libnvidia-cfg.so.1 runtime library.
+
+Package: libnvidia-common-550-server
+Description-md5: 259c61ba4e777f5a2f1e7ee2fd1957bc
+Description-en: Shared files used by the NVIDIA libraries
+ This package provides a set of files that are required by the NVIDIA
+ libraries.
+
+Package: libnvidia-common-550-server
+Description-md5: c222cc663eeb446e82a9725704de5c7e
+Description-en: Shared files used by the NVIDIA libraries
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: libnvidia-common-575
+Description-md5: 259c61ba4e777f5a2f1e7ee2fd1957bc
+Description-en: Shared files used by the NVIDIA libraries
+ This package provides a set of files that are required by the NVIDIA
+ libraries.
+
+Package: libnvidia-common-575
+Description-md5: c222cc663eeb446e82a9725704de5c7e
+Description-en: Shared files used by the NVIDIA libraries
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: libnvidia-common-575-server
+Description-md5: 259c61ba4e777f5a2f1e7ee2fd1957bc
+Description-en: Shared files used by the NVIDIA libraries
+ This package provides a set of files that are required by the NVIDIA
+ libraries.
+
+Package: libnvidia-common-575-server
+Description-md5: c222cc663eeb446e82a9725704de5c7e
+Description-en: Shared files used by the NVIDIA libraries
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: libnvidia-common-595-server
+Description-md5: 259c61ba4e777f5a2f1e7ee2fd1957bc
+Description-en: Shared files used by the NVIDIA libraries
+ This package provides a set of files that are required by the NVIDIA
+ libraries.
+
+Package: libnvidia-common-610
+Description-md5: 199944b00680c01ad96667801f879894
+Description-en: Shared files used by the NVIDIA libraries (transitional package)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: libnvidia-common-615
+Description-md5: 259c61ba4e777f5a2f1e7ee2fd1957bc
+Description-en: Shared files used by the NVIDIA libraries
+ This package provides a set of files that are required by the NVIDIA
+ libraries.
+
+Package: libnvidia-common-615-server
+Description-md5: 259c61ba4e777f5a2f1e7ee2fd1957bc
+Description-en: Shared files used by the NVIDIA libraries
+ This package provides a set of files that are required by the NVIDIA
+ libraries.
+
+Package: libnvidia-compute-550-server
+Description-md5: 1e135edb8c4fdf70dd25e304b6405cd5
+Description-en: NVIDIA libcompute package
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: libnvidia-compute-575
+Description-md5: 1e135edb8c4fdf70dd25e304b6405cd5
+Description-en: NVIDIA libcompute package
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: libnvidia-compute-575-server
+Description-md5: 1e135edb8c4fdf70dd25e304b6405cd5
+Description-en: NVIDIA libcompute package
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: libnvidia-compute-595-server
+Description-md5: 11b7b8b816402e282453221bd66903b4
+Description-en: NVIDIA libcompute package
+ This package provides a set of libraries which enable the NVIDIA Server Driver
+ to use GPUs for parallel general purpose computation through CUDA and
+ OpenCL.
+
+Package: libnvidia-compute-610
+Description-md5: b7d7506d200a8f782e2b476c63a5d195
+Description-en: NVIDIA libcompute package (transitional package)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: libnvidia-compute-615
+Description-md5: c7c5b2d5b16b7e02eed65de795271363
+Description-en: NVIDIA libcompute package
+ This package provides a set of libraries which enable the NVIDIA driver
+ to use GPUs for parallel general purpose computation through CUDA and
+ OpenCL.
+
+Package: libnvidia-compute-615-server
+Description-md5: 11b7b8b816402e282453221bd66903b4
+Description-en: NVIDIA libcompute package
+ This package provides a set of libraries which enable the NVIDIA Server Driver
+ to use GPUs for parallel general purpose computation through CUDA and
+ OpenCL.
+
+Package: libnvidia-decode-550-server
+Description-md5: 54c39f3fd48c6482600cca04e70e422c
+Description-en: NVIDIA Video Decoding runtime libraries
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: libnvidia-decode-575
+Description-md5: 54c39f3fd48c6482600cca04e70e422c
+Description-en: NVIDIA Video Decoding runtime libraries
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: libnvidia-decode-575-server
+Description-md5: 54c39f3fd48c6482600cca04e70e422c
+Description-en: NVIDIA Video Decoding runtime libraries
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: libnvidia-decode-595-server
+Description-md5: 82c3a05b45f86380632898c9b339df7a
+Description-en: NVIDIA Video Decoding runtime libraries
+ This package includes the NVIDIA CUDA Video Decoder (NVCUVID) library which
+ provides an interface to hardware video decoding capabilities on NVIDIA GPUs with CUDA.
+ .
+ The package also provides a VDPAU (Video Decode and Presentation API for Unix-like
+ systems) library for the NVIDIA vendor implementation.
+
+Package: libnvidia-decode-610
+Description-md5: dbf7c906d9ccdd24c10a8418a77373d0
+Description-en: NVIDIA Video Decoding runtime libraries (transitional package)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: libnvidia-decode-615
+Description-md5: 82c3a05b45f86380632898c9b339df7a
+Description-en: NVIDIA Video Decoding runtime libraries
+ This package includes the NVIDIA CUDA Video Decoder (NVCUVID) library which
+ provides an interface to hardware video decoding capabilities on NVIDIA GPUs with CUDA.
+ .
+ The package also provides a VDPAU (Video Decode and Presentation API for Unix-like
+ systems) library for the NVIDIA vendor implementation.
+
+Package: libnvidia-decode-615-server
+Description-md5: 82c3a05b45f86380632898c9b339df7a
+Description-en: NVIDIA Video Decoding runtime libraries
+ This package includes the NVIDIA CUDA Video Decoder (NVCUVID) library which
+ provides an interface to hardware video decoding capabilities on NVIDIA GPUs with CUDA.
+ .
+ The package also provides a VDPAU (Video Decode and Presentation API for Unix-like
+ systems) library for the NVIDIA vendor implementation.
+
+Package: libnvidia-encode-550-server
+Description-md5: b3a62ed2e7cfad84d19c95e4e3b81558
+Description-en: NVENC Video Encoding runtime library
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: libnvidia-encode-575
+Description-md5: b3a62ed2e7cfad84d19c95e4e3b81558
+Description-en: NVENC Video Encoding runtime library
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: libnvidia-encode-575-server
+Description-md5: b3a62ed2e7cfad84d19c95e4e3b81558
+Description-en: NVENC Video Encoding runtime library
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: libnvidia-encode-595-server
+Description-md5: 21b4191ea88e49a7e948a2b89cfed901
+Description-en: NVENC Video Encoding runtime library
+ The NVENC Video Encoding library provides an interface to video encoder
+ hardware on supported NVIDIA GPUs.
+ .
+ This package contains the nvidia-encode runtime library.
+
+Package: libnvidia-encode-610
+Description-md5: 36c3a11854f2cfdddec85176ad989f39
+Description-en: NVENC Video Encoding runtime library (transitional package)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: libnvidia-encode-615
+Description-md5: 21b4191ea88e49a7e948a2b89cfed901
+Description-en: NVENC Video Encoding runtime library
+ The NVENC Video Encoding library provides an interface to video encoder
+ hardware on supported NVIDIA GPUs.
+ .
+ This package contains the nvidia-encode runtime library.
+
+Package: libnvidia-encode-615-server
+Description-md5: 21b4191ea88e49a7e948a2b89cfed901
+Description-en: NVENC Video Encoding runtime library
+ The NVENC Video Encoding library provides an interface to video encoder
+ hardware on supported NVIDIA GPUs.
+ .
+ This package contains the nvidia-encode runtime library.
+
+Package: libnvidia-extra-550-server
+Description-md5: 0204cf0eebec82a16e0c805c695e0598
+Description-en: Extra libraries for the NVIDIA Server Driver
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: libnvidia-extra-575
+Description-md5: 0204cf0eebec82a16e0c805c695e0598
+Description-en: Extra libraries for the NVIDIA Server Driver
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: libnvidia-extra-575-server
+Description-md5: 0204cf0eebec82a16e0c805c695e0598
+Description-en: Extra libraries for the NVIDIA Server Driver
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: libnvidia-extra-595-server
+Description-md5: d919c13960893adb9b27fa15ab4b33a4
+Description-en: Extra libraries for the NVIDIA Server Driver
+ This package provides an additional set of libraries to be used with
+ the NVIDIA Server Driver.
+
+Package: libnvidia-extra-610
+Description-md5: c9b601113e871035e4aea789e08d06b8
+Description-en: Extra libraries for the NVIDIA driver (transitional package)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: libnvidia-extra-615
+Description-md5: 0c26d83df4ea22dc17ba24c862fae8c7
+Description-en: Extra libraries for the NVIDIA driver
+ This package provides an additional set of libraries to be used with
+ the NVIDIA driver.
+
+Package: libnvidia-extra-615-server
+Description-md5: d919c13960893adb9b27fa15ab4b33a4
+Description-en: Extra libraries for the NVIDIA Server Driver
+ This package provides an additional set of libraries to be used with
+ the NVIDIA Server Driver.
+
+Package: libnvidia-fbc1-550-server
+Description-md5: eb2759774c27d02307a91b7fe1728422
+Description-en: NVIDIA OpenGL-based Framebuffer Capture runtime library
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: libnvidia-fbc1-575
+Description-md5: eb2759774c27d02307a91b7fe1728422
+Description-en: NVIDIA OpenGL-based Framebuffer Capture runtime library
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: libnvidia-fbc1-575-server
+Description-md5: eb2759774c27d02307a91b7fe1728422
+Description-en: NVIDIA OpenGL-based Framebuffer Capture runtime library
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: libnvidia-fbc1-595-server
+Description-md5: 19123a53d351a2e540ca869d1e74f9d2
+Description-en: NVIDIA OpenGL-based Framebuffer Capture runtime library
+ The NVIDIA OpenGL-based Framebuffer Capture (NvFBCOpenGL) library provides
+ a high performance, low latency interface to capture and optionally encode an
+ OpenGL framebuffer. NvFBCOpenGL is a private API that is only available to
+ approved partners for use in remote graphics scenarios.
+ .
+ This package contains the NvFBCOpenGL runtime library.
+
+Package: libnvidia-fbc1-610
+Description-md5: daa7bbd02af234d4654ab22d2b701009
+Description-en: NVIDIA OpenGL-based Framebuffer Capture runtime library (transitional package)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: libnvidia-fbc1-615
+Description-md5: 19123a53d351a2e540ca869d1e74f9d2
+Description-en: NVIDIA OpenGL-based Framebuffer Capture runtime library
+ The NVIDIA OpenGL-based Framebuffer Capture (NvFBCOpenGL) library provides
+ a high performance, low latency interface to capture and optionally encode an
+ OpenGL framebuffer. NvFBCOpenGL is a private API that is only available to
+ approved partners for use in remote graphics scenarios.
+ .
+ This package contains the NvFBCOpenGL runtime library.
+
+Package: libnvidia-fbc1-615-server
+Description-md5: 19123a53d351a2e540ca869d1e74f9d2
+Description-en: NVIDIA OpenGL-based Framebuffer Capture runtime library
+ The NVIDIA OpenGL-based Framebuffer Capture (NvFBCOpenGL) library provides
+ a high performance, low latency interface to capture and optionally encode an
+ OpenGL framebuffer. NvFBCOpenGL is a private API that is only available to
+ approved partners for use in remote graphics scenarios.
+ .
+ This package contains the NvFBCOpenGL runtime library.
+
+Package: libnvidia-gl-550-server
+Description-md5: 050b7d6ed180623e7383dba8671f1b39
+Description-en: NVIDIA OpenGL/GLX/EGL/GLES GLVND libraries and Vulkan ICD
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: libnvidia-gl-575
+Description-md5: 050b7d6ed180623e7383dba8671f1b39
+Description-en: NVIDIA OpenGL/GLX/EGL/GLES GLVND libraries and Vulkan ICD
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: libnvidia-gl-575-server
+Description-md5: 050b7d6ed180623e7383dba8671f1b39
+Description-en: NVIDIA OpenGL/GLX/EGL/GLES GLVND libraries and Vulkan ICD
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: libnvidia-gl-595-server
+Description-md5: d899ab089124230e29489e7dcc9f137a
+Description-en: NVIDIA OpenGL/GLX/EGL/GLES GLVND libraries and Vulkan ICD
+ This package provides the NVIDIA OpenGL/GLX/EGL/GLES libraries and the
+ Vulkan ICD.
+
+Package: libnvidia-gl-610
+Description-md5: 72008e0e9d30fec3f0afc14a1044d133
+Description-en: NVIDIA OpenGL/GLX/EGL/GLES GLVND libraries and Vulkan ICD (transitional package)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: libnvidia-gl-615
+Description-md5: d899ab089124230e29489e7dcc9f137a
+Description-en: NVIDIA OpenGL/GLX/EGL/GLES GLVND libraries and Vulkan ICD
+ This package provides the NVIDIA OpenGL/GLX/EGL/GLES libraries and the
+ Vulkan ICD.
+
+Package: libnvidia-gl-615-server
+Description-md5: d899ab089124230e29489e7dcc9f137a
+Description-en: NVIDIA OpenGL/GLX/EGL/GLES GLVND libraries and Vulkan ICD
+ This package provides the NVIDIA OpenGL/GLX/EGL/GLES libraries and the
+ Vulkan ICD.
+
+Package: libnvidia-nscq-460
+Description-md5: 5c18da8fbc7182f2b6ef12bba5b490cb
+Description-en: Transitional package for libnvidia-nscq-470
+ This is a transitional package for libnvidia-nscq-470, and can be
+ safely removed after the installation is complete.
+
+Package: libnvidia-nscq-470
+Description-md5: 5c18da8fbc7182f2b6ef12bba5b490cb
+Description-en: Transitional package for libnvidia-nscq-470
+ This is a transitional package for libnvidia-nscq-470, and can be
+ safely removed after the installation is complete.
+
+Package: libnvidia-nscq-535
+Description-md5: 4a054caf2c1d301b928a568560e782af
+Description-en: NVSwitch Configuration and Query library (transitional package)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: libnvidia-nscq-550
+Description-md5: 9e3814be16130771b3205a08146341d9
+Description-en: NVSwitch Configuration and Query library
+ Transitional package
+
+Package: libnvidia-nscq-565
+Description-md5: 4a054caf2c1d301b928a568560e782af
+Description-en: NVSwitch Configuration and Query library (transitional package)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: libnvidia-nscq-570
+Description-md5: d85cd6ab0fa3e60d7afd09e0898085f6
+Description-en: NVSwitch Configuration and Query library
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: libnvidia-nscq-575
+Description-md5: 9e3814be16130771b3205a08146341d9
+Description-en: NVSwitch Configuration and Query library
+ Transitional package
+
+Package: libnvidia-nscq-580
+Description-md5: 06d90fb68ae67655c00815a4db03a64e
+Description-en: NVSwitch Configuration and Query library
+ NVIDIA NVSwitch Configuration and Query (NSCQ) library provides a
+ stable driver API used by DCGM for monitoring NVSwitch devices.
+
+Package: libnvidia-nscq-590
+Description-md5: d85cd6ab0fa3e60d7afd09e0898085f6
+Description-en: NVSwitch Configuration and Query library
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: libnvidia-nscq-595
+Description-md5: 06d90fb68ae67655c00815a4db03a64e
+Description-en: NVSwitch Configuration and Query library
+ NVIDIA NVSwitch Configuration and Query (NSCQ) library provides a
+ stable driver API used by DCGM for monitoring NVSwitch devices.
+
+Package: libnvidia-nscq-615
+Description-md5: 06d90fb68ae67655c00815a4db03a64e
+Description-en: NVSwitch Configuration and Query library
+ NVIDIA NVSwitch Configuration and Query (NSCQ) library provides a
+ stable driver API used by DCGM for monitoring NVSwitch devices.
+
+Package: nvidia-compute-utils-550-server
+Description-md5: 2e1db6d5084077f4d39c74d5bc8f12d5
+Description-en: NVIDIA compute utilities
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-compute-utils-575
+Description-md5: 2e1db6d5084077f4d39c74d5bc8f12d5
+Description-en: NVIDIA compute utilities
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-compute-utils-575-server
+Description-md5: 2e1db6d5084077f4d39c74d5bc8f12d5
+Description-en: NVIDIA compute utilities
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-compute-utils-595-server
+Description-md5: 22d91d0fcba51df4741637e102ab12c2
+Description-en: NVIDIA compute utilities
+ This package provides utility binaries for paraller general purpose
+ computing use cases with the NVIDIA Server Driver.
+ .
+ CUDA MPS is a feature that allows multiple CUDA processes to share a single
+ GPU context. CUDA MPS should be transparent to CUDA programs.
+ .
+ CUDA MPS requires a device that supports Unified Virtual Address (UVA) and
+ has compute capability SM 3.5 or higher.
+ Pre-CUDA 4.0 APIs are not supported under CUDA MPS.
+
+Package: nvidia-compute-utils-610
+Description-md5: 70d929b039dacc87d564de1c1c43c27b
+Description-en: NVIDIA compute utilities (transitional package)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-compute-utils-615
+Description-md5: bf6fab9efc1024a52f79dd543478f871
+Description-en: NVIDIA compute utilities
+ This package provides utility binaries for paraller general purpose
+ computing use cases with the NVIDIA driver.
+ .
+ CUDA MPS is a feature that allows multiple CUDA processes to share a single
+ GPU context. CUDA MPS should be transparent to CUDA programs.
+ .
+ CUDA MPS requires a device that supports Unified Virtual Address (UVA) and
+ has compute capability SM 3.5 or higher.
+ Pre-CUDA 4.0 APIs are not supported under CUDA MPS.
+
+Package: nvidia-compute-utils-615-server
+Description-md5: 22d91d0fcba51df4741637e102ab12c2
+Description-en: NVIDIA compute utilities
+ This package provides utility binaries for paraller general purpose
+ computing use cases with the NVIDIA Server Driver.
+ .
+ CUDA MPS is a feature that allows multiple CUDA processes to share a single
+ GPU context. CUDA MPS should be transparent to CUDA programs.
+ .
+ CUDA MPS requires a device that supports Unified Virtual Address (UVA) and
+ has compute capability SM 3.5 or higher.
+ Pre-CUDA 4.0 APIs are not supported under CUDA MPS.
+
+Package: nvidia-dkms-550
+Description-md5: a347abf1b58ca811e614eaaf299d05d7
+Description-en: NVIDIA DKMS package
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-dkms-550-open
+Description-md5: d10226eaee2a7cc487a5e3ce0b948199
+Description-en: NVIDIA DKMS package (open kernel module)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-dkms-550-server
+Description-md5: a347abf1b58ca811e614eaaf299d05d7
+Description-en: NVIDIA DKMS package
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-dkms-550-server-open
+Description-md5: d10226eaee2a7cc487a5e3ce0b948199
+Description-en: NVIDIA DKMS package (open kernel module)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-dkms-575
+Description-md5: a347abf1b58ca811e614eaaf299d05d7
+Description-en: NVIDIA DKMS package
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-dkms-575-open
+Description-md5: d10226eaee2a7cc487a5e3ce0b948199
+Description-en: NVIDIA DKMS package (open kernel module)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-dkms-575-server
+Description-md5: a347abf1b58ca811e614eaaf299d05d7
+Description-en: NVIDIA DKMS package
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-dkms-575-server-open
+Description-md5: d10226eaee2a7cc487a5e3ce0b948199
+Description-en: NVIDIA DKMS package (open kernel module)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-dkms-595-server
+Description-md5: ec8c193060b5458922cc0bda62df7796
+Description-en: NVIDIA DKMS package
+ This package builds the NVIDIA kernel module needed by the userspace
+ driver, using DKMS.
+ Provided that you have the kernel header packages installed, the kernel
+ module will be built for your running kernel, and automatically rebuilt for
+ any new kernel headers that are installed.
+
+Package: nvidia-dkms-595-server-open
+Description-md5: dafa8f35853882b3010cba056bb022d0
+Description-en: NVIDIA DKMS package (open kernel module)
+ This package builds the open NVIDIA kernel module needed by the userspace
+ driver, using DKMS.
+ Provided that you have the kernel header packages installed, the kernel
+ module will be built for your running kernel, and automatically rebuilt for
+ any new kernel headers that are installed.
+
+Package: nvidia-dkms-610
+Description-md5: 6b98bde4ce0d90e5c576c7a0d870e5d9
+Description-en: NVIDIA DKMS package (transitional package)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-dkms-610-open
+Description-md5: b34400b6c042c32771e7523f2faa4dbb
+Description-en: NVIDIA DKMS package (open kernel module) (transitional package)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-dkms-615
+Description-md5: 6b98bde4ce0d90e5c576c7a0d870e5d9
+Description-en: NVIDIA DKMS package (transitional package)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-dkms-615-open
+Description-md5: dafa8f35853882b3010cba056bb022d0
+Description-en: NVIDIA DKMS package (open kernel module)
+ This package builds the open NVIDIA kernel module needed by the userspace
+ driver, using DKMS.
+ Provided that you have the kernel header packages installed, the kernel
+ module will be built for your running kernel, and automatically rebuilt for
+ any new kernel headers that are installed.
+
+Package: nvidia-dkms-615-server
+Description-md5: 6b98bde4ce0d90e5c576c7a0d870e5d9
+Description-en: NVIDIA DKMS package (transitional package)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-dkms-615-server-open
+Description-md5: dafa8f35853882b3010cba056bb022d0
+Description-en: NVIDIA DKMS package (open kernel module)
+ This package builds the open NVIDIA kernel module needed by the userspace
+ driver, using DKMS.
+ Provided that you have the kernel header packages installed, the kernel
+ module will be built for your running kernel, and automatically rebuilt for
+ any new kernel headers that are installed.
+
+Package: nvidia-driver-550-open
+Description-md5: 27d0817bd10bcbc869df4f9387ff9522
+Description-en: NVIDIA driver (open kernel) metapackage
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-driver-550-server
+Description-md5: 86952170fa3d086614aec7a9a0092360
+Description-en: NVIDIA Server Driver metapackage
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-driver-550-server-open
+Description-md5: 27d0817bd10bcbc869df4f9387ff9522
+Description-en: NVIDIA driver (open kernel) metapackage
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-driver-575
+Description-md5: 86952170fa3d086614aec7a9a0092360
+Description-en: NVIDIA Server Driver metapackage
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-driver-575-open
+Description-md5: 27d0817bd10bcbc869df4f9387ff9522
+Description-en: NVIDIA driver (open kernel) metapackage
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-driver-575-server
+Description-md5: 86952170fa3d086614aec7a9a0092360
+Description-en: NVIDIA Server Driver metapackage
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-driver-575-server-open
+Description-md5: 27d0817bd10bcbc869df4f9387ff9522
+Description-en: NVIDIA driver (open kernel) metapackage
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-driver-595-server
+Description-md5: 775de13e43299730e828f8e8f4bc906c
+Description-en: NVIDIA Server Driver metapackage
+ This metapackage depends on the NVIDIA binary driver and on all of its libraries,
+ to provide hardware acceleration for OpenGL/GLX/EGL/GLES/Vulkan
+ applications on either X11 or on Wayland.
+ .
+ See /usr/share/doc/nvidia-driver-595-server/README.txt.gz
+ for a complete list of supported GPUs and PCI IDs.
+
+Package: nvidia-driver-595-server-open
+Description-md5: 1540c00a178c92ae2b091062d2350af8
+Description-en: NVIDIA driver (open kernel) metapackage
+ This metapackage depends on the NVIDIA binary driver and on all of its libraries,
+ to provide hardware acceleration for OpenGL/GLX/EGL/GLES/Vulkan
+ applications on either X11 or on Wayland.
+ .
+ See /usr/share/doc/nvidia-driver-595-server/README.txt.gz
+ for a complete list of supported GPUs and PCI IDs.
+
+Package: nvidia-driver-610
+Description-md5: e8907bb6396b722aed4f7fc2c17d380a
+Description-en: NVIDIA driver metapackage (transitional package)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-driver-610-open
+Description-md5: 4fc4779daccb5c93a48a77f2a0f981e5
+Description-en: NVIDIA driver (open kernel) metapackage (transitional package)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-driver-615
+Description-md5: e8907bb6396b722aed4f7fc2c17d380a
+Description-en: NVIDIA driver metapackage (transitional package)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-driver-615-open
+Description-md5: 6e2d36d96303133798944a3a0502d457
+Description-en: NVIDIA driver (open kernel) metapackage
+ This metapackage depends on the NVIDIA binary driver and on all of its libraries,
+ to provide hardware acceleration for OpenGL/GLX/EGL/GLES/Vulkan
+ applications on either X11 or on Wayland.
+ .
+ See /usr/share/doc/nvidia-driver-615/README.txt.gz
+ for a complete list of supported GPUs and PCI IDs.
+
+Package: nvidia-driver-615-server
+Description-md5: 243350d85396a5c34635c6687cb226d1
+Description-en: NVIDIA Server Driver metapackage (transitional package)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-driver-615-server-open
+Description-md5: d9774807b3445a13c30611004383641d
+Description-en: NVIDIA driver (open kernel) metapackage
+ This metapackage depends on the NVIDIA binary driver and on all of its libraries,
+ to provide hardware acceleration for OpenGL/GLX/EGL/GLES/Vulkan
+ applications on either X11 or on Wayland.
+ .
+ See /usr/share/doc/nvidia-driver-615-server/README.txt.gz
+ for a complete list of supported GPUs and PCI IDs.
+
+Package: nvidia-fabricmanager-460
+Description-md5: 9161ba1fb1465aa474f5771de163cfc4
+Description-en: Transitional package for nvidia-fabricmanager-470
+ This is a transitional package for nvidia-fabricmanager-470, and can be
+ safely removed after the installation is complete.
+
+Package: nvidia-fabricmanager-470
+Description-md5: f549b16a68ec6836fed943dbb070d299
+Description-en: Transitional package nvidia-fabricmanager-470
+ This is a transitional package for nvidia-fabricmanager-470, and can be
+ safely removed after the installation is complete.
+
+Package: nvidia-fabricmanager-535
+Description-md5: 06ff0a5beaed94dd1612653f803516ef
+Description-en: Fabric Manager for NVSwitch based systems. (transitional package)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-fabricmanager-550
+Description-md5: 3710873766d2a2d831d4e85e739d1681
+Description-en: Fabric Manager for NVSwitch based systems.
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-fabricmanager-565
+Description-md5: 06ff0a5beaed94dd1612653f803516ef
+Description-en: Fabric Manager for NVSwitch based systems. (transitional package)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-fabricmanager-570
+Description-md5: 3710873766d2a2d831d4e85e739d1681
+Description-en: Fabric Manager for NVSwitch based systems.
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-fabricmanager-575
+Description-md5: 3710873766d2a2d831d4e85e739d1681
+Description-en: Fabric Manager for NVSwitch based systems.
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-fabricmanager-580
+Description-md5: 3d49e1346de8fc10beaca066b0eb5df0
+Description-en: Fabric Manager for NVSwitch based systems.
+ Fabric Manager for NVIDIA NVSwitch based systems.
+
+Package: nvidia-fabricmanager-590
+Description-md5: 3710873766d2a2d831d4e85e739d1681
+Description-en: Fabric Manager for NVSwitch based systems.
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-fabricmanager-595
+Description-md5: 3d49e1346de8fc10beaca066b0eb5df0
+Description-en: Fabric Manager for NVSwitch based systems.
+ Fabric Manager for NVIDIA NVSwitch based systems.
+
+Package: nvidia-fabricmanager-615
+Description-md5: 3d49e1346de8fc10beaca066b0eb5df0
+Description-en: Fabric Manager for NVSwitch based systems.
+ Fabric Manager for NVIDIA NVSwitch based systems.
+
+Package: nvidia-fabricmanager-dev-460
+Description-md5: 43b0b28c82f1d336e6909be154e74985
+Description-en: Transitional package for nvidia-fabricmanager-dev-470
+ This is a transitional package for nvidia-fabricmanager-dev-470, and can be
+ safely removed after the installation is complete.
+
+Package: nvidia-fabricmanager-dev-470
+Description-md5: 6b81e2cb2c3ee908c57a89d356125607
+Description-en: Transitional package nvidia-fabricmanager-dev-470
+ This is a transitional package for nvidia-fabricmanager-dev-470, and can be
+ safely removed after the installation is complete.
+
+Package: nvidia-fabricmanager-dev-535
+Description-md5: 6d784138f631bec423b38a723527202b
+Description-en: Fabric Manager API headers and associated library (transitional package)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-fabricmanager-dev-550
+Description-md5: eb51daeba23d564740354d45d0bd3639
+Description-en: Fabric Manager API headers and associated library
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-fabricmanager-dev-565
+Description-md5: 6d784138f631bec423b38a723527202b
+Description-en: Fabric Manager API headers and associated library (transitional package)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-fabricmanager-dev-570
+Description-md5: eb51daeba23d564740354d45d0bd3639
+Description-en: Fabric Manager API headers and associated library
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-fabricmanager-dev-575
+Description-md5: eb51daeba23d564740354d45d0bd3639
+Description-en: Fabric Manager API headers and associated library
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-fabricmanager-dev-580
+Description-md5: 565605cc6a127d423c88c38e5c2f9a26
+Description-en: Fabric Manager API headers and associated library
+ Fabric Manager API headers and associated library
+
+Package: nvidia-fabricmanager-dev-590
+Description-md5: eb51daeba23d564740354d45d0bd3639
+Description-en: Fabric Manager API headers and associated library
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-fabricmanager-dev-595
+Description-md5: 565605cc6a127d423c88c38e5c2f9a26
+Description-en: Fabric Manager API headers and associated library
+ Fabric Manager API headers and associated library
+
+Package: nvidia-fabricmanager-dev-615
+Description-md5: 565605cc6a127d423c88c38e5c2f9a26
+Description-en: Fabric Manager API headers and associated library
+ Fabric Manager API headers and associated library
+
+Package: nvidia-firmware-575-575.64.03
+Description-md5: a9f4cc74ba3faebf0cac0795ed2434bf
+Description-en: Firmware files used by the kernel module
+ This package installs required firmware files for the NVIDIA kernel
+ module.
+
+Package: nvidia-firmware-575-server-575.57.08
+Description-md5: a9f4cc74ba3faebf0cac0795ed2434bf
+Description-en: Firmware files used by the kernel module
+ This package installs required firmware files for the NVIDIA kernel
+ module.
+
+Package: nvidia-firmware-595-595.58.03
+Description-md5: a9f4cc74ba3faebf0cac0795ed2434bf
+Description-en: Firmware files used by the kernel module
+ This package installs required firmware files for the NVIDIA kernel
+ module.
+
+Package: nvidia-firmware-595-595.71.05
+Description-md5: a9f4cc74ba3faebf0cac0795ed2434bf
+Description-en: Firmware files used by the kernel module
+ This package installs required firmware files for the NVIDIA kernel
+ module.
+
+Package: nvidia-firmware-595-595.84
+Description-md5: a9f4cc74ba3faebf0cac0795ed2434bf
+Description-en: Firmware files used by the kernel module
+ This package installs required firmware files for the NVIDIA kernel
+ module.
+
+Package: nvidia-firmware-595-595.91.07
+Description-md5: a9f4cc74ba3faebf0cac0795ed2434bf
+Description-en: Firmware files used by the kernel module
+ This package installs required firmware files for the NVIDIA kernel
+ module.
+
+Package: nvidia-firmware-595-server-595.58.03
+Description-md5: a9f4cc74ba3faebf0cac0795ed2434bf
+Description-en: Firmware files used by the kernel module
+ This package installs required firmware files for the NVIDIA kernel
+ module.
+
+Package: nvidia-firmware-595-server-595.71.05
+Description-md5: a9f4cc74ba3faebf0cac0795ed2434bf
+Description-en: Firmware files used by the kernel module
+ This package installs required firmware files for the NVIDIA kernel
+ module.
+
+Package: nvidia-firmware-595-server-595.91.07
+Description-md5: a9f4cc74ba3faebf0cac0795ed2434bf
+Description-en: Firmware files used by the kernel module
+ This package installs required firmware files for the NVIDIA kernel
+ module.
+
+Package: nvidia-firmware-610-610.43.02
+Description-md5: a9f4cc74ba3faebf0cac0795ed2434bf
+Description-en: Firmware files used by the kernel module
+ This package installs required firmware files for the NVIDIA kernel
+ module.
+
+Package: nvidia-firmware-610-610.57.04
+Description-md5: a9f4cc74ba3faebf0cac0795ed2434bf
+Description-en: Firmware files used by the kernel module
+ This package installs required firmware files for the NVIDIA kernel
+ module.
+
+Package: nvidia-firmware-615-615.71.09
+Description-md5: a9f4cc74ba3faebf0cac0795ed2434bf
+Description-en: Firmware files used by the kernel module
+ This package installs required firmware files for the NVIDIA kernel
+ module.
+
+Package: nvidia-firmware-615-server-615.71.09
+Description-md5: a9f4cc74ba3faebf0cac0795ed2434bf
+Description-en: Firmware files used by the kernel module
+ This package installs required firmware files for the NVIDIA kernel
+ module.
+
+Package: nvidia-headless-550
+Description-md5: 2940dd9bb34e53168a62696e774395f1
+Description-en: NVIDIA headless metapackage
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-headless-550-open
+Description-md5: da5e7f97aa978e70576e4fecfe6fe496
+Description-en: NVIDIA headless metapackage (open kernel module)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-headless-550-server
+Description-md5: 2940dd9bb34e53168a62696e774395f1
+Description-en: NVIDIA headless metapackage
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-headless-550-server-open
+Description-md5: da5e7f97aa978e70576e4fecfe6fe496
+Description-en: NVIDIA headless metapackage (open kernel module)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-headless-575
+Description-md5: 2940dd9bb34e53168a62696e774395f1
+Description-en: NVIDIA headless metapackage
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-headless-575-open
+Description-md5: da5e7f97aa978e70576e4fecfe6fe496
+Description-en: NVIDIA headless metapackage (open kernel module)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-headless-575-server
+Description-md5: 2940dd9bb34e53168a62696e774395f1
+Description-en: NVIDIA headless metapackage
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-headless-575-server-open
+Description-md5: da5e7f97aa978e70576e4fecfe6fe496
+Description-en: NVIDIA headless metapackage (open kernel module)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-headless-595-server
+Description-md5: d00367550b486e8cf418f0b099e16d3d
+Description-en: NVIDIA headless metapackage
+ This metapackage installs the NVIDIA Server Driver and the libraries that enable
+ parallel general purpose computation through CUDA and
+ OpenCL.
+ .
+ Install this package if you do not need X11 or Wayland support, which is
+ provided by the nvidia-driver-595-server metapackage.
+
+Package: nvidia-headless-595-server-open
+Description-md5: f4c5b02146286378c75ec120637162aa
+Description-en: NVIDIA headless metapackage (open kernel module)
+ This metapackage installs the NVIDIA driver and the libraries that enable
+ parallel general purpose computation through CUDA and
+ OpenCL.
+ .
+ Install this package if you do not need X11 or Wayland support, which is
+ provided by the nvidia-driver-595-server metapackage.
+
+Package: nvidia-headless-610
+Description-md5: 651f424e5942d7515ce3f42db92f3e53
+Description-en: NVIDIA headless metapackage (transitional package)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-headless-610-open
+Description-md5: 30dc38d3adf048bb8eb306db3ddc3142
+Description-en: NVIDIA headless metapackage (open kernel module) (transitional package)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-headless-615
+Description-md5: 651f424e5942d7515ce3f42db92f3e53
+Description-en: NVIDIA headless metapackage (transitional package)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-headless-615-open
+Description-md5: a504bc131f513c45ba630d5e6da2c232
+Description-en: NVIDIA headless metapackage (open kernel module)
+ This metapackage installs the NVIDIA driver and the libraries that enable
+ parallel general purpose computation through CUDA and
+ OpenCL.
+ .
+ Install this package if you do not need X11 or Wayland support, which is
+ provided by the nvidia-driver-615 metapackage.
+
+Package: nvidia-headless-615-server
+Description-md5: 651f424e5942d7515ce3f42db92f3e53
+Description-en: NVIDIA headless metapackage (transitional package)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-headless-615-server-open
+Description-md5: 36c5c8487f44ce862f0b3d8b6b6e3387
+Description-en: NVIDIA headless metapackage (open kernel module)
+ This metapackage installs the NVIDIA driver and the libraries that enable
+ parallel general purpose computation through CUDA and
+ OpenCL.
+ .
+ Install this package if you do not need X11 or Wayland support, which is
+ provided by the nvidia-driver-615-server metapackage.
+
+Package: nvidia-headless-no-dkms-550
+Description-md5: dae0ba3c5fd80f1c2ddbc2a821e6dd08
+Description-en: NVIDIA headless metapackage - no DKMS
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-headless-no-dkms-550-open
+Description-md5: 3a1e7854fdf5a90f6264c70dce0d2b27
+Description-en: NVIDIA headless metapackage - no DKMS (open kernel module)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-headless-no-dkms-550-server
+Description-md5: dae0ba3c5fd80f1c2ddbc2a821e6dd08
+Description-en: NVIDIA headless metapackage - no DKMS
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-headless-no-dkms-550-server-open
+Description-md5: 3a1e7854fdf5a90f6264c70dce0d2b27
+Description-en: NVIDIA headless metapackage - no DKMS (open kernel module)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-headless-no-dkms-575
+Description-md5: dae0ba3c5fd80f1c2ddbc2a821e6dd08
+Description-en: NVIDIA headless metapackage - no DKMS
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-headless-no-dkms-575-open
+Description-md5: 3a1e7854fdf5a90f6264c70dce0d2b27
+Description-en: NVIDIA headless metapackage - no DKMS (open kernel module)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-headless-no-dkms-575-server
+Description-md5: dae0ba3c5fd80f1c2ddbc2a821e6dd08
+Description-en: NVIDIA headless metapackage - no DKMS
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-headless-no-dkms-575-server-open
+Description-md5: 3a1e7854fdf5a90f6264c70dce0d2b27
+Description-en: NVIDIA headless metapackage - no DKMS (open kernel module)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-headless-no-dkms-595-server
+Description-md5: ad0266c29b4fbd2c4b83624bece9b840
+Description-en: NVIDIA headless metapackage - no DKMS
+ This metapackage installs the NVIDIA Server Driver and the libraries that enable
+ parallel general purpose computation through CUDA and
+ OpenCL. DKMS will not be installed, and, therefore, the kernel module
+ will not be built.
+ .
+ Install this package if you do not need X11 or Wayland support, which is
+ provided by the nvidia-driver-595-server metapackage.
+
+Package: nvidia-headless-no-dkms-595-server-open
+Description-md5: 1432882a3adc08d71423c3b53bf736ed
+Description-en: NVIDIA headless metapackage - no DKMS (open kernel module)
+ This metapackage installs the NVIDIA driver and the libraries that enable
+ parallel general purpose computation through CUDA and
+ OpenCL. DKMS will not be installed, and, therefore, the kernel module
+ will not be built.
+ .
+ Install this package if you do not need X11 or Wayland support, which is
+ provided by the nvidia-driver-595-server metapackage.
+
+Package: nvidia-headless-no-dkms-610
+Description-md5: e3be17826869cdcc66eb993b2766e442
+Description-en: NVIDIA headless metapackage - no DKMS (transitional package)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-headless-no-dkms-610-open
+Description-md5: bcf95c10fb78e477aa6d2b34965c2013
+Description-en: NVIDIA headless metapackage - no DKMS (open kernel module) (transitional package)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-headless-no-dkms-615
+Description-md5: e3be17826869cdcc66eb993b2766e442
+Description-en: NVIDIA headless metapackage - no DKMS (transitional package)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-headless-no-dkms-615-open
+Description-md5: c35204719d4fd1d75b0772ae808fe1a3
+Description-en: NVIDIA headless metapackage - no DKMS (open kernel module)
+ This metapackage installs the NVIDIA driver and the libraries that enable
+ parallel general purpose computation through CUDA and
+ OpenCL. DKMS will not be installed, and, therefore, the kernel module
+ will not be built.
+ .
+ Install this package if you do not need X11 or Wayland support, which is
+ provided by the nvidia-driver-615 metapackage.
+
+Package: nvidia-headless-no-dkms-615-server
+Description-md5: e3be17826869cdcc66eb993b2766e442
+Description-en: NVIDIA headless metapackage - no DKMS (transitional package)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-headless-no-dkms-615-server-open
+Description-md5: e4043c8ef910ab3e1a99aa57fed8aa4b
+Description-en: NVIDIA headless metapackage - no DKMS (open kernel module)
+ This metapackage installs the NVIDIA driver and the libraries that enable
+ parallel general purpose computation through CUDA and
+ OpenCL. DKMS will not be installed, and, therefore, the kernel module
+ will not be built.
+ .
+ Install this package if you do not need X11 or Wayland support, which is
+ provided by the nvidia-driver-615-server metapackage.
+
+Package: nvidia-imex-550
+Description-md5: 66a7bfb594ce8e4c27645336f59a3dbc
+Description-en: IMEX Manager for NVIDIA based systems.
+ Transitional package
+
+Package: nvidia-imex-565
+Description-md5: 5edc4eb81e1b8d724aaa4aa104bd6e9b
+Description-en: IMEX Manager for NVIDIA based systems. (transitional package)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-imex-570
+Description-md5: f7a2948485b44425a1902b0c6e2b047a
+Description-en: IMEX Manager for NVIDIA based systems.
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-imex-575
+Description-md5: 66a7bfb594ce8e4c27645336f59a3dbc
+Description-en: IMEX Manager for NVIDIA based systems.
+ Transitional package
+
+Package: nvidia-imex-580
+Description-md5: f7a765b2a95d4cabcc9695466d5f6cc8
+Description-en: IMEX Manager for NVIDIA based systems.
+ IMEX Manager for NVIDIA systems.
+
+Package: nvidia-imex-590
+Description-md5: f7a2948485b44425a1902b0c6e2b047a
+Description-en: IMEX Manager for NVIDIA based systems.
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-imex-595
+Description-md5: f7a765b2a95d4cabcc9695466d5f6cc8
+Description-en: IMEX Manager for NVIDIA based systems.
+ IMEX Manager for NVIDIA systems.
+
+Package: nvidia-imex-615
+Description-md5: f7a765b2a95d4cabcc9695466d5f6cc8
+Description-en: IMEX Manager for NVIDIA based systems.
+ IMEX Manager for NVIDIA systems.
+
+Package: nvidia-kernel-common-575
+Description-md5: f15253bf8783982d5f9b2e93dc069e1b
+Description-en: Shared files used with the kernel module
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-kernel-common-575-server
+Description-md5: f15253bf8783982d5f9b2e93dc069e1b
+Description-en: Shared files used with the kernel module
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-kernel-common-595-server
+Description-md5: caa64a2a10d329a0475baf9ebcdb40d5
+Description-en: Shared files used with the kernel module
+ This package installs all the optional accessory files for the NVIDIA
+ kernel module.
+ .
+ Install this package if you want to blacklist any conflicting kernel
+ modules, and if you want udev to load the the NVIDIA kernel modules,
+ and to create the uvm devices automatically.
+
+Package: nvidia-kernel-common-610
+Description-md5: a2fcad20362187322348caccef78ab9d
+Description-en: Shared files used with the kernel module (transitional package)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-kernel-common-615
+Description-md5: caa64a2a10d329a0475baf9ebcdb40d5
+Description-en: Shared files used with the kernel module
+ This package installs all the optional accessory files for the NVIDIA
+ kernel module.
+ .
+ Install this package if you want to blacklist any conflicting kernel
+ modules, and if you want udev to load the the NVIDIA kernel modules,
+ and to create the uvm devices automatically.
+
+Package: nvidia-kernel-common-615-server
+Description-md5: caa64a2a10d329a0475baf9ebcdb40d5
+Description-en: Shared files used with the kernel module
+ This package installs all the optional accessory files for the NVIDIA
+ kernel module.
+ .
+ Install this package if you want to blacklist any conflicting kernel
+ modules, and if you want udev to load the the NVIDIA kernel modules,
+ and to create the uvm devices automatically.
+
+Package: nvidia-kernel-source-550-open
+Description-md5: 122a0b2a83aad5e05dab7e00c057dde1
+Description-en: NVIDIA kernel source package
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-kernel-source-550-server
+Description-md5: 122a0b2a83aad5e05dab7e00c057dde1
+Description-en: NVIDIA kernel source package
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-kernel-source-550-server-open
+Description-md5: 122a0b2a83aad5e05dab7e00c057dde1
+Description-en: NVIDIA kernel source package
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-kernel-source-575
+Description-md5: 122a0b2a83aad5e05dab7e00c057dde1
+Description-en: NVIDIA kernel source package
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-kernel-source-575-open
+Description-md5: 122a0b2a83aad5e05dab7e00c057dde1
+Description-en: NVIDIA kernel source package
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-kernel-source-575-server
+Description-md5: 122a0b2a83aad5e05dab7e00c057dde1
+Description-en: NVIDIA kernel source package
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-kernel-source-575-server-open
+Description-md5: 122a0b2a83aad5e05dab7e00c057dde1
+Description-en: NVIDIA kernel source package
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-kernel-source-595-server
+Description-md5: dc60d6861ca351f7cadc7d8fcc74e854
+Description-en: NVIDIA kernel source package
+ This package provides the NVIDIA kernel source needed by the userspace
+ driver.
+
+Package: nvidia-kernel-source-595-server-open
+Description-md5: 2694f1253ed6bd4cfbccf1e22ec25a3d
+Description-en: NVIDIA kernel source package
+ This package provides the open NVIDIA kernel source needed by the userspace
+ driver.
+
+Package: nvidia-kernel-source-610
+Description-md5: 2132505fc22258d2624a002c6d62a46e
+Description-en: NVIDIA kernel source package (transitional package)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-kernel-source-610-open
+Description-md5: 2132505fc22258d2624a002c6d62a46e
+Description-en: NVIDIA kernel source package (transitional package)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-kernel-source-615
+Description-md5: 2132505fc22258d2624a002c6d62a46e
+Description-en: NVIDIA kernel source package (transitional package)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-kernel-source-615-open
+Description-md5: 2694f1253ed6bd4cfbccf1e22ec25a3d
+Description-en: NVIDIA kernel source package
+ This package provides the open NVIDIA kernel source needed by the userspace
+ driver.
+
+Package: nvidia-kernel-source-615-server
+Description-md5: 2132505fc22258d2624a002c6d62a46e
+Description-en: NVIDIA kernel source package (transitional package)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-kernel-source-615-server-open
+Description-md5: 2694f1253ed6bd4cfbccf1e22ec25a3d
+Description-en: NVIDIA kernel source package
+ This package provides the open NVIDIA kernel source needed by the userspace
+ driver.
+
+Package: nvidia-utils-550-server
+Description-md5: a6d4a8cdd6ad1a7e664366dbb02ec140
+Description-en: NVIDIA Server Driver support binaries
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-utils-575
+Description-md5: a6d4a8cdd6ad1a7e664366dbb02ec140
+Description-en: NVIDIA Server Driver support binaries
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-utils-575-server
+Description-md5: a6d4a8cdd6ad1a7e664366dbb02ec140
+Description-en: NVIDIA Server Driver support binaries
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-utils-595-server
+Description-md5: 4e4bcf98bdc87ac5b44ccdaec6901913
+Description-en: NVIDIA Server Driver support binaries
+ This package contains supporting binaries for the NVIDIA Server Driver.
+
+Package: nvidia-utils-610
+Description-md5: 0b179beb40b7397feb118954c1d894e3
+Description-en: NVIDIA driver support binaries (transitional package)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: nvidia-utils-615
+Description-md5: d81f3aa17f8585f803913263abcf99e2
+Description-en: NVIDIA driver support binaries
+ This package contains supporting binaries for the NVIDIA driver.
+
+Package: nvidia-utils-615-server
+Description-md5: 4e4bcf98bdc87ac5b44ccdaec6901913
+Description-en: NVIDIA Server Driver support binaries
+ This package contains supporting binaries for the NVIDIA Server Driver.
+
+Package: r4d
+Description-md5: 5ba7c89935c297f429a699c3f39d1441
+Description-en: Remote For Device-under-test (R4D) Daemon
+ Remote For Device-under-test (R4D) Daemon acts as controlling server for test
+ racks. Each Rack contains a serial device server and a power control switch.
+ A rack can host several DUTs (device-under-test).
+ r4d connects to the serial device server and the power switch to perform
+ actions on user request. A user connects to r4d through a SOAP interface.
+ .
+ This package contains the controlling daemon and administration tool.
+
+Package: r8125-dkms
+Description-md5: 21605b7f80ee7a56a99a0ef7f36c7598
+Description-en: dkms source for the r8125 network driver
+ r8125 is the Linux 2.5G Ethernet device driver released by RealTek for their
+ network controller.
+ .
+ This package provides the dkms source code for the r8125 kernel modules.
+ Kernel source or headers are required to compile these modules.
+
+Package: repo
+Description-md5: 1496a967d4bcbc0d6ebc3348869abf22
+Description-en: repository management tool built on top of git
+ Repo is a repository management tool that the Android developers built on top
+ of Git. Repo unifies the many Git repositories when necessary, does the
+ uploads to the Android revision control system, and automates parts of the
+ Android development workflow. Repo is not meant to replace Git, only to make
+ it easier to work with Git in the context of Android. The repo command is an
+ executable Python script that you can put anywhere in your path. In working
+ with the Android source files, you will use Repo for across-network
+ operations. For example, with a single Repo command you can download files
+ from multiple repositories into your local working directory.
+ .
+ repo is an unusual tool because it downloads all of its own Python modules
+ using GPG-signed git tags, and stores those files as part of the project that
+ it is working with.  So this package just provides the wrapper script, which
+ provides the GPG signing keys for verifying that the correct Python code was
+ downloaded.
+
+Package: sl-modem-dkms
+Description-md5: a58074862ac671ccf741dfee54f7b6e0
+Description-en: SmartLink software modem driver - module building source
+ This package contains source code for the low-level drivers for the
+ software modems produced by Smart Link Ltd. It supports PCI and USB models.
+ .
+ In addition to this package, you will need the package sl-modem-daemon
+ which implements the application part of the driver.
+ .
+ Module packages can be built for the custom kernel package either by hand or
+ using DKMS.
+
+Package: virtualbox
+Description-md5: 30f96d22c1a6ca04db16bdc1e79ad965
+Description-en: x86 virtualization solution - base binaries
+ VirtualBox is a free x86 virtualization solution allowing a wide range
+ of x86 operating systems such as Windows, DOS, BSD or Linux to run on a
+ Linux system.
+ .
+ This package provides the binaries for VirtualBox. Either the virtualbox-dkms
+ or the virtualbox-source package is also required in order to compile the
+ kernel modules needed for virtualbox. A graphical user interface for
+ VirtualBox is provided by the package virtualbox-qt.
+
+Package: virtualbox-dkms
+Description-md5: 4d42f0fe51c4a92f2aed5071f84524ae
+Description-en: x86 virtualization solution - kernel module sources for dkms
+ VirtualBox is a free x86 virtualization solution allowing a wide range
+ of x86 operating systems such as Windows, DOS, BSD or Linux to run on a
+ Linux system.
+ .
+ This package provides the source code for the virtualbox kernel module to be
+ build with dkms. Kernel sources or headers are required to compile this
+ module.
+
+Package: virtualbox-guest-utils
+Description-md5: 0c420aa026ad03a572b15c6e38dbebf7
+Description-en: x86 virtualization solution - non-X11 guest utilities
+ VirtualBox is a free x86 virtualization solution allowing a wide range
+ of x86 operating systems such as Windows, DOS, BSD or Linux to run on a
+ Linux system.
+ .
+ This package provides the non-X11 guest utilities for VirtualBox. These
+ utilities are meant to be run inside the virtual machine.
+ They provide closer integration and allow to share data through shared folders
+ between the host system and the virtual machine.
+
+Package: virtualbox-guest-utils-hwe
+Description-md5: 0c420aa026ad03a572b15c6e38dbebf7
+Description-en: x86 virtualization solution - non-X11 guest utilities
+ VirtualBox is a free x86 virtualization solution allowing a wide range
+ of x86 operating systems such as Windows, DOS, BSD or Linux to run on a
+ Linux system.
+ .
+ This package provides the non-X11 guest utilities for VirtualBox. These
+ utilities are meant to be run inside the virtual machine.
+ They provide closer integration and allow to share data through shared folders
+ between the host system and the virtual machine.
+
+Package: virtualbox-guest-x11
+Description-md5: 3487afde0b114ec7e205b11f1dd3f7a5
+Description-en: x86 virtualization solution - X11 guest utilities
+ VirtualBox is a free x86 virtualization solution allowing a wide range
+ of x86 operating systems such as Windows, DOS, BSD or Linux to run on a
+ Linux system.
+ .
+ This package provides the X11 guest utilities for VirtualBox. These utilities
+ are meant to be run inside the virtual machine.
+ They provide closer integration and improve the interactive performance.
+
+Package: virtualbox-guest-x11-hwe
+Description-md5: 3487afde0b114ec7e205b11f1dd3f7a5
+Description-en: x86 virtualization solution - X11 guest utilities
+ VirtualBox is a free x86 virtualization solution allowing a wide range
+ of x86 operating systems such as Windows, DOS, BSD or Linux to run on a
+ Linux system.
+ .
+ This package provides the X11 guest utilities for VirtualBox. These utilities
+ are meant to be run inside the virtual machine.
+ They provide closer integration and improve the interactive performance.
+
+Package: virtualbox-qt
+Description-md5: 41ed29f36ba23b3ce0155f9a8efcff60
+Description-en: x86 virtualization solution - Qt based user interface
+ VirtualBox is a free x86 virtualization solution allowing a wide range
+ of x86 operating systems such as Windows, DOS, BSD or Linux to run on a
+ Linux system.
+ .
+ This package provides the Qt based graphical user interface for VirtualBox.
+
+Package: virtualbox-source
+Description-md5: 53035ede584988f3413156cb7a5dbe8b
+Description-en: x86 virtualization solution - kernel module source
+ VirtualBox is a free x86 virtualization solution allowing a wide range
+ of x86 operating systems such as Windows, DOS, BSD or Linux to run on a
+ Linux system.
+ .
+ This package provides the source code for the virtualbox kernel module.
+ The virtualbox package is also required in order to make use of these
+ modules. Kernel sources or headers are required to compile this module.
+ .
+ The source is placed under /usr/src, and after decompression it can
+ be built to produce a virtualbox-modules-_KVERS_ providing
+ "virtualbox-modules" package.
+
+Package: xserver-xorg-video-nvidia-550-server
+Description-md5: b5b83bcc735eb2aca8ee2ea5cbe0b834
+Description-en: NVIDIA binary Xorg driver
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: xserver-xorg-video-nvidia-575
+Description-md5: b5b83bcc735eb2aca8ee2ea5cbe0b834
+Description-en: NVIDIA binary Xorg driver
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: xserver-xorg-video-nvidia-575-server
+Description-md5: b5b83bcc735eb2aca8ee2ea5cbe0b834
+Description-en: NVIDIA binary Xorg driver
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: xserver-xorg-video-nvidia-595-server
+Description-md5: 6894003d07b3deea37ecf8be2dbcb5c3
+Description-en: NVIDIA binary Xorg driver
+ The NVIDIA binary driver provides optimized hardware acceleration of
+ OpenGL/GLX/EGL/GLES applications via a direct-rendering X Server
+ for graphics cards using NVIDIA chip sets.
+ .
+ See /usr/share/doc/nvidia-driver-595-server/README.txt.gz
+ for a complete list of supported GPUs and PCI IDs.
+
+Package: xserver-xorg-video-nvidia-610
+Description-md5: ebe1eb0172530983aa199dbb70f6cea0
+Description-en: NVIDIA binary Xorg driver (transitional package)
+ Transitional package for upgrades. This package can be safely removed.
+
+Package: xserver-xorg-video-nvidia-615
+Description-md5: 2cc91c246aa6c3c7347d467f8f3ac313
+Description-en: NVIDIA binary Xorg driver
+ The NVIDIA binary driver provides optimized hardware acceleration of
+ OpenGL/GLX/EGL/GLES applications via a direct-rendering X Server
+ for graphics cards using NVIDIA chip sets.
+ .
+ See /usr/share/doc/nvidia-driver-615/README.txt.gz
+ for a complete list of supported GPUs and PCI IDs.
+
+Package: xserver-xorg-video-nvidia-615-server
+Description-md5: 647ec35e8d5769482c95636dc40be70b
+Description-en: NVIDIA binary Xorg driver
+ The NVIDIA binary driver provides optimized hardware acceleration of
+ OpenGL/GLX/EGL/GLES applications via a direct-rendering X Server
+ for graphics cards using NVIDIA chip sets.
+ .
+ See /usr/share/doc/nvidia-driver-615-server/README.txt.gz
+ for a complete list of supported GPUs and PCI IDs.
+
+Package: linux-modules-nvidia-525-nvidia-tegra
+Description-md5: b6488d9840b6d2866bc207d7eb099bfc
+Description-en: Extra drivers for nvidia-525 for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -525 to -535.
+
+Package: linux-modules-nvidia-525-nvidia-tegra-6.8
+Description-md5: b6488d9840b6d2866bc207d7eb099bfc
+Description-en: Extra drivers for nvidia-525 for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -525 to -535.
+
+Package: linux-modules-nvidia-525-open-nvidia-tegra
+Description-md5: 990e299a1f7dfb60cfd61bfd7f0f668d
+Description-en: Extra drivers for nvidia-525-open for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -525-open to -535-open.
+
+Package: linux-modules-nvidia-525-open-nvidia-tegra-6.8
+Description-md5: 990e299a1f7dfb60cfd61bfd7f0f668d
+Description-en: Extra drivers for nvidia-525-open for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -525-open to -535-open.
+
+Package: linux-modules-nvidia-525-server-nvidia-tegra
+Description-md5: 5ce129b03d7c66a5878d06b965c7c340
+Description-en: Extra drivers for nvidia-525-server for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -525-server to -535-server.
+
+Package: linux-modules-nvidia-525-server-nvidia-tegra-6.8
+Description-md5: 5ce129b03d7c66a5878d06b965c7c340
+Description-en: Extra drivers for nvidia-525-server for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -525-server to -535-server.
+
+Package: linux-modules-nvidia-525-server-open-nvidia-tegra
+Description-md5: 3bede607de2aef1eeea4a7ee72f17c19
+Description-en: Extra drivers for nvidia-525-server-open for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -525-server-open to -535-server-open.
+
+Package: linux-modules-nvidia-525-server-open-nvidia-tegra-6.8
+Description-md5: 3bede607de2aef1eeea4a7ee72f17c19
+Description-en: Extra drivers for nvidia-525-server-open for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -525-server-open to -535-server-open.
+
+Package: linux-modules-nvidia-535-6.8.0-1016-nvidia-tegra
+Description-md5: 0d6038022313e5d678fff29e66cfa3cb
+Description-en: Linux kernel nvidia modules for version 6.8.0-1016
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1016 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-535-6.8.0-1019-nvidia-tegra
+Description-md5: b5c3278bf2b9e0d284459ce7f87bed4d
+Description-en: Linux kernel nvidia modules for version 6.8.0-1019
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1019 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-535-6.8.0-1020-nvidia-tegra
+Description-md5: a289de3db97c1bbc562fd6108bab6222
+Description-en: Linux kernel nvidia modules for version 6.8.0-1020
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1020 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-535-6.8.0-1021-nvidia-tegra
+Description-md5: 1fdc3cbd1a44d3997e2925edf05f5b32
+Description-en: Linux kernel nvidia modules for version 6.8.0-1021
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1021 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-535-6.8.0-1022-nvidia-tegra
+Description-md5: 7628a2126374bf30567f24b43a0c6503
+Description-en: Linux kernel nvidia modules for version 6.8.0-1022
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1022 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-535-6.8.0-1023-nvidia-tegra
+Description-md5: 7c1258e97d51ba670d776fcf6e755afb
+Description-en: Linux kernel nvidia modules for version 6.8.0-1023
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1023 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-535-6.8.0-1024-nvidia-tegra
+Description-md5: acbe0a91b8bd65dfe3149036ae934a3f
+Description-en: Linux kernel nvidia modules for version 6.8.0-1024
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1024 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-535-6.8.0-1025-nvidia-tegra
+Description-md5: 4d994856173eb39345da26c06e3e446d
+Description-en: Linux kernel nvidia modules for version 6.8.0-1025
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1025 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-535-6.8.0-1026-nvidia-tegra
+Description-md5: a7bf3106178fdb4d2ed01e06116eb71d
+Description-en: Linux kernel nvidia modules for version 6.8.0-1026
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1026 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-535-6.8.0-1029-nvidia-tegra
+Description-md5: cfe0ff9acde62d59b4132097f7f6606d
+Description-en: Linux kernel nvidia modules for version 6.8.0-1029
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1029 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-535-nvidia-tegra
+Description-md5: 84db28eaf0241e5cfbfaaff77a7146ab
+Description-en: Extra drivers for nvidia-535 for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -535 to -580.
+
+Package: linux-modules-nvidia-535-nvidia-tegra-6.8
+Description-md5: 84db28eaf0241e5cfbfaaff77a7146ab
+Description-en: Extra drivers for nvidia-535 for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -535 to -580.
+
+Package: linux-modules-nvidia-535-open-6.8.0-1016-nvidia-tegra
+Description-md5: da9bfab48e650c8174ea889bda7b382e
+Description-en: Linux kernel nvidia modules for version 6.8.0-1016
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1016 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-535-open-6.8.0-1019-nvidia-tegra
+Description-md5: 73c9eb4f3c989e3c119c5873d043073c
+Description-en: Linux kernel nvidia modules for version 6.8.0-1019
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1019 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-535-open-6.8.0-1020-nvidia-tegra
+Description-md5: a4d332aac4973876ef8e97d9e290b281
+Description-en: Linux kernel nvidia modules for version 6.8.0-1020
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1020 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-535-open-6.8.0-1021-nvidia-tegra
+Description-md5: 281245839fb2c928940d7c5ccf9eae46
+Description-en: Linux kernel nvidia modules for version 6.8.0-1021
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1021 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-535-open-6.8.0-1022-nvidia-tegra
+Description-md5: 6a43806e281641c3b016a4aa37fa0e09
+Description-en: Linux kernel nvidia modules for version 6.8.0-1022
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1022 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-535-open-6.8.0-1023-nvidia-tegra
+Description-md5: b5da7678484cc746ef5df77b117bfcbb
+Description-en: Linux kernel nvidia modules for version 6.8.0-1023
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1023 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-535-open-6.8.0-1024-nvidia-tegra
+Description-md5: 049b0c955ac9cefbd8c846cac849f4eb
+Description-en: Linux kernel nvidia modules for version 6.8.0-1024
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1024 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-535-open-6.8.0-1025-nvidia-tegra
+Description-md5: 7e598e5bc071ab1934b26792df170b11
+Description-en: Linux kernel nvidia modules for version 6.8.0-1025
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1025 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-535-open-6.8.0-1026-nvidia-tegra
+Description-md5: 5f668853734284e269964c75bb0d2b4e
+Description-en: Linux kernel nvidia modules for version 6.8.0-1026
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1026 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-535-open-6.8.0-1029-nvidia-tegra
+Description-md5: 5344e700a780077e52ae0345e85d997b
+Description-en: Linux kernel nvidia modules for version 6.8.0-1029
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1029 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-535-open-nvidia-tegra
+Description-md5: 23c44ac702473aef454286df88b8ccde
+Description-en: Extra drivers for nvidia-535-open for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -535-open to -580-open.
+
+Package: linux-modules-nvidia-535-open-nvidia-tegra-6.8
+Description-md5: 23c44ac702473aef454286df88b8ccde
+Description-en: Extra drivers for nvidia-535-open for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -535-open to -580-open.
+
+Package: linux-modules-nvidia-535-server-6.8.0-1016-nvidia-tegra
+Description-md5: e0599cc762ab9a48eb18792ca8f5892a
+Description-en: Linux kernel nvidia modules for version 6.8.0-1016
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1016 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-server-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-535-server-6.8.0-1019-nvidia-tegra
+Description-md5: f3950eda68d9c1b9c435668bc8b8e0fb
+Description-en: Linux kernel nvidia modules for version 6.8.0-1019
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1019 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-server-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-535-server-6.8.0-1020-nvidia-tegra
+Description-md5: e8fd4a41c63bfb178700856f66688967
+Description-en: Linux kernel nvidia modules for version 6.8.0-1020
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1020 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-server-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-535-server-6.8.0-1021-nvidia-tegra
+Description-md5: 63c43c361191a4ee692d363e39b72dfb
+Description-en: Linux kernel nvidia modules for version 6.8.0-1021
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1021 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-server-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-535-server-6.8.0-1022-nvidia-tegra
+Description-md5: c233dc3f6056907e542d88bc3492995c
+Description-en: Linux kernel nvidia modules for version 6.8.0-1022
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1022 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-server-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-535-server-6.8.0-1023-nvidia-tegra
+Description-md5: b238c7535c28672e8b49b78622f0b0d8
+Description-en: Linux kernel nvidia modules for version 6.8.0-1023
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1023 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-server-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-535-server-6.8.0-1024-nvidia-tegra
+Description-md5: 52935e41ed990028276341071b2b38e7
+Description-en: Linux kernel nvidia modules for version 6.8.0-1024
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1024 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-server-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-535-server-6.8.0-1025-nvidia-tegra
+Description-md5: a4dabeec8cba54b3ce15e76fab48d021
+Description-en: Linux kernel nvidia modules for version 6.8.0-1025
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1025 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-server-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-535-server-6.8.0-1026-nvidia-tegra
+Description-md5: 513fd0938fa2f1821965583bc868bcb3
+Description-en: Linux kernel nvidia modules for version 6.8.0-1026
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1026 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-server-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-535-server-6.8.0-1029-nvidia-tegra
+Description-md5: 13797d749df46c7da7d5cd034f983a13
+Description-en: Linux kernel nvidia modules for version 6.8.0-1029
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1029 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-server-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-535-server-nvidia-tegra
+Description-md5: 201a00ceb5cd9c042676afc8741e8f6e
+Description-en: Extra drivers for nvidia-535-server for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -535-server to -580-server.
+
+Package: linux-modules-nvidia-535-server-nvidia-tegra-6.8
+Description-md5: 201a00ceb5cd9c042676afc8741e8f6e
+Description-en: Extra drivers for nvidia-535-server for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -535-server to -580-server.
+
+Package: linux-modules-nvidia-535-server-open-6.8.0-1016-nvidia-tegra
+Description-md5: 72c84585e99291437c75c1b7ea736a75
+Description-en: Linux kernel nvidia modules for version 6.8.0-1016
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1016 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-server-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-535-server-open-6.8.0-1019-nvidia-tegra
+Description-md5: 7e312bff73383aa42ed06db659e6ea24
+Description-en: Linux kernel nvidia modules for version 6.8.0-1019
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1019 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-server-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-535-server-open-6.8.0-1020-nvidia-tegra
+Description-md5: 5cbe0e6132e1d9d5de38007959bef0bd
+Description-en: Linux kernel nvidia modules for version 6.8.0-1020
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1020 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-server-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-535-server-open-6.8.0-1021-nvidia-tegra
+Description-md5: 51b8444e96d5f6180c3051add593aebb
+Description-en: Linux kernel nvidia modules for version 6.8.0-1021
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1021 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-server-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-535-server-open-6.8.0-1022-nvidia-tegra
+Description-md5: 351b99b1f20a55edd6d26b5494bec682
+Description-en: Linux kernel nvidia modules for version 6.8.0-1022
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1022 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-server-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-535-server-open-6.8.0-1023-nvidia-tegra
+Description-md5: aadbe215f494b8fecaa5532b0935c30f
+Description-en: Linux kernel nvidia modules for version 6.8.0-1023
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1023 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-server-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-535-server-open-6.8.0-1024-nvidia-tegra
+Description-md5: 2b43609592acbc2bb2a09c70c450189f
+Description-en: Linux kernel nvidia modules for version 6.8.0-1024
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1024 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-server-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-535-server-open-6.8.0-1025-nvidia-tegra
+Description-md5: 8a9326384ab6bde02494be88bbbda672
+Description-en: Linux kernel nvidia modules for version 6.8.0-1025
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1025 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-server-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-535-server-open-6.8.0-1026-nvidia-tegra
+Description-md5: 72850d30f922e9d8eda4a56bc0d4bebb
+Description-en: Linux kernel nvidia modules for version 6.8.0-1026
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1026 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-server-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-535-server-open-6.8.0-1029-nvidia-tegra
+Description-md5: dc3c4072f74c9fdafccc981f2c03bf24
+Description-en: Linux kernel nvidia modules for version 6.8.0-1029
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1029 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-server-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-535-server-open-nvidia-tegra
+Description-md5: b9f2d0cacb70f569d39077d30e82b5c6
+Description-en: Extra drivers for nvidia-535-server-open for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -535-server-open to -580-server-open.
+
+Package: linux-modules-nvidia-535-server-open-nvidia-tegra-6.8
+Description-md5: b9f2d0cacb70f569d39077d30e82b5c6
+Description-en: Extra drivers for nvidia-535-server-open for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -535-server-open to -580-server-open.
+
+Package: linux-modules-nvidia-550-nvidia-tegra
+Description-md5: 3c59a41b7cb83d8fc4540d52a5bafdc3
+Description-en: Extra drivers for nvidia-550 for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -550 to -580.
+
+Package: linux-modules-nvidia-550-nvidia-tegra-6.8
+Description-md5: 3c59a41b7cb83d8fc4540d52a5bafdc3
+Description-en: Extra drivers for nvidia-550 for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -550 to -580.
+
+Package: linux-modules-nvidia-550-open-nvidia-tegra
+Description-md5: cc4d494769eeaab81cfdc13588700981
+Description-en: Extra drivers for nvidia-550-open for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -550-open to -580-open.
+
+Package: linux-modules-nvidia-550-open-nvidia-tegra-6.8
+Description-md5: cc4d494769eeaab81cfdc13588700981
+Description-en: Extra drivers for nvidia-550-open for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -550-open to -580-open.
+
+Package: linux-modules-nvidia-570-nvidia-tegra
+Description-md5: f6413adb3f77ab11c578911cc2ad47fe
+Description-en: Extra drivers for nvidia-570 for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -570 to -580.
+
+Package: linux-modules-nvidia-570-nvidia-tegra-6.8
+Description-md5: f6413adb3f77ab11c578911cc2ad47fe
+Description-en: Extra drivers for nvidia-570 for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -570 to -580.
+
+Package: linux-modules-nvidia-570-open-nvidia-tegra
+Description-md5: 2adf4204e01e1c38e448debc2145e349
+Description-en: Extra drivers for nvidia-570-open for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -570-open to -580-open.
+
+Package: linux-modules-nvidia-570-open-nvidia-tegra-6.8
+Description-md5: 2adf4204e01e1c38e448debc2145e349
+Description-en: Extra drivers for nvidia-570-open for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -570-open to -580-open.
+
+Package: linux-modules-nvidia-570-server-nvidia-tegra
+Description-md5: 80f0cecb5150cd2fdf6ef4ac0d20723f
+Description-en: Extra drivers for nvidia-570-server for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -570-server to -580-server.
+
+Package: linux-modules-nvidia-570-server-nvidia-tegra-6.8
+Description-md5: 80f0cecb5150cd2fdf6ef4ac0d20723f
+Description-en: Extra drivers for nvidia-570-server for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -570-server to -580-server.
+
+Package: linux-modules-nvidia-570-server-open-nvidia-tegra
+Description-md5: 2c08ec2de06b3f456aebc6a186bc3677
+Description-en: Extra drivers for nvidia-570-server-open for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -570-server-open to -580-server-open.
+
+Package: linux-modules-nvidia-570-server-open-nvidia-tegra-6.8
+Description-md5: 2c08ec2de06b3f456aebc6a186bc3677
+Description-en: Extra drivers for nvidia-570-server-open for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -570-server-open to -580-server-open.
+
+Package: linux-modules-nvidia-575-nvidia-tegra
+Description-md5: 0961a6fcb936b9b73957a292e526671c
+Description-en: Extra drivers for nvidia-575 for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -575 to -580.
+
+Package: linux-modules-nvidia-575-nvidia-tegra-6.8
+Description-md5: 0961a6fcb936b9b73957a292e526671c
+Description-en: Extra drivers for nvidia-575 for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -575 to -580.
+
+Package: linux-modules-nvidia-575-open-nvidia-tegra
+Description-md5: 6d386514d7a2d8a656b3df66d7d9996f
+Description-en: Extra drivers for nvidia-575-open for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -575-open to -580-open.
+
+Package: linux-modules-nvidia-575-open-nvidia-tegra-6.8
+Description-md5: 6d386514d7a2d8a656b3df66d7d9996f
+Description-en: Extra drivers for nvidia-575-open for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -575-open to -580-open.
+
+Package: linux-modules-nvidia-575-server-nvidia-tegra
+Description-md5: fd59978e7567db6f19da598747c79879
+Description-en: Extra drivers for nvidia-575-server for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -575-server to -580-server.
+
+Package: linux-modules-nvidia-575-server-nvidia-tegra-6.8
+Description-md5: fd59978e7567db6f19da598747c79879
+Description-en: Extra drivers for nvidia-575-server for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -575-server to -580-server.
+
+Package: linux-modules-nvidia-575-server-open-nvidia-tegra
+Description-md5: 97d2d47c22187262df3b094d4f5f401e
+Description-en: Extra drivers for nvidia-575-server-open for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -575-server-open to -580-server-open.
+
+Package: linux-modules-nvidia-575-server-open-nvidia-tegra-6.8
+Description-md5: 97d2d47c22187262df3b094d4f5f401e
+Description-en: Extra drivers for nvidia-575-server-open for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -575-server-open to -580-server-open.
+
+Package: linux-modules-nvidia-580-6.8.0-1029-nvidia-tegra
+Description-md5: 75b7621576d16d3031c05026192531f0
+Description-en: Linux kernel nvidia modules for version 6.8.0-1029
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1029 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-580-6.8.0-1030-nvidia-tegra
+Description-md5: 16f4c103ac2f0c688efd114e6d10f554
+Description-en: Linux kernel nvidia modules for version 6.8.0-1030
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1030 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-580-6.8.0-1031-nvidia-tegra
+Description-md5: 4dc1f5ade36789455b14713896565eaa
+Description-en: Linux kernel nvidia modules for version 6.8.0-1031
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1031 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-580-6.8.0-1032-nvidia-tegra
+Description-md5: 91a7ca0857ca8456b18126c82b8e0922
+Description-en: Linux kernel nvidia modules for version 6.8.0-1032
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1032 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-580-6.8.0-1035-nvidia-tegra
+Description-md5: d6971a610ac2abe2a72f299c56992b49
+Description-en: Linux kernel nvidia modules for version 6.8.0-1035
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1035 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-580-6.8.0-1036-nvidia-tegra
+Description-md5: 95e7e1731e6856b9f129efd8b56de40d
+Description-en: Linux kernel nvidia modules for version 6.8.0-1036
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1036 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-580-6.8.0-1038-nvidia-tegra
+Description-md5: 2def1f5307adc5a0fc3365f94b8e3196
+Description-en: Linux kernel nvidia modules for version 6.8.0-1038
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1038 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-580-nvidia-tegra
+Description-md5: cb12983f0459346aa1d6c17c742b962b
+Description-en: Extra drivers for nvidia-580 for the nvidia-tegra flavour
+ Install extra signed nvidia-580 modules compatible with the nvidia-tegra flavour.
+
+Package: linux-modules-nvidia-580-nvidia-tegra-6.8
+Description-md5: 21e42d07e06063bd143a377d5a3c2ec2
+Description-en: Extra drivers for nvidia-580 for the nvidia-tegra-6.8 flavour
+ Install extra signed nvidia-580 modules compatible with the nvidia-tegra-6.8 flavour.
+
+Package: linux-modules-nvidia-580-open-6.8.0-1029-nvidia-tegra
+Description-md5: 515c2f098bb3079d50bdae6138acf629
+Description-en: Linux kernel nvidia modules for version 6.8.0-1029
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1029 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-580-open-6.8.0-1030-nvidia-tegra
+Description-md5: 6c43b6c353aa5c794d45be1a56fb659e
+Description-en: Linux kernel nvidia modules for version 6.8.0-1030
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1030 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-580-open-6.8.0-1031-nvidia-tegra
+Description-md5: b015f5d5d4a380f44ad8bb4e185b1a40
+Description-en: Linux kernel nvidia modules for version 6.8.0-1031
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1031 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-580-open-6.8.0-1032-nvidia-tegra
+Description-md5: e136ed9f0ea2c6f0d42ac849536a5b73
+Description-en: Linux kernel nvidia modules for version 6.8.0-1032
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1032 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-580-open-6.8.0-1035-nvidia-tegra
+Description-md5: c4f4b07ad2b1b955b2b856cdc6cd568a
+Description-en: Linux kernel nvidia modules for version 6.8.0-1035
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1035 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-580-open-6.8.0-1036-nvidia-tegra
+Description-md5: 273fb3727ecfb1227151efe67ab236bd
+Description-en: Linux kernel nvidia modules for version 6.8.0-1036
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1036 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-580-open-6.8.0-1038-nvidia-tegra
+Description-md5: 89ced16f455f68ef9ff43b06ff999b79
+Description-en: Linux kernel nvidia modules for version 6.8.0-1038
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1038 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-580-open-nvidia-tegra
+Description-md5: d4de3f6d38d10565810e0b242285114d
+Description-en: Extra drivers for nvidia-580-open for the nvidia-tegra flavour
+ Install extra signed nvidia-580-open modules compatible with the nvidia-tegra flavour.
+
+Package: linux-modules-nvidia-580-open-nvidia-tegra-6.8
+Description-md5: 1eb86c81848156ca22a62b5452bb3105
+Description-en: Extra drivers for nvidia-580-open for the nvidia-tegra-6.8 flavour
+ Install extra signed nvidia-580-open modules compatible with the nvidia-tegra-6.8 flavour.
+
+Package: linux-modules-nvidia-580-server-6.8.0-1029-nvidia-tegra
+Description-md5: 144cd8e88f139fd307239e11b763fd72
+Description-en: Linux kernel nvidia modules for version 6.8.0-1029
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1029 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-server-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-580-server-6.8.0-1030-nvidia-tegra
+Description-md5: 4690c8154051acf56c5909f1f1ae9098
+Description-en: Linux kernel nvidia modules for version 6.8.0-1030
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1030 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-server-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-580-server-6.8.0-1031-nvidia-tegra
+Description-md5: 43743f0f79dfd663c222b3ea48f6f40d
+Description-en: Linux kernel nvidia modules for version 6.8.0-1031
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1031 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-server-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-580-server-6.8.0-1032-nvidia-tegra
+Description-md5: 0411944529d236f15527dfc3bd3b60f3
+Description-en: Linux kernel nvidia modules for version 6.8.0-1032
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1032 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-server-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-580-server-6.8.0-1035-nvidia-tegra
+Description-md5: 72639abea4df6cf5bad2683d6f2a78d5
+Description-en: Linux kernel nvidia modules for version 6.8.0-1035
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1035 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-server-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-580-server-6.8.0-1036-nvidia-tegra
+Description-md5: 65e7e2d8492a188f39c3a60ef74d71d8
+Description-en: Linux kernel nvidia modules for version 6.8.0-1036
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1036 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-server-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-580-server-6.8.0-1038-nvidia-tegra
+Description-md5: 47d01f19017fca0aa5edc6f8f88467dc
+Description-en: Linux kernel nvidia modules for version 6.8.0-1038
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1038 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-server-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-580-server-nvidia-tegra
+Description-md5: b87193bb7583685c368f968d13aa213c
+Description-en: Extra drivers for nvidia-580-server for the nvidia-tegra flavour
+ Install extra signed nvidia-580-server modules compatible with the nvidia-tegra flavour.
+
+Package: linux-modules-nvidia-580-server-nvidia-tegra-6.8
+Description-md5: 160d98454889c445c340c4e1f32e6841
+Description-en: Extra drivers for nvidia-580-server for the nvidia-tegra-6.8 flavour
+ Install extra signed nvidia-580-server modules compatible with the nvidia-tegra-6.8 flavour.
+
+Package: linux-modules-nvidia-580-server-open-6.8.0-1029-nvidia-tegra
+Description-md5: 8a4b7e7febd648a8a658e65c000c47a4
+Description-en: Linux kernel nvidia modules for version 6.8.0-1029
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1029 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-server-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-580-server-open-6.8.0-1030-nvidia-tegra
+Description-md5: 5c75f4f6d703fb9975b3dbfeccf19f48
+Description-en: Linux kernel nvidia modules for version 6.8.0-1030
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1030 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-server-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-580-server-open-6.8.0-1031-nvidia-tegra
+Description-md5: 61b97d07a05288644564bbc2e2e134fd
+Description-en: Linux kernel nvidia modules for version 6.8.0-1031
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1031 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-server-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-580-server-open-6.8.0-1032-nvidia-tegra
+Description-md5: 47cd248a83c7f2342457075f0b71232b
+Description-en: Linux kernel nvidia modules for version 6.8.0-1032
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1032 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-server-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-580-server-open-6.8.0-1035-nvidia-tegra
+Description-md5: 854e927d18342a4fac1626ae7a89b154
+Description-en: Linux kernel nvidia modules for version 6.8.0-1035
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1035 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-server-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-580-server-open-6.8.0-1036-nvidia-tegra
+Description-md5: b637ce61a6058a046f0fbf4739642af1
+Description-en: Linux kernel nvidia modules for version 6.8.0-1036
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1036 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-server-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-580-server-open-6.8.0-1038-nvidia-tegra
+Description-md5: 700e6482edf6767b8c15c305f1cac221
+Description-en: Linux kernel nvidia modules for version 6.8.0-1038
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1038 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-server-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-580-server-open-nvidia-tegra
+Description-md5: b0627549329f0ebc4e4f77f0c0c28585
+Description-en: Extra drivers for nvidia-580-server-open for the nvidia-tegra flavour
+ Install extra signed nvidia-580-server-open modules compatible with the nvidia-tegra flavour.
+
+Package: linux-modules-nvidia-580-server-open-nvidia-tegra-6.8
+Description-md5: 3ffd6059876aa88a477311e5a8ecba9a
+Description-en: Extra drivers for nvidia-580-server-open for the nvidia-tegra-6.8 flavour
+ Install extra signed nvidia-580-server-open modules compatible with the nvidia-tegra-6.8 flavour.
+
+Package: linux-modules-nvidia-590-nvidia-tegra
+Description-md5: 42a5e84c4886cdd8fa092b4274bbb321
+Description-en: Extra drivers for nvidia-590 for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -590 to -595.
+
+Package: linux-modules-nvidia-590-nvidia-tegra-6.8
+Description-md5: 42a5e84c4886cdd8fa092b4274bbb321
+Description-en: Extra drivers for nvidia-590 for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -590 to -595.
+
+Package: linux-modules-nvidia-590-open-nvidia-tegra
+Description-md5: 376008ed5277fd7db9140e8fe643b912
+Description-en: Extra drivers for nvidia-590-open for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -590-open to -595-open.
+
+Package: linux-modules-nvidia-590-open-nvidia-tegra-6.8
+Description-md5: 376008ed5277fd7db9140e8fe643b912
+Description-en: Extra drivers for nvidia-590-open for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -590-open to -595-open.
+
+Package: linux-modules-nvidia-590-server-nvidia-tegra
+Description-md5: 77cedd82a3e1a48ad7303261c081661c
+Description-en: Extra drivers for nvidia-590-server for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -590-server to -595-server.
+
+Package: linux-modules-nvidia-590-server-nvidia-tegra-6.8
+Description-md5: 77cedd82a3e1a48ad7303261c081661c
+Description-en: Extra drivers for nvidia-590-server for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -590-server to -595-server.
+
+Package: linux-modules-nvidia-590-server-open-nvidia-tegra
+Description-md5: 8c6a4503d2db66f4d1798496785f3b2f
+Description-en: Extra drivers for nvidia-590-server-open for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -590-server-open to -595-server-open.
+
+Package: linux-modules-nvidia-590-server-open-nvidia-tegra-6.8
+Description-md5: 8c6a4503d2db66f4d1798496785f3b2f
+Description-en: Extra drivers for nvidia-590-server-open for the nvidia-tegra flavour (dummy transitional package)
+ Transitional package for upgrades of -590-server-open to -595-server-open.
+
+Package: linux-modules-nvidia-595-6.8.0-1029-nvidia-tegra
+Description-md5: dfd12becb8bff03e21efde99fc1f3aef
+Description-en: Linux kernel nvidia modules for version 6.8.0-1029
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1029 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-595-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-595-nvidia-tegra
+Description-md5: 83e75f5fa17a61a4bd9d50e68817eb3b
+Description-en: Extra drivers for nvidia-595 for the nvidia-tegra flavour
+ Install extra signed nvidia-595 modules compatible with the nvidia-tegra flavour.
+
+Package: linux-modules-nvidia-595-nvidia-tegra-6.8
+Description-md5: baf01e7b2c0d9f32aee2799ec7903069
+Description-en: Extra drivers for nvidia-595 for the nvidia-tegra-6.8 flavour
+ Install extra signed nvidia-595 modules compatible with the nvidia-tegra-6.8 flavour.
+
+Package: linux-modules-nvidia-595-open-6.8.0-1029-nvidia-tegra
+Description-md5: 8e7a56b47e12f68458ab3b967525d40e
+Description-en: Linux kernel nvidia modules for version 6.8.0-1029
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1029 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-595-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-595-open-nvidia-tegra
+Description-md5: e2b273d69475ae5fdac9cf11336d985b
+Description-en: Extra drivers for nvidia-595-open for the nvidia-tegra flavour
+ Install extra signed nvidia-595-open modules compatible with the nvidia-tegra flavour.
+
+Package: linux-modules-nvidia-595-open-nvidia-tegra-6.8
+Description-md5: f26d097f59845be79223c998dd84b391
+Description-en: Extra drivers for nvidia-595-open for the nvidia-tegra-6.8 flavour
+ Install extra signed nvidia-595-open modules compatible with the nvidia-tegra-6.8 flavour.
+
+Package: linux-modules-nvidia-595-server-6.8.0-1029-nvidia-tegra
+Description-md5: 3aee05bfeeea302ded46424a9432548e
+Description-en: Linux kernel nvidia modules for version 6.8.0-1029
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1029 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-595-server-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-595-server-nvidia-tegra
+Description-md5: acfa99904fdd771d1deba28a41b2b552
+Description-en: Extra drivers for nvidia-595-server for the nvidia-tegra flavour
+ Install extra signed nvidia-595-server modules compatible with the nvidia-tegra flavour.
+
+Package: linux-modules-nvidia-595-server-nvidia-tegra-6.8
+Description-md5: 7155378428fe1c04bb34c3cad4997926
+Description-en: Extra drivers for nvidia-595-server for the nvidia-tegra-6.8 flavour
+ Install extra signed nvidia-595-server modules compatible with the nvidia-tegra-6.8 flavour.
+
+Package: linux-modules-nvidia-595-server-open-6.8.0-1029-nvidia-tegra
+Description-md5: 3dfce7b11ee82cf97152e5d322c79ce2
+Description-en: Linux kernel nvidia modules for version 6.8.0-1029
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1029 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-595-server-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-595-server-open-nvidia-tegra
+Description-md5: a6450d64a9b561df7c6feca489e1df7a
+Description-en: Extra drivers for nvidia-595-server-open for the nvidia-tegra flavour
+ Install extra signed nvidia-595-server-open modules compatible with the nvidia-tegra flavour.
+
+Package: linux-modules-nvidia-595-server-open-nvidia-tegra-6.8
+Description-md5: b89b741cc7b35d87a0335a4731ad1434
+Description-en: Extra drivers for nvidia-595-server-open for the nvidia-tegra-6.8 flavour
+ Install extra signed nvidia-595-server-open modules compatible with the nvidia-tegra-6.8 flavour.
+
+Package: linux-modules-nvidia-615-open-6.8.0-1036-nvidia-tegra
+Description-md5: fd735440d40eea211fca3deb9a203b14
+Description-en: Linux kernel nvidia modules for version 6.8.0-1036
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1036 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-615-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-615-open-6.8.0-1038-nvidia-tegra
+Description-md5: 9d0302a2849a06ce24cbe36995a59b21
+Description-en: Linux kernel nvidia modules for version 6.8.0-1038
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1038 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-615-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-615-open-nvidia-tegra
+Description-md5: 2aceb4c1482cdd783fff758d9b018214
+Description-en: Extra drivers for nvidia-615-open for the nvidia-tegra flavour
+ Install extra signed nvidia-615-open modules compatible with the nvidia-tegra flavour.
+
+Package: linux-modules-nvidia-615-open-nvidia-tegra-6.8
+Description-md5: b2b04fb0a678698ca7983ea244e48cd8
+Description-en: Extra drivers for nvidia-615-open for the nvidia-tegra-6.8 flavour
+ Install extra signed nvidia-615-open modules compatible with the nvidia-tegra-6.8 flavour.
+
+Package: linux-modules-nvidia-615-server-open-6.8.0-1036-nvidia-tegra
+Description-md5: 4af988382bb65bcf5579660bcfa0b02e
+Description-en: Linux kernel nvidia modules for version 6.8.0-1036
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1036 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-615-server-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-615-server-open-6.8.0-1038-nvidia-tegra
+Description-md5: f135e320cd22c640323feba766b540a6
+Description-en: Linux kernel nvidia modules for version 6.8.0-1038
+ This package pulls together the Linux kernel nvidia modules for
+ version 6.8.0-1038 with the appropriate signatures.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-615-server-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-modules-nvidia-615-server-open-nvidia-tegra
+Description-md5: a9e08b2678ccc5b6bf9039de18dc6ef2
+Description-en: Extra drivers for nvidia-615-server-open for the nvidia-tegra flavour
+ Install extra signed nvidia-615-server-open modules compatible with the nvidia-tegra flavour.
+
+Package: linux-modules-nvidia-615-server-open-nvidia-tegra-6.8
+Description-md5: e9191bfbda84d4f9e7da8c446487a833
+Description-en: Extra drivers for nvidia-615-server-open for the nvidia-tegra-6.8 flavour
+ Install extra signed nvidia-615-server-open modules compatible with the nvidia-tegra-6.8 flavour.
+
+Package: linux-objects-nvidia-535-6.8.0-1016-nvidia-tegra
+Description-md5: 46e565675461640bd255ca161e3e08b3
+Description-en: Linux kernel nvidia modules for version 6.8.0-1016 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1016.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-535-6.8.0-1019-nvidia-tegra
+Description-md5: b817d702038ae6f081296a763a013192
+Description-en: Linux kernel nvidia modules for version 6.8.0-1019 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1019.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-535-6.8.0-1020-nvidia-tegra
+Description-md5: 9fffdfb0bcaf9d7cbf13b7db2b5de020
+Description-en: Linux kernel nvidia modules for version 6.8.0-1020 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1020.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-535-6.8.0-1021-nvidia-tegra
+Description-md5: 0c0d8bb06d11f8704098b3520ba9b522
+Description-en: Linux kernel nvidia modules for version 6.8.0-1021 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1021.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-535-6.8.0-1022-nvidia-tegra
+Description-md5: 86c10eab89b5e72767ad5fd08875950f
+Description-en: Linux kernel nvidia modules for version 6.8.0-1022 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1022.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-535-6.8.0-1023-nvidia-tegra
+Description-md5: e6eb99e389846d9b79279f92711f1906
+Description-en: Linux kernel nvidia modules for version 6.8.0-1023 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1023.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-535-6.8.0-1024-nvidia-tegra
+Description-md5: b067d9e2f6c7b805f354f2f3109702c8
+Description-en: Linux kernel nvidia modules for version 6.8.0-1024 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1024.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-535-6.8.0-1025-nvidia-tegra
+Description-md5: 8e3ec8a42a8f22b3362030762e09921c
+Description-en: Linux kernel nvidia modules for version 6.8.0-1025 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1025.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-535-6.8.0-1026-nvidia-tegra
+Description-md5: 6e37f6af6325c4b185965def8294f14b
+Description-en: Linux kernel nvidia modules for version 6.8.0-1026 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1026.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-535-6.8.0-1029-nvidia-tegra
+Description-md5: 5858f204d9cda5b485f5e932cb743ac2
+Description-en: Linux kernel nvidia modules for version 6.8.0-1029 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1029.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-535-open-6.8.0-1016-nvidia-tegra
+Description-md5: 046b58a08507720abdf3994278b615fb
+Description-en: Linux kernel nvidia modules for version 6.8.0-1016 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1016.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-535-open-6.8.0-1019-nvidia-tegra
+Description-md5: 244e742e5b0707e36415161e0ba4ca73
+Description-en: Linux kernel nvidia modules for version 6.8.0-1019 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1019.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-535-open-6.8.0-1020-nvidia-tegra
+Description-md5: d9abe13b5117813484bedf245d7e02e1
+Description-en: Linux kernel nvidia modules for version 6.8.0-1020 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1020.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-535-open-6.8.0-1021-nvidia-tegra
+Description-md5: 8f5a2cc7bf59f882cdc59b70ca5d41b4
+Description-en: Linux kernel nvidia modules for version 6.8.0-1021 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1021.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-535-open-6.8.0-1022-nvidia-tegra
+Description-md5: ca7fc43f226c63ed601ab1c270d0f8b8
+Description-en: Linux kernel nvidia modules for version 6.8.0-1022 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1022.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-535-open-6.8.0-1023-nvidia-tegra
+Description-md5: 1d9292bf59319f9a2377ebf1eef25a5a
+Description-en: Linux kernel nvidia modules for version 6.8.0-1023 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1023.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-535-open-6.8.0-1024-nvidia-tegra
+Description-md5: 66ec06ffcd3a34d30ce9b957c0108425
+Description-en: Linux kernel nvidia modules for version 6.8.0-1024 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1024.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-535-open-6.8.0-1025-nvidia-tegra
+Description-md5: 7b1a0832ea4818d8548af7bc4e7babef
+Description-en: Linux kernel nvidia modules for version 6.8.0-1025 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1025.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-535-open-6.8.0-1026-nvidia-tegra
+Description-md5: fbe494904429233ce62c84a5bab09a72
+Description-en: Linux kernel nvidia modules for version 6.8.0-1026 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1026.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-535-open-6.8.0-1029-nvidia-tegra
+Description-md5: e2d5d82a8453de0d37784aec35936cb8
+Description-en: Linux kernel nvidia modules for version 6.8.0-1029 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1029.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-535-server-6.8.0-1016-nvidia-tegra
+Description-md5: 41a957030bec7c89c8755ac55bbf43ee
+Description-en: Linux kernel nvidia modules for version 6.8.0-1016 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1016.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-server-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-535-server-6.8.0-1019-nvidia-tegra
+Description-md5: 973b626eed17dd806b48fbfe8281d793
+Description-en: Linux kernel nvidia modules for version 6.8.0-1019 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1019.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-server-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-535-server-6.8.0-1020-nvidia-tegra
+Description-md5: 3455a8e8086b0ea0f9fa77376f0530f3
+Description-en: Linux kernel nvidia modules for version 6.8.0-1020 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1020.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-server-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-535-server-6.8.0-1021-nvidia-tegra
+Description-md5: c1ae5460a5853590e655b6f8e58264b6
+Description-en: Linux kernel nvidia modules for version 6.8.0-1021 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1021.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-server-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-535-server-6.8.0-1022-nvidia-tegra
+Description-md5: 9f62355e49e724c30fdda0075172f911
+Description-en: Linux kernel nvidia modules for version 6.8.0-1022 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1022.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-server-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-535-server-6.8.0-1023-nvidia-tegra
+Description-md5: 117035c80cda8375f0166506e675e60d
+Description-en: Linux kernel nvidia modules for version 6.8.0-1023 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1023.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-server-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-535-server-6.8.0-1024-nvidia-tegra
+Description-md5: b653b8fd21bf8aea8eae54092292d09c
+Description-en: Linux kernel nvidia modules for version 6.8.0-1024 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1024.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-server-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-535-server-6.8.0-1025-nvidia-tegra
+Description-md5: f56d5ad7799f215b6adced6af668c6e1
+Description-en: Linux kernel nvidia modules for version 6.8.0-1025 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1025.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-server-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-535-server-6.8.0-1026-nvidia-tegra
+Description-md5: 2eb9621aee49f8fd4d3b01bfbb8b088d
+Description-en: Linux kernel nvidia modules for version 6.8.0-1026 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1026.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-server-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-535-server-6.8.0-1029-nvidia-tegra
+Description-md5: 798a291647ac519fc0e4127b99639aea
+Description-en: Linux kernel nvidia modules for version 6.8.0-1029 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1029.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-server-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-535-server-open-6.8.0-1016-nvidia-tegra
+Description-md5: 402b0757989bccfcec011c70d9b64def
+Description-en: Linux kernel nvidia modules for version 6.8.0-1016 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1016.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-server-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-535-server-open-6.8.0-1019-nvidia-tegra
+Description-md5: 4bd33ba943f4d877783871bcc2a9fb08
+Description-en: Linux kernel nvidia modules for version 6.8.0-1019 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1019.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-server-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-535-server-open-6.8.0-1020-nvidia-tegra
+Description-md5: 3f433ba9c928a014ee3934e292746a14
+Description-en: Linux kernel nvidia modules for version 6.8.0-1020 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1020.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-server-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-535-server-open-6.8.0-1021-nvidia-tegra
+Description-md5: 9885e8a01b6faaaaccbbcb772b2f3c3d
+Description-en: Linux kernel nvidia modules for version 6.8.0-1021 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1021.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-server-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-535-server-open-6.8.0-1022-nvidia-tegra
+Description-md5: e7a21cdedc73070c3968fb5541192aba
+Description-en: Linux kernel nvidia modules for version 6.8.0-1022 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1022.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-server-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-535-server-open-6.8.0-1023-nvidia-tegra
+Description-md5: 7e61755d35061fcc1d33bad6a167acce
+Description-en: Linux kernel nvidia modules for version 6.8.0-1023 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1023.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-server-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-535-server-open-6.8.0-1024-nvidia-tegra
+Description-md5: 5e7886460ef9204834817bc941384b81
+Description-en: Linux kernel nvidia modules for version 6.8.0-1024 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1024.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-server-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-535-server-open-6.8.0-1025-nvidia-tegra
+Description-md5: 4e64567d508fbd44bafa5067c50dcacb
+Description-en: Linux kernel nvidia modules for version 6.8.0-1025 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1025.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-server-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-535-server-open-6.8.0-1026-nvidia-tegra
+Description-md5: 7174830d166d815eddb2d29f78e058c6
+Description-en: Linux kernel nvidia modules for version 6.8.0-1026 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1026.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-server-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-535-server-open-6.8.0-1029-nvidia-tegra
+Description-md5: a9989e51e9d290e80b4752fa16f4ce1d
+Description-en: Linux kernel nvidia modules for version 6.8.0-1029 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1029.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-535-server-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-580-6.8.0-1029-nvidia-tegra
+Description-md5: 8a21415ca7eac5a9e3c937b58dd4a8a8
+Description-en: Linux kernel nvidia modules for version 6.8.0-1029 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1029.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-580-6.8.0-1030-nvidia-tegra
+Description-md5: b3660a7fcf0eec628ba4740d393e16db
+Description-en: Linux kernel nvidia modules for version 6.8.0-1030 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1030.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-580-6.8.0-1031-nvidia-tegra
+Description-md5: 31d699a72cb92c488a2ff93df176f5bf
+Description-en: Linux kernel nvidia modules for version 6.8.0-1031 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1031.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-580-6.8.0-1032-nvidia-tegra
+Description-md5: b028dd47d22a803322e799e2a2d08620
+Description-en: Linux kernel nvidia modules for version 6.8.0-1032 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1032.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-580-6.8.0-1035-nvidia-tegra
+Description-md5: fe03112fa1567dc576b75e1f92f5c7aa
+Description-en: Linux kernel nvidia modules for version 6.8.0-1035 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1035.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-580-6.8.0-1036-nvidia-tegra
+Description-md5: 9b632cb358e9c74b79a580cb4066ecf3
+Description-en: Linux kernel nvidia modules for version 6.8.0-1036 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1036.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-580-6.8.0-1038-nvidia-tegra
+Description-md5: 587a504d8d43c4d9e949ddf9ecc6171c
+Description-en: Linux kernel nvidia modules for version 6.8.0-1038 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1038.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-580-open-6.8.0-1029-nvidia-tegra
+Description-md5: 9c1e84b1a586dac65ae122c478424960
+Description-en: Linux kernel nvidia modules for version 6.8.0-1029 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1029.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-580-open-6.8.0-1030-nvidia-tegra
+Description-md5: 705bf7e701c63eda9b3c092a0406ead7
+Description-en: Linux kernel nvidia modules for version 6.8.0-1030 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1030.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-580-open-6.8.0-1031-nvidia-tegra
+Description-md5: 57450a788c5fc88bc4261beae279e009
+Description-en: Linux kernel nvidia modules for version 6.8.0-1031 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1031.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-580-open-6.8.0-1032-nvidia-tegra
+Description-md5: f6313127fbddaa8a0b0c4bf028a9a52b
+Description-en: Linux kernel nvidia modules for version 6.8.0-1032 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1032.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-580-open-6.8.0-1035-nvidia-tegra
+Description-md5: 65fb7de367a314d05859ab1d620a168f
+Description-en: Linux kernel nvidia modules for version 6.8.0-1035 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1035.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-580-open-6.8.0-1036-nvidia-tegra
+Description-md5: 3869e34bca016123bf5207d7b846d205
+Description-en: Linux kernel nvidia modules for version 6.8.0-1036 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1036.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-580-open-6.8.0-1038-nvidia-tegra
+Description-md5: dc00162f92ebc0089f24b16027b82d69
+Description-en: Linux kernel nvidia modules for version 6.8.0-1038 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1038.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-580-server-6.8.0-1029-nvidia-tegra
+Description-md5: 8eb618325faeeff97687c8d887cea0c5
+Description-en: Linux kernel nvidia modules for version 6.8.0-1029 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1029.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-server-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-580-server-6.8.0-1030-nvidia-tegra
+Description-md5: fee1567ad9578d38446aef637d140714
+Description-en: Linux kernel nvidia modules for version 6.8.0-1030 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1030.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-server-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-580-server-6.8.0-1031-nvidia-tegra
+Description-md5: fa2768720f2c352bc621ca6557ea9ada
+Description-en: Linux kernel nvidia modules for version 6.8.0-1031 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1031.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-server-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-580-server-6.8.0-1032-nvidia-tegra
+Description-md5: 360c289fad67b35a6d1843360a2add93
+Description-en: Linux kernel nvidia modules for version 6.8.0-1032 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1032.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-server-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-580-server-6.8.0-1035-nvidia-tegra
+Description-md5: b05a3ff4c246b401a3421b2363e60229
+Description-en: Linux kernel nvidia modules for version 6.8.0-1035 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1035.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-server-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-580-server-6.8.0-1036-nvidia-tegra
+Description-md5: dfcd5c7b0f930088172dcd029716b1da
+Description-en: Linux kernel nvidia modules for version 6.8.0-1036 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1036.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-server-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-580-server-6.8.0-1038-nvidia-tegra
+Description-md5: b6e0efea3ff4503c07a7413adf1dc03f
+Description-en: Linux kernel nvidia modules for version 6.8.0-1038 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1038.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-server-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-580-server-open-6.8.0-1029-nvidia-tegra
+Description-md5: a08efde02d75582c1df47f38e5ea43b0
+Description-en: Linux kernel nvidia modules for version 6.8.0-1029 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1029.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-server-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-580-server-open-6.8.0-1030-nvidia-tegra
+Description-md5: a61a6398d45c47348687786c2dc74be9
+Description-en: Linux kernel nvidia modules for version 6.8.0-1030 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1030.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-server-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-580-server-open-6.8.0-1031-nvidia-tegra
+Description-md5: a895bd88c1bce898711400ae5155d5d3
+Description-en: Linux kernel nvidia modules for version 6.8.0-1031 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1031.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-server-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-580-server-open-6.8.0-1032-nvidia-tegra
+Description-md5: 262be0d6d02146fb937a27c2e90f12eb
+Description-en: Linux kernel nvidia modules for version 6.8.0-1032 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1032.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-server-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-580-server-open-6.8.0-1035-nvidia-tegra
+Description-md5: 53066f8a982ff73d71abfc6a98d6dc39
+Description-en: Linux kernel nvidia modules for version 6.8.0-1035 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1035.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-server-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-580-server-open-6.8.0-1036-nvidia-tegra
+Description-md5: bf5bfe05e5b532398d3c424226e53c75
+Description-en: Linux kernel nvidia modules for version 6.8.0-1036 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1036.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-server-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-580-server-open-6.8.0-1038-nvidia-tegra
+Description-md5: 4523a3caeb25450cb719c659318c9f0d
+Description-en: Linux kernel nvidia modules for version 6.8.0-1038 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1038.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-580-server-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-595-6.8.0-1029-nvidia-tegra
+Description-md5: 97d151f4398d2c7e320569d6ab7a6254
+Description-en: Linux kernel nvidia modules for version 6.8.0-1029 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1029.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-595-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-595-open-6.8.0-1029-nvidia-tegra
+Description-md5: 9e5d30cb6052e946deaa6f853452eb87
+Description-en: Linux kernel nvidia modules for version 6.8.0-1029 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1029.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-595-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-595-server-6.8.0-1029-nvidia-tegra
+Description-md5: d4b153bf3cca0c2d4e62fc3a7ba4d63b
+Description-en: Linux kernel nvidia modules for version 6.8.0-1029 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1029.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-595-server-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-595-server-open-6.8.0-1029-nvidia-tegra
+Description-md5: c39cdedb3e5130e79dafc6043473e7c5
+Description-en: Linux kernel nvidia modules for version 6.8.0-1029 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1029.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-595-server-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-615-open-6.8.0-1036-nvidia-tegra
+Description-md5: 87903dc8048f4794504697a522f5ad13
+Description-en: Linux kernel nvidia modules for version 6.8.0-1036 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1036.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-615-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-615-open-6.8.0-1038-nvidia-tegra
+Description-md5: 4aa4936f409c997755cdaf32fbb01395
+Description-en: Linux kernel nvidia modules for version 6.8.0-1038 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1038.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-615-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-615-server-open-6.8.0-1036-nvidia-tegra
+Description-md5: 22020ed554fe8df087b4aa8ac260068c
+Description-en: Linux kernel nvidia modules for version 6.8.0-1036 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1036.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-615-server-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-objects-nvidia-615-server-open-6.8.0-1038-nvidia-tegra
+Description-md5: 14b2e7d78e99ca28b2241d4fde7db73f
+Description-en: Linux kernel nvidia modules for version 6.8.0-1038 (objects)
+ This package contains the Linux kernel nvidia modules for version 6.8.0-1038.
+ .
+ You likely do not want to install this package directly. Instead, install the
+ one of the linux-modules-nvidia-615-server-open-nvidia-tegra* meta-packages,
+ which will ensure that upgrades work correctly, and that supporting packages are
+ also installed.
+
+Package: linux-signatures-nvidia-6.8.0-1016-nvidia-tegra
+Description-md5: 7f8589666e9f7387db1758e2c854804c
+Description-en: Linux kernel signatures for nvidia modules for version 6.8.0-1016-nvidia-tegra
+ This package contains the Linux kernel signatures nvidia modules for
+ version 6.8.0-1016-nvidia-tegra.
+ .
+ You likely do not want to install this package directly.
+
+Package: linux-signatures-nvidia-6.8.0-1019-nvidia-tegra
+Description-md5: 9c244c476c58bfef8c8a044fb00e4b9f
+Description-en: Linux kernel signatures for nvidia modules for version 6.8.0-1019-nvidia-tegra
+ This package contains the Linux kernel signatures nvidia modules for
+ version 6.8.0-1019-nvidia-tegra.
+ .
+ You likely do not want to install this package directly.
+
+Package: linux-signatures-nvidia-6.8.0-1020-nvidia-tegra
+Description-md5: 4c7255b09936e8223f38ea22b4b19730
+Description-en: Linux kernel signatures for nvidia modules for version 6.8.0-1020-nvidia-tegra
+ This package contains the Linux kernel signatures nvidia modules for
+ version 6.8.0-1020-nvidia-tegra.
+ .
+ You likely do not want to install this package directly.
+
+Package: linux-signatures-nvidia-6.8.0-1021-nvidia-tegra
+Description-md5: 1fe4b91de046b55089905d5ecc4326e2
+Description-en: Linux kernel signatures for nvidia modules for version 6.8.0-1021-nvidia-tegra
+ This package contains the Linux kernel signatures nvidia modules for
+ version 6.8.0-1021-nvidia-tegra.
+ .
+ You likely do not want to install this package directly.
+
+Package: linux-signatures-nvidia-6.8.0-1022-nvidia-tegra
+Description-md5: 9958a990d0159e533ffd848ebc6d14a4
+Description-en: Linux kernel signatures for nvidia modules for version 6.8.0-1022-nvidia-tegra
+ This package contains the Linux kernel signatures nvidia modules for
+ version 6.8.0-1022-nvidia-tegra.
+ .
+ You likely do not want to install this package directly.
+
+Package: linux-signatures-nvidia-6.8.0-1023-nvidia-tegra
+Description-md5: 9458d37d66f5da3f09679a07453eacd3
+Description-en: Linux kernel signatures for nvidia modules for version 6.8.0-1023-nvidia-tegra
+ This package contains the Linux kernel signatures nvidia modules for
+ version 6.8.0-1023-nvidia-tegra.
+ .
+ You likely do not want to install this package directly.
+
+Package: linux-signatures-nvidia-6.8.0-1024-nvidia-tegra
+Description-md5: 00967277280716a74a131f2678e6ebc9
+Description-en: Linux kernel signatures for nvidia modules for version 6.8.0-1024-nvidia-tegra
+ This package contains the Linux kernel signatures nvidia modules for
+ version 6.8.0-1024-nvidia-tegra.
+ .
+ You likely do not want to install this package directly.
+
+Package: linux-signatures-nvidia-6.8.0-1025-nvidia-tegra
+Description-md5: 03f3ef7f76955edb2207899307156437
+Description-en: Linux kernel signatures for nvidia modules for version 6.8.0-1025-nvidia-tegra
+ This package contains the Linux kernel signatures nvidia modules for
+ version 6.8.0-1025-nvidia-tegra.
+ .
+ You likely do not want to install this package directly.
+
+Package: linux-signatures-nvidia-6.8.0-1026-nvidia-tegra
+Description-md5: 01edf138e8ac5c125b60f5c95a17a35d
+Description-en: Linux kernel signatures for nvidia modules for version 6.8.0-1026-nvidia-tegra
+ This package contains the Linux kernel signatures nvidia modules for
+ version 6.8.0-1026-nvidia-tegra.
+ .
+ You likely do not want to install this package directly.
+
+Package: linux-signatures-nvidia-6.8.0-1029-nvidia-tegra
+Description-md5: 70185f6d4bf500addca5c88413a38ac9
+Description-en: Linux kernel signatures for nvidia modules for version 6.8.0-1029-nvidia-tegra
+ This package contains the Linux kernel signatures nvidia modules for
+ version 6.8.0-1029-nvidia-tegra.
+ .
+ You likely do not want to install this package directly.
+
+Package: linux-signatures-nvidia-6.8.0-1030-nvidia-tegra
+Description-md5: 01f643c9a0a0155a9ff4bf0ed28b6b65
+Description-en: Linux kernel signatures for nvidia modules for version 6.8.0-1030-nvidia-tegra
+ This package contains the Linux kernel signatures nvidia modules for
+ version 6.8.0-1030-nvidia-tegra.
+ .
+ You likely do not want to install this package directly.
+
+Package: linux-signatures-nvidia-6.8.0-1031-nvidia-tegra
+Description-md5: 0c36e2eb17ef2974244c14ce0f532bd7
+Description-en: Linux kernel signatures for nvidia modules for version 6.8.0-1031-nvidia-tegra
+ This package contains the Linux kernel signatures nvidia modules for
+ version 6.8.0-1031-nvidia-tegra.
+ .
+ You likely do not want to install this package directly.
+
+Package: linux-signatures-nvidia-6.8.0-1032-nvidia-tegra
+Description-md5: abc739b878f27ee4183586667278bab7
+Description-en: Linux kernel signatures for nvidia modules for version 6.8.0-1032-nvidia-tegra
+ This package contains the Linux kernel signatures nvidia modules for
+ version 6.8.0-1032-nvidia-tegra.
+ .
+ You likely do not want to install this package directly.
+
+Package: linux-signatures-nvidia-6.8.0-1035-nvidia-tegra
+Description-md5: 2c73d28193708d2325050c2e52d05709
+Description-en: Linux kernel signatures for nvidia modules for version 6.8.0-1035-nvidia-tegra
+ This package contains the Linux kernel signatures nvidia modules for
+ version 6.8.0-1035-nvidia-tegra.
+ .
+ You likely do not want to install this package directly.
+
+Package: linux-signatures-nvidia-6.8.0-1036-nvidia-tegra
+Description-md5: 71cc5a830f84835c2901cada7378be8c
+Description-en: Linux kernel signatures for nvidia modules for version 6.8.0-1036-nvidia-tegra
+ This package contains the Linux kernel signatures nvidia modules for
+ version 6.8.0-1036-nvidia-tegra.
+ .
+ You likely do not want to install this package directly.
+
+Package: linux-signatures-nvidia-6.8.0-1038-nvidia-tegra
+Description-md5: 1fb54e37885f411f6757d78442a95f8f
+Description-en: Linux kernel signatures for nvidia modules for version 6.8.0-1038-nvidia-tegra
+ This package contains the Linux kernel signatures nvidia modules for
+ version 6.8.0-1038-nvidia-tegra.
+ .
+ You likely do not want to install this package directly.
+

@@ -23,7 +23,7 @@ import {
   Info,
   MessageCircle,
 } from "lucide-react";
-import { naira, HOTEL, whatsappLink } from "@/lib/hotel";
+import { naira, HOTEL, whatsappLink, nightsBetween } from "@/lib/hotel";
 import type { AvailabilityResult, BookingQuote, BookingErrorCode } from "@/lib/booking/types";
 import { BookingCalendarDatePicker } from "@/components/booking/BookingCalendarDatePicker";
 import { usePaymentSettings } from "@/lib/settings/usePaymentSettings";
@@ -69,11 +69,26 @@ type RatePlanSummary = {
 
 const STEPS = ["Dates", "Room", "Details", "Pay"] as const;
 
+/* Human-readable date: "2026-11-15" → "Fri, 15 Nov 2026" */
+function fmtDate(iso: string): string {
+  if (!iso) return "—";
+  const d = new Date(iso + "T12:00:00");
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString("en-NG", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
 function BookingFlow() {
   const sp = useSearchParams();
   const [step, setStep] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  // Which suite's Select button is loading (avoids spinning every card at once)
+  const [busyRoomId, setBusyRoomId] = useState<string | null>(null);
 
   // Search
   const today = new Date().toISOString().split("T")[0];
@@ -214,6 +229,7 @@ function BookingFlow() {
   const selectRoom = useCallback(
     async (roomTypeId: string) => {
       setBusy(true);
+      setBusyRoomId(roomTypeId);
       setError(null);
       try {
         const addonIds = Object.entries(addonSelection)
@@ -250,6 +266,7 @@ function BookingFlow() {
         setError(err?.message || "Failed to calculate room pricing. Please try again.");
       } finally {
         setBusy(false);
+        setBusyRoomId(null);
       }
     },
     [addonSelection, checkIn, checkOut, adults, children, roomCount, promoInput, ratePlanId],
@@ -501,7 +518,7 @@ function BookingFlow() {
           {quote && (
             <>
               <div className="flex justify-between"><span className="text-stone-600 dark:text-stone-300">Room</span><span className="font-medium">{quote.roomTypeName}</span></div>
-              <div className="flex justify-between"><span className="text-stone-600 dark:text-stone-300">Dates</span><span className="font-medium">{quote.checkIn} → {quote.checkOut}</span></div>
+              <div className="flex justify-between"><span className="text-stone-600 dark:text-stone-300">Dates</span><span className="font-medium">{fmtDate(quote.checkIn)} → {fmtDate(quote.checkOut)}</span></div>
               <div className="flex justify-between"><span className="text-stone-600 dark:text-stone-300">Guests</span><span className="font-medium">{quote.adults + quote.children}</span></div>
               <div className="flex justify-between border-t border-[#ece6dd] pt-2"><span className="text-stone-600 dark:text-stone-300">Total</span><span className="font-semibold text-[var(--accent)]">{naira(quote.pricing.grandTotal / 100)}</span></div>
             </>
@@ -543,8 +560,16 @@ function BookingFlow() {
       {/* ── Modern Minimalist Stepper ── */}
       <nav
         aria-label="Booking steps"
-        className="rounded-2xl bg-white dark:bg-[#1a1815] border border-stone-200/90 dark:border-stone-800/90 p-4 sm:p-5 shadow-xs"
+        aria-current="step"
+        className="rounded-3xl bg-white dark:bg-[#1a1815] border border-stone-200/90 dark:border-stone-800/90 p-4 sm:p-5 shadow-sm"
       >
+        {/* Slim progress bar — always visible, works on every screen size */}
+        <div className="h-1 w-full rounded-full bg-stone-100 dark:bg-stone-800 overflow-hidden mb-4">
+          <div
+            className="h-full rounded-full bg-[var(--accent)] transition-all duration-500 ease-out"
+            style={{ width: `${progressPercentage}%` }}
+          />
+        </div>
         <div className="flex items-center justify-between gap-2">
           {STEP_CONFIG.map((item, idx) => {
             const isCurrent = idx === step;
@@ -637,10 +662,49 @@ function BookingFlow() {
             </div>
           )}
 
+          {/* Stale-step recovery — never leave this column blank */}
+          {((step === 1 && !search) ||
+            (step === 2 && !quote) ||
+            (step === 3 && (!reference || !quote))) && (
+            <section
+              className="bg-white dark:bg-[#1a1815] p-8 sm:p-10 rounded-3xl border border-stone-200/80 dark:border-stone-800 shadow-sm text-center space-y-4"
+              aria-label="Recover booking step"
+            >
+              <div className="h-12 w-12 rounded-full bg-stone-100 dark:bg-stone-800 flex items-center justify-center mx-auto">
+                <Info className="h-6 w-6 text-stone-400 dark:text-stone-500" />
+              </div>
+              <h3 className="font-display text-xl text-stone-900 dark:text-white">
+                Let&apos;s pick up where you left off
+              </h3>
+              <p className="text-xs text-stone-500 dark:text-stone-400 max-w-sm mx-auto leading-relaxed">
+                This step needs details from an earlier one, and they are no longer
+                available. Start a fresh search — it only takes a few seconds.
+              </p>
+              <div className="flex flex-col sm:flex-row justify-center gap-3 pt-1">
+                {step === 2 && search && (
+                  <button
+                    type="button"
+                    onClick={() => jumpToStep(1)}
+                    className="px-6 py-3 rounded-xl border border-stone-300 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800 text-xs font-semibold text-stone-700 dark:text-stone-300 inline-flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                  >
+                    <ArrowLeft className="h-4 w-4" /> Back to Suites
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => jumpToStep(0)}
+                  className="btn-gold px-6 py-3 text-xs font-semibold inline-flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <Calendar className="h-4 w-4" /> Start a New Search
+                </button>
+              </div>
+            </section>
+          )}
+
         {/* ── STEP 0: STAY DATES & OCCUPANCY ── */}
         {step === 0 && (
           <section
-            className="bg-white dark:bg-[#1a1815] p-6 sm:p-8 rounded-2xl border border-stone-200/80 dark:border-stone-800 shadow-xs space-y-7"
+            className="bg-white dark:bg-[#1a1815] p-6 sm:p-8 rounded-3xl border border-stone-200/80 dark:border-stone-800 shadow-sm space-y-7"
             aria-label="Search availability"
           >
             <div>
@@ -669,6 +733,68 @@ function BookingFlow() {
               roomCount={roomCount}
               minNights={1}
             />
+
+            {/* Rate Plan Selection — wired to the quote API */}
+            {ratePlans.length > 1 && (
+              <div className="pt-6 border-t border-stone-100 dark:border-stone-800">
+                <span className="text-xs font-condensed uppercase tracking-wider text-stone-500 dark:text-stone-400 font-semibold block mb-3">
+                  Rate Plan
+                </span>
+                <div className="grid sm:grid-cols-2 gap-3">
+                  {ratePlans.map((rp) => {
+                    const active = ratePlanId === rp.id;
+                    return (
+                      <button
+                        key={rp.id}
+                        type="button"
+                        onClick={() => setRatePlanId(rp.id)}
+                        aria-pressed={active}
+                        className={`text-left p-4 rounded-xl border transition-all cursor-pointer ${
+                          active
+                            ? "border-[var(--accent)] bg-[var(--accent)]/5 shadow-xs"
+                            : "border-stone-200 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/60 hover:border-stone-300 dark:hover:border-stone-700"
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <span className="text-sm font-semibold text-stone-900 dark:text-white">
+                            {rp.name}
+                          </span>
+                          <span
+                            className={`mt-0.5 h-4 w-4 rounded-full border-2 shrink-0 flex items-center justify-center ${
+                              active ? "border-[var(--accent)]" : "border-stone-300 dark:border-stone-600"
+                            }`}
+                          >
+                            {active && <span className="h-2 w-2 rounded-full bg-[var(--accent)]" />}
+                          </span>
+                        </div>
+                        <span className="text-[11px] text-stone-500 dark:text-stone-400 block mt-1.5 leading-relaxed">
+                          {rp.description}
+                        </span>
+                        <span className="flex flex-wrap items-center gap-1.5 mt-2">
+                          <span
+                            className={`text-[10px] uppercase font-condensed tracking-wider font-semibold px-1.5 py-0.5 rounded ${
+                              active
+                                ? "bg-[var(--accent)]/15 text-[var(--accent)]"
+                                : "bg-stone-200/70 dark:bg-stone-800 text-stone-500 dark:text-stone-400"
+                            }`}
+                          >
+                            {rp.priceModifier.type === "percent"
+                              ? `${rp.priceModifier.value > 0 ? "+" : ""}${rp.priceModifier.value}%`
+                              : `${rp.priceModifier.value > 0 ? "+" : ""}${naira(rp.priceModifier.value / 100)}`}
+                          </span>
+                          <span className="text-[10px] text-stone-400 dark:text-stone-500">
+                            {rp.depositPercent > 0 ? `${rp.depositPercent}% deposit` : "No deposit"} ·{" "}
+                            {rp.freeCancellationDays > 0
+                              ? `Free cancellation ${rp.freeCancellationDays}d`
+                              : "Non-refundable"}
+                          </span>
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             {/* Occupancy & Preferences */}
             <div className="pt-6 border-t border-stone-100 dark:border-stone-800">
@@ -744,6 +870,19 @@ function BookingFlow() {
                 </div>
               </div>
             </div>
+
+            {/* Nights summary before searching */}
+            {checkIn && checkOut && checkOut > checkIn && (
+              <div className="flex items-center justify-center gap-2 text-xs text-stone-600 dark:text-stone-300 bg-stone-50 dark:bg-stone-900/60 border border-stone-200/60 dark:border-stone-800 rounded-xl py-2.5">
+                <Calendar className="h-3.5 w-3.5 text-[var(--accent)] shrink-0" />
+                <span>
+                  <strong className="font-semibold text-stone-900 dark:text-white">
+                    {nightsBetween(checkIn, checkOut)} night{nightsBetween(checkIn, checkOut) !== 1 ? "s" : ""}
+                  </strong>{" "}
+                  · {fmtDate(checkIn)} → {fmtDate(checkOut)}
+                </span>
+              </div>
+            )}
 
             <button
               type="button"
@@ -856,7 +995,9 @@ function BookingFlow() {
                       onClick={() => selectRoom(r.roomType.id)}
                       className="btn-gold px-6 py-2.5 text-xs font-semibold inline-flex items-center gap-1.5 disabled:opacity-40 ml-auto cursor-pointer shadow-xs"
                     >
-                      {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
+                      {busyRoomId === r.roomType.id ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      ) : null}
                       <span>Select Suite</span>
                       <ArrowRight className="h-3.5 w-3.5" />
                     </button>
@@ -869,8 +1010,7 @@ function BookingFlow() {
 
         {/* ── STEP 2: GUEST DETAILS & REVIEW ── */}
         {step === 2 && quote && (
-          <section className="space-y-6" aria-label="Guest details">
-            <div className="bg-white dark:bg-[#1a1815] p-6 sm:p-8 rounded-2xl border border-stone-200/80 dark:border-stone-800 shadow-xs space-y-6">
+          <section className="space-y-6" aria-label="Guest details">              <div className="bg-white dark:bg-[#1a1815] p-6 sm:p-8 rounded-3xl border border-stone-200/80 dark:border-stone-800 shadow-sm space-y-6">
               <div>
                 <span className="text-[11px] font-condensed uppercase tracking-wider text-[var(--accent)] font-semibold block mb-1">
                   Step 03
@@ -1042,8 +1182,7 @@ function BookingFlow() {
 
         {/* ── STEP 3: PAYMENT & CONFIRMATION ── */}
         {step === 3 && reference && quote && (
-          <section className="space-y-6" aria-label="Payment and confirmation">
-            <div className="bg-white dark:bg-[#1a1815] p-6 sm:p-8 rounded-2xl border border-stone-200/80 dark:border-stone-800 shadow-xs space-y-6">
+          <section className="space-y-6" aria-label="Payment and confirmation">              <div className="bg-white dark:bg-[#1a1815] p-6 sm:p-8 rounded-3xl border border-stone-200/80 dark:border-stone-800 shadow-sm space-y-6">
               <div>
                 <span className="text-[11px] font-condensed uppercase tracking-wider text-[var(--accent)] font-semibold block mb-1">
                   Step 04
@@ -1107,9 +1246,14 @@ function BookingFlow() {
                 </div>
               )}
 
-              <p className="text-[11px] uppercase font-condensed tracking-wider text-stone-400 dark:text-stone-500 pt-1">
-                Optional — pay online now, or pay after confirming on WhatsApp
-              </p>
+              <div className="pt-3 border-t border-stone-100 dark:border-stone-800">
+                <span className="text-xs font-condensed uppercase tracking-wider text-stone-500 dark:text-stone-400 font-semibold block">
+                  Choose how to complete your reservation
+                </span>
+                <p className="text-[11px] text-stone-400 dark:text-stone-500 mt-0.5 leading-relaxed">
+                  Optional — pay online now, or settle after confirming with the front desk.
+                </p>
+              </div>
 
               {/* PAYMENT OPTION 1: PAYSTACK ONLINE */}
               {paystackEnabled ? (
@@ -1159,7 +1303,10 @@ function BookingFlow() {
                 </div>
               )}
 
-              {/* PAYMENT OPTION 2: INSTANT WHATSAPP CONFIRMATION */}
+              {/* PAYMENT OPTION 2: WHATSAPP FRONT DESK
+                  (Hidden when the guest arrived via WhatsApp — their dedicated
+                  panel above already carries the primary WhatsApp CTA.) */}
+              {reservedVia !== "whatsapp" && (
               <div className="p-5 rounded-2xl border border-emerald-200 dark:border-emerald-900/60 bg-emerald-50/40 dark:bg-emerald-950/20 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-semibold text-stone-900 dark:text-white flex items-center gap-2">
@@ -1207,6 +1354,7 @@ function BookingFlow() {
                   <span>Confirm via WhatsApp ({HOTEL.phone})</span>
                 </a>
               </div>
+              )}
 
               {/* PAYMENT OPTION 3: DIRECT BANK TRANSFER */}
               <div className="p-5 rounded-2xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-[#1a1815] space-y-3.5">
@@ -1302,7 +1450,7 @@ function BookingFlow() {
 
       {/* ── AUTHORITATIVE RESERVATION FOLIO SIDEBAR ── */}
       <aside
-        className="rounded-2xl p-6 sm:p-7 border border-stone-200/90 dark:border-stone-800 bg-white dark:bg-[#1a1815] shadow-xs lg:sticky lg:top-[100px] space-y-5"
+        className="rounded-3xl p-6 sm:p-7 border border-stone-200/90 border-t-4 border-t-[var(--accent)] dark:border-stone-800 dark:border-t-[var(--accent)] bg-white dark:bg-[#1a1815] shadow-[0_18px_50px_-30px_rgba(0,0,0,0.35)] lg:sticky lg:top-[100px] space-y-5"
         aria-live="polite"
       >
         <div className="border-b border-stone-100 dark:border-stone-800 pb-4">
@@ -1322,14 +1470,14 @@ function BookingFlow() {
             </p>
             {checkIn && checkOut && (
               <div className="text-xs font-mono text-stone-600 dark:text-stone-300 bg-stone-50 dark:bg-stone-900/60 p-2.5 rounded-xl border border-stone-200/60 dark:border-stone-800">
-                {checkIn} → {checkOut}
+                {fmtDate(checkIn)} → {fmtDate(checkOut)}
               </div>
             )}
           </div>
         ) : (
           <div className="space-y-4 text-xs">
             <div className="flex justify-between items-center text-stone-700 dark:text-stone-300 pb-3 border-b border-stone-100 dark:border-stone-800">
-              <span className="font-medium">{quote.checkIn} → {quote.checkOut}</span>
+              <span className="font-medium">{fmtDate(quote.checkIn)} → {fmtDate(quote.checkOut)}</span>
               <span className="text-stone-500 font-mono">{quote.nights} night{quote.nights !== 1 ? "s" : ""}</span>
             </div>
 
@@ -1405,21 +1553,39 @@ function BookingFlow() {
 export default function BookingPage() {
   return (
     <>
-      <section className="relative pt-32 pb-16 sm:pt-40 sm:pb-20 bg-[#1b1b1b] dark:bg-[#1a1a1d] overflow-hidden">
+      <section className="relative pt-32 pb-20 sm:pt-40 sm:pb-24 bg-[#1b1b1b] dark:bg-[#1a1a1d] overflow-hidden">
         {/* Baseline Header Image — Luxury Hotel Exterior */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/images/exterior-night.jpg"
           alt="Banky Hotel & Suites Exterior at Night"
-          className="absolute inset-0 w-full h-full object-cover opacity-35 pointer-events-none select-none"
+          className="absolute inset-0 w-full h-full object-cover opacity-45 scale-105 pointer-events-none select-none"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#1b1b1b] dark:from-[#202023] via-[#1b1b1b]/70 to-[#1b1b1b]/85" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#1b1b1b] dark:from-[#202023] via-[#1b1b1b]/70 to-[#1b1b1b]/80" />
+        <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-white dark:from-[#202023] to-transparent" />
         <div className="container-x relative z-10 text-center">
-          <span className="eyebrow text-[var(--accent)] block mb-3">Online Reservations</span>
-          <h1 className="font-display text-4xl sm:text-5xl md:text-6xl text-white mb-4">Book Your Stay</h1>
-          <p className="text-sm text-stone-200 max-w-xl mx-auto">
+          <span className="eyebrow text-[var(--accent)] block mb-4">Online Reservations</span>
+          <h1 className="font-display text-4xl sm:text-5xl md:text-7xl text-white mb-5 tracking-tight">
+            Book Your Stay
+          </h1>
+          <span className="block w-16 h-0.5 mx-auto mb-5 bg-[var(--accent)]" />
+          <p className="text-sm sm:text-base text-stone-200/90 max-w-2xl mx-auto leading-relaxed">
             Real-time availability, transparent pricing, and secure Paystack payments — confirmed the moment your payment is verified.
           </p>
+          <div className="flex flex-wrap items-center justify-center gap-2.5 mt-7">
+            {[
+              "Live room inventory",
+              "WhatsApp-first reservations",
+              "Paystack · USSD · Transfer",
+            ].map((t) => (
+              <span
+                key={t}
+                className="text-[11px] uppercase font-condensed tracking-[0.18em] font-medium text-stone-200 border border-white/20 bg-white/10 backdrop-blur-sm rounded-full px-4 py-1.5"
+              >
+                {t}
+              </span>
+            ))}
+          </div>
         </div>
       </section>
       <section className="py-10 sm:py-16 md:py-20 bg-white dark:bg-[#202023]">

@@ -1,11 +1,11 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Menu, X, Calendar, Sun, Moon } from "lucide-react";
 import { PhoneSolidIcon } from "@/components/icons/PhoneSolidIcon";
-import { HOTEL, PHONE_NUMBERS } from "@/lib/hotel";
+import { HOTEL } from "@/lib/hotel";
 import { DEFAULT_BRAND_IDENTITY } from "@/lib/brand-identity";
 import { useTheme } from "@/lib/ThemeContext";
 
@@ -23,6 +23,10 @@ const NAV = [
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  // When the menu opened — lets us swallow the rapid "second tap" that lands
+  // on the overlay's logo (which sits exactly where the hamburger is) before
+  // the menu has visually appeared.
+  const menuOpenedAtRef = useRef(0);
   const { theme, toggleTheme, watTimeString } = useTheme();
   const headerRef = useRef<HTMLElement>(null);
   const pathname = usePathname();
@@ -67,9 +71,15 @@ export function Header() {
   }, [pathname]);
 
   useEffect(() => {
+    if (open) menuOpenedAtRef.current = Date.now();
+  }, [open]);
+
+  useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [open]);
+
+  const toggleMenu = useCallback(() => setOpen((prev) => !prev), []);
 
   if (pathname?.startsWith("/qr") || pathname?.startsWith("/admin")) {
     return null;
@@ -77,45 +87,49 @@ export function Header() {
 
   return (
     <header ref={headerRef} className="fixed inset-x-0 top-0 z-50">
-      <div className={`transition-all duration-[400ms] ease-in-out ${scrolled ? "bg-[#0a2777]/40 backdrop-blur-md shadow-[0_4px_12px_rgba(0,0,0,0.18)]" : "bg-transparent"}`}>
-        <div className={`container-x flex items-center justify-between transition-all duration-[400ms] ease-in-out ${scrolled ? "py-0.5" : "py-0.5 sm:py-1"}`}>
-          {/* Left — Hamburger on mobile & tablet; Phone on desktop */}
-          <div className="flex-1 flex items-center justify-start">
-            {/* Mobile & Tablet: Hamburger menu icon at top-left with no border and no background */}
+      <div className={`transition-all duration-[400ms] ease-in-out ${scrolled ? "bg-[#0a2777]/40 backdrop-blur-md shadow-[0_4px_12px_rgba(0,0,0,0.18)]" : "bg-transparent"}`} >
+        <div className={`container-x grid grid-cols-[1fr_auto_1fr] items-center transition-all duration-[400ms] ease-in-out ${scrolled ? "py-0.5" : "py-0.5 sm:py-1"}`}>
+          {/* Left — Hamburger (mobile/tablet) · Phone (desktop) */}
+          <div className="flex items-center justify-start min-w-0">
+            {/* Mobile & Tablet: Hamburger menu icon */}
             <button
-              onClick={() => setOpen(!open)}
+              type="button"
+              onClick={toggleMenu}
+              aria-expanded={open}
               aria-label={open ? "Close menu" : "Open menu"}
-              className={`lg:hidden p-1.5 -ml-1.5 bg-transparent border-none shadow-none transition-transform active:scale-90 flex items-center justify-center cursor-pointer ${iconBtnColor}`}
+              className={`lg:hidden p-1.5 bg-transparent border-none shadow-none transition-transform active:scale-90 flex items-center justify-center cursor-pointer ${iconBtnColor}`}
             >
               {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
 
-          {/* Desktop: Phone number */}
-          <a
-            href={`tel:${HOTEL.phone}`}
-            className={`hidden lg:inline-flex items-center gap-2 font-condensed text-[0.76rem] tracking-[0.16em] uppercase font-medium py-1 px-2.5 transition-colors duration-[400ms] ease-in-out ${scrolled ? "text-white/90 hover:text-white" : "text-white/90 hover:text-white"}`}
-          >
-            <PhoneSolidIcon className="h-3.5 w-3.5" style={{ color: "var(--accent)" }} />
-            <span>+234 903 587 9708</span>
-          </a>
-        </div>          {/* Center — Header logo uses centralized brand-identity.ts config */}
-        <Link href="/" className="flex items-center group shrink-0" aria-label="Banky Hotel & Suites Home">
-          <span className="shrink-0 flex items-center justify-center w-auto h-[54px] sm:h-[64px] lg:h-[72px] xl:h-[78px] bg-transparent border-none p-0 transition-all duration-[400ms] ease-in-out group-hover:scale-105">
-            <Image
-              src={DEFAULT_BRAND_IDENTITY.activeLogoUrl}
-              alt="Banky Hotel & Suites"
-              width={180}
-              height={78}
-              priority
-              referrerPolicy="no-referrer"
-              className="h-full w-auto max-w-[130px] sm:max-w-[155px] lg:max-w-[180px] object-contain bg-transparent select-none drop-shadow-sm"
-            />
-          </span>
-        </Link>
+            {/* Desktop: Phone number */}
+            <a
+              href={`tel:${HOTEL.phone}`}
+              className={`hidden lg:inline-flex items-center gap-2 font-condensed text-[0.76rem] tracking-[0.16em] uppercase font-medium py-1 px-2.5 transition-colors duration-[400ms] ease-in-out ${scrolled ? "text-white/90 hover:text-white" : "text-white/90 hover:text-white"}`}
+            >
+              <PhoneSolidIcon className="h-3.5 w-3.5" style={{ color: "var(--accent)" }} />
+              <span>+234 903 587 9708</span>
+            </a>
+          </div>
 
-        {/* Right — Day/Night toggle on mobile & tablet; Reserve + Day/Night + Menu on desktop */}
-        <div className="flex items-center justify-end gap-2 sm:gap-3">
-            {/* Mobile & Tablet Mode: Day or Night toggle button at the top-right */}
+          {/* Center — Logo, dead-centered by the 1fr / auto / 1fr grid */}
+          <Link href="/" className="flex items-center justify-center group shrink-0" aria-label="Banky Hotel & Suites Home">
+            <span className="shrink-0 flex items-center justify-center w-auto h-[54px] sm:h-[64px] lg:h-[72px] xl:h-[78px] bg-transparent border-none p-0 transition-all duration-[400ms] ease-in-out group-hover:scale-105">
+              <Image
+                src={DEFAULT_BRAND_IDENTITY.activeLogoUrl}
+                alt="Banky Hotel & Suites"
+                width={180}
+                height={78}
+                priority
+                referrerPolicy="no-referrer"
+                className="h-full w-auto max-w-[130px] sm:max-w-[155px] lg:max-w-[180px] object-contain bg-transparent select-none drop-shadow-sm"
+              />
+            </span>
+          </Link>
+
+          {/* Right — Day/Night toggle, Reserve, Menu */}
+          <div className="flex items-center justify-end gap-2 sm:gap-3">
+            {/* Mobile & tablet: Day/Night toggle */}
             <button
               suppressHydrationWarning
               onClick={toggleTheme}
@@ -128,7 +142,8 @@ export function Header() {
                   <Moon className="h-5 w-5" />
                 ) : (
                   <Sun className="h-5 w-5" />
-                )}
+                )
+              }
               </span>
             </button>
 
@@ -146,8 +161,11 @@ export function Header() {
 
             {/* Desktop: Menu button */}
             <button
-              onClick={() => setOpen(!open)}
-              className={`hidden lg:flex items-center justify-center gap-2 h-[34px] sm:h-9 px-4 rounded-full transition-all duration-[400ms] ease-in-out active:scale-95 border ${scrolled ? "bg-white/10 text-white border-white/20 hover:bg-white/20" : "bg-transparent text-white border-white/30 hover:bg-white/10"}`}
+              type="button"
+              onClick={toggleMenu}
+              aria-expanded={open}
+              aria-label={open ? "Close menu" : "Open menu"}
+              className={`hidden lg:flex items-center justify-center gap-2 h-[34px] sm:h-9 px-3 rounded-full transition-all duration-[400ms] ease-in-out active:scale-95 border ${scrolled ? "bg-white/10 text-white border-white/20 hover:bg-white/20" : "bg-transparent text-white border-white/30 hover:bg-white/10"}`}
             >
               <span className="hidden sm:inline font-condensed text-xs uppercase tracking-[0.22em] font-medium">{open ? "Close" : "Menu"}</span>
               {open ? <X className="h-4 w-4 sm:h-5 sm:w-5" /> : <Menu className="h-4 w-4 sm:h-5 sm:w-5" />}
@@ -156,25 +174,46 @@ export function Header() {
         </div>
       </div>
 
+      {/* Mobile & tablet full-screen menu overlay */}
       {open && (
-        <div className="fixed inset-0 z-50 bg-[#1b1b1b] text-white flex flex-col justify-between overflow-y-auto animate-fade-in">
+        <div className="fixed inset-0 z-50 bg-black/95 text-white flex flex-col justify-between overflow-y-auto animate-fade-in">
           <div className="container-x py-4 sm:py-6 flex items-center justify-between border-b border-white/10 shrink-0">
-            <Link href="/" onClick={() => setOpen(false)} className="flex items-center group shrink-0" aria-label="Banky Hotel & Suites Home">
+            <Link
+              href="/"
+              onClick={(e) => {
+                // Ignore taps during the first moment after opening — the logo
+                // sits under the hamburger, so an impatient double-tap would
+                // otherwise slam the menu shut before it is even seen.
+                if (Date.now() - menuOpenedAtRef.current < 500) {
+                  e.preventDefault();
+                  return;
+                }
+                setOpen(false);
+              }}
+              className="flex items-center group shrink-0"
+              aria-label="Banky Hotel & Suites Home"
+            >
               <span className="shrink-0 flex items-center justify-center bg-transparent p-0 h-12 sm:h-14">
                 <Image
-                src={DEFAULT_BRAND_IDENTITY.activeLogoUrl}
-                alt="Banky Hotel & Suites"
-                width={150}
-                height={56}
-                referrerPolicy="no-referrer"
-                className="h-full w-auto object-contain bg-transparent select-none drop-shadow-sm"
+                  src={DEFAULT_BRAND_IDENTITY.activeLogoUrl}
+                  alt="Banky Hotel & Suites"
+                  width={150}
+                  height={56}
+                  referrerPolicy="no-referrer"
+                  className="h-full w-auto object-contain bg-transparent select-none drop-shadow-sm"
                 />
               </span>
             </Link>
-            <button onClick={() => setOpen(false)} className="h-10 w-10 sm:h-11 sm:w-11 rounded-full border border-white/20 bg-white/5 flex items-center justify-center text-white transition-all" style={{ ["--tw-ring-opacity" as string]: "1" }}
-              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "var(--accent)"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.05)"; }}
+            <button
+              type="button"
+              onClick={() => {
+                // The X sits directly above the desktop Menu pill — swallow the
+                // impatient double-click so the menu can't close before it shows.
+                if (Date.now() - menuOpenedAtRef.current < 500) return;
+                setOpen(false);
+              }}
               aria-label="Close menu"
+              className="h-10 w-10 sm:h-11 sm:w-11 rounded-full border border-white/20 bg-white/5 flex items-center justify-center text-white transition-all hover:bg-white/10"
             >
               <X className="h-5 w-5" />
             </button>
@@ -186,7 +225,12 @@ export function Header() {
             </div>
             <div className="space-y-2">
               {NAV.map((item, i) => (
-                <Link key={item.to} href={item.to} onClick={() => setOpen(false)} className="flex items-center justify-between py-3 text-xl sm:text-2xl md:text-3xl lg:text-4xl font-display text-stone-200 hover:text-[var(--accent)] transition-all border-b border-white/5 hover:translate-x-2 group">
+                <Link
+                  key={item.to}
+                  href={item.to}
+                  onClick={() => setOpen(false)}
+                  className="flex items-center justify-between py-3 text-xl sm:text-2xl md:text-3xl lg:text-4xl font-display text-stone-200 hover:text-[var(--accent)] transition-all border-b border-white/5 hover:translate-x-2 group"
+                >
                   <span className="flex items-baseline gap-4">
                     <span className="font-condensed text-xs sm:text-sm tracking-[0.2em] opacity-60" style={{ color: "var(--accent)" }}>0{i + 1}.</span>
                     <span>{item.label}</span>
@@ -196,7 +240,7 @@ export function Header() {
             </div>
           </div>
           <div className="container-x py-4 border-t border-white/10 flex justify-between items-center text-xs text-stone-400 shrink-0">
-            <span>&copy; {new Date().getFullYear()} Banky Hotel &amp; Suites</span>
+            <span>&copy; {new Date().getFullYear()} Banky Hotel & Suites</span>
             <span className="font-condensed uppercase tracking-[0.2em]" style={{ color: "var(--accent)" }}>Four-Star Luxury Hotel &middot; Ado-Ekiti</span>
           </div>
         </div>

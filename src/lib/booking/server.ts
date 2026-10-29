@@ -1,7 +1,12 @@
 import "server-only";
-import { cert, getApps, initializeApp, type App } from "firebase-admin/app";
-import { getFirestore as getAdminFirestore, type Firestore as AdminFirestore } from "firebase-admin/firestore";
-import { getAuth as getAdminAuth } from "firebase-admin/auth";
+// NOTE: firebase-admin is intentionally NOT used in this project.
+// It performs dynamic code generation (eval/new Function) at module load,
+// which Cloudflare Workers/workerd rejects with a "Code generation from strings
+// disallowed" TypeError — every API route crashed with a 500.
+// There is no service-account key configured anyway (see hasValidServiceAccount
+// history + .env.example), and Firestore security rules are written for the
+// unauthenticated web SDK, so the web SDK is the single data path everywhere:
+// local dev, tests and the deployed Worker all behave identically.
 import {
   collection,
   doc,
@@ -25,46 +30,6 @@ import {
 import { db as webDb } from "@/lib/firebase";
 import firebaseConfigData from "../../../firebase-applet-config.json";
 
-let _adminApp: App | null = null;
-let _adminDb: AdminFirestore | null = null;
-let _adminAuth: ReturnType<typeof getAdminAuth> | null = null;
-
-function hasValidServiceAccount(): boolean {
-  const raw = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
-  if (!raw) return false;
-  try {
-    const parsed = JSON.parse(raw);
-    return Boolean(parsed.project_id && parsed.private_key && parsed.client_email);
-  } catch {
-    return false;
-  }
-}
-
-export function getAdminApp(): App | null {
-  if (!hasValidServiceAccount()) return null;
-  if (_adminApp) return _adminApp;
-
-  const existing = getApps().find((a) => a.name === "banky-server");
-  if (existing) {
-    _adminApp = existing;
-    return _adminApp;
-  }
-
-  try {
-    const credsJson = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON!);
-    _adminApp = initializeApp(
-      {
-        credential: cert(credsJson as Parameters<typeof cert>[0]),
-        projectId: firebaseConfigData?.projectId,
-      },
-      "banky-server",
-    );
-    return _adminApp;
-  } catch (err) {
-    console.warn("Failed to initialize Firebase Admin with service account:", err);
-    return null;
-  }
-}
 
 export interface GenericDocSnapshot<T = any> {
   id: string;
@@ -310,24 +275,10 @@ const _webDbAdapter = new WebFirestoreAdapter();
  * Authoritative Server Database instance.
  */
 export function serverDb(): WebFirestoreAdapter {
-  const adminApp = getAdminApp();
-  if (adminApp) {
-    if (_adminDb) return _adminDb as unknown as WebFirestoreAdapter;
-    _adminDb = getAdminFirestore(adminApp, firebaseConfigData?.firestoreDatabaseId);
-    _adminDb.settings({ ignoreUndefinedProperties: true });
-    return _adminDb as unknown as WebFirestoreAdapter;
-  }
   return _webDbAdapter;
 }
 
 export function serverAuth(): any {
-  const adminApp = getAdminApp();
-  if (adminApp) {
-    if (_adminAuth) return _adminAuth;
-    _adminAuth = getAdminAuth(adminApp);
-    return _adminAuth;
-  }
-
   return {
     verifyIdToken: async (idToken: string) => {
       const apiKey = firebaseConfigData?.apiKey || process.env.NEXT_PUBLIC_FIREBASE_API_KEY;

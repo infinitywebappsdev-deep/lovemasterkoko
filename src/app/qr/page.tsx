@@ -18,6 +18,7 @@ import {
   Sparkles,
   Info,
   ChevronRight,
+  ChevronLeft,
   ShieldCheck,
   Send,
   Coffee,
@@ -72,6 +73,7 @@ const CATEGORY_IMAGES: Record<string, string> = {
 function QrMenuContent() {
   const searchParams = useSearchParams();
   const initialRoom = searchParams.get("room") || searchParams.get("table") || "";
+  const backUrl = searchParams.get("ref") || "";
   const initialType = searchParams.get("table") ? "table" : "room";
 
   // Data state
@@ -391,6 +393,23 @@ function QrMenuContent() {
               </button>
             </div>
           </div>
+
+          {/* Back Button */}
+          <button
+            onClick={() => {
+              const ref = searchParams.get("ref");
+              if (ref) {
+                window.location.href = ref;
+              } else {
+                window.history.back();
+              }
+            }}
+            className="relative p-2 sm:px-2.5 sm:py-1.5 rounded-xl bg-stone-900 border border-stone-800 text-stone-300 hover:text-white text-xs font-medium flex items-center gap-1.5 active:scale-95 transition-all"
+            title="Back"
+          >
+            <ChevronLeft className="h-4 w-4" />
+            <span className="hidden sm:inline">Back</span>
+          </button>
 
           {/* Header Action Buttons */}
           <div className="flex items-center gap-1.5 sm:gap-2">

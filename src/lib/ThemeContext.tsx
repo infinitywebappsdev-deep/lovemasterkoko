@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext, useEffect, useState, useCallback, useTransition } from "react";
+import { createContext, useContext, useEffect, useState, useCallback, useRef, useTransition } from "react";
 
 export type Theme = "light" | "dark";
 
@@ -99,6 +99,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   });
   const [mounted, setMounted] = useState(false);
 
+  // In-memory manual override — survives even when sessionStorage is blocked
+  // (private browsing / in-app webviews). This is what makes the day/night
+  // toggle stick instead of being reverted by the 20s schedule sync.
+  const manualRef = useRef<Theme | null>(null);
+
   // Synchronize with Lagos WAT time
   const applyScheduledTheme = useCallback((allowOverride = true) => {
     const wat = getLagosWATTheme();
@@ -110,14 +115,21 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     let effectiveTheme = wat.theme;
     let manualActive = false;
 
-    if (allowOverride && typeof window !== "undefined") {
-      try {
-        const manual = sessionStorage.getItem(MANUAL_OVERRIDE_KEY);
-        if (manual === "light" || manual === "dark") {
-          effectiveTheme = manual;
-          manualActive = true;
-        }
-      } catch {}
+    if (allowOverride) {
+      if (manualRef.current) {
+        // Highest priority: the guest's own toggle choice for this session
+        effectiveTheme = manualRef.current;
+        manualActive = true;
+      } else if (typeof window !== "undefined") {
+        try {
+          const manual = sessionStorage.getItem(MANUAL_OVERRIDE_KEY);
+          if (manual === "light" || manual === "dark") {
+            manualRef.current = manual;
+            effectiveTheme = manual;
+            manualActive = true;
+          }
+        } catch {}
+      }
     }
 
     setTheme(effectiveTheme);
@@ -137,6 +149,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     // Clean up any legacy persistent theme that might permanently conflict with WAT schedule
     try {
       localStorage.removeItem("banky-theme");
+      // Rehydrate in-memory override from storage so navigation keeps the choice
+      const manual = sessionStorage.getItem(MANUAL_OVERRIDE_KEY);
+      if (manual === "light" || manual === "dark") manualRef.current = manual;
     } catch {}
 
     // Initialize theme based on Lagos WAT
@@ -149,6 +164,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       const ms = getMsUntilNextTransition();
       timerId = setTimeout(() => {
         // When schedule boundary arrives, clear manual override so schedule automatically kicks in
+        manualRef.current = null;
         try {
           sessionStorage.removeItem(MANUAL_OVERRIDE_KEY);
         } catch {}
@@ -194,15 +210,19 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const toggleTheme = useCallback(() => {
     setTheme((prev) => {
       const next = prev === "light" ? "dark" : "light";
+      manualRef.current = next;
       try {
         sessionStorage.setItem(MANUAL_OVERRIDE_KEY, next);
-      } catch {}
-      setIsAuto(false);
+      } catch {
+        /* storage blocked — the in-memory ref still keeps the choice */
+      }
       return next;
     });
+    setIsAuto(false);
   }, []);
 
   const resetToAuto = useCallback(() => {
+    manualRef.current = null;
     try {
       sessionStorage.removeItem(MANUAL_OVERRIDE_KEY);
     } catch {}

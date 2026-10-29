@@ -13,19 +13,78 @@ const ROOMS_COLLECTION = "rooms";
 const LOCAL_STORAGE_KEY = "banky_custom_rooms_cache";
 
 /**
+ * Photos in `public/images` have been renamed/replaced several times, but the
+ * room documents stored in Firestore still point at the old filenames. Those
+ * cards then render a broken image (404). Map every legacy path that is still
+ * in the database to the file that exists today.
+ */
+const LEGACY_IMAGE_ALIASES: Record<string, string> = {
+  "/images/banky-pre1.jpg": "/images/Banky Presidential1.jpg",
+  "/images/banky-pre4.jpg": "/images/Banky Presidential4.jpg",
+  "/images/banky-presidential-tvwall.jpg": "/images/banky  presidential TVwall xxx.jpg",
+  "/images/Superexcu2.jpeg": "/images/super executive 2.jpg",
+  "/images/SuperExecu1.jpeg": "/images/super executive1.jpg",
+  "/images/New executti.jpeg": "/images/EXECUTIVE Main.jpeg",
+  "/images/Banky Executive2.jpg": "/images/Banky Executive2x.jpg",
+};
+
+/**
+ * When a stored record still references one of those retired files, the whole
+ * gallery for that category is replaced with the single photograph the hotel
+ * chose for it — rather than rebuilding a gallery out of legacy names.
+ */
+const ROOM_IMAGE_OVERRIDES: Record<string, string> = {
+  luxury: "/images/Banky Presidential2.jpg",
+  "super-executive": "/images/Super Executi.jpeg",
+};
+
+function repairImage(path: unknown): string | undefined {
+  if (typeof path !== "string" || !path) return undefined;
+  return LEGACY_IMAGE_ALIASES[path] ?? path;
+}
+
+function repairImages(images: unknown): string[] {
+  if (!Array.isArray(images)) return [];
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const entry of images) {
+    const fixed = repairImage(entry);
+    if (fixed && !seen.has(fixed)) {
+      seen.add(fixed);
+      out.push(fixed);
+    }
+  }
+  return out;
+}
+
+/** True when the stored document still points at at least one retired file. */
+function referencesLegacyImage(data: any): boolean {
+  if (typeof data?.image === "string" && data.image in LEGACY_IMAGE_ALIASES) return true;
+  return Array.isArray(data?.images) && data.images.some((p: unknown) => typeof p === "string" && p in LEGACY_IMAGE_ALIASES);
+}
+
+/**
  * Normalizes room data ensuring required fields and array formats
  */
 export function normalizeRoom(data: any, id: string): Room {
+  const slug = data.slug || id;
+
+  // Retired filenames → the photo the hotel picked for this category.
+  const override = referencesLegacyImage(data) ? ROOM_IMAGE_OVERRIDES[slug] : undefined;
+
+  const image = override || repairImage(data.image) || "/images/Standard room.jpg";
+  const images = override ? [override] : repairImages(data.images).length > 0 ? repairImages(data.images) : [image];
+
   return {
-    slug: data.slug || id,
+    slug,
     name: data.name || "Unnamed Room",
     rate: Number(data.rate) || 30000,
     qty: Number(data.qty) || 1,
     status: data.status === "disabled" ? "disabled" : "active",
     occupancy: data.occupancy || "2 Guests",
     bed: data.bed || "King Bed",
-    image: data.image || "/images/Standard room.jpg",
-    images: Array.isArray(data.images) && data.images.length > 0 ? data.images : [data.image || "/images/Standard room.jpg"],
+    image,
+    images,
     video: data.video || (data.slug ? `/videos/${data.slug}-room.mp4` : undefined),
     blurb: data.blurb || "Comfortable and elegantly appointed hotel accommodation at Banky Hotel & Suites.",
     features: Array.isArray(data.features) && data.features.length > 0
