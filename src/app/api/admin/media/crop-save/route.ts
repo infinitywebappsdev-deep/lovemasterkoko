@@ -1,19 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
-import fs from "fs/promises";
+
 import path from "path";
+
 import { requireStaff, jsonError } from "@/lib/booking/auth";
+import { writeMedia } from "@/lib/media/store";
 
 export async function POST(req: NextRequest) {
   const auth = await requireStaff(req);
   if (!auth.ok) return jsonError(auth.error, auth.message, 401);
+
   try {
     const contentType = req.headers.get("content-type") || "";
-    const imagesDir = path.join(process.cwd(), "public", "images");
-    await fs.mkdir(imagesDir, { recursive: true });
 
     let fileName = "";
     let roomSlug = "";
-    let buffer: Buffer | null = null;
+    let buffer: Uint8Array | null = null;
+    let mimeType: string | undefined;
 
     if (contentType.includes("multipart/form-data")) {
       const formData = await req.formData();
@@ -29,13 +31,13 @@ export async function POST(req: NextRequest) {
         fileName = file.name || `cropped-${Date.now()}.jpg`;
       }
 
-      const bytes = await file.arrayBuffer();
-      buffer = Buffer.from(bytes);
+      buffer = new Uint8Array(await file.arrayBuffer());
+      mimeType = file.type && file.type.startsWith("image/") ? file.type : undefined;
     } else {
       const json = await req.json();
       fileName = json.fileName;
       roomSlug = json.roomSlug || "";
-      const base64Data = json.imageData;
+      const base64Data: string = json.imageData;
 
       if (!base64Data) {
         return NextResponse.json({ ok: false, message: "No image data provided" }, { status: 400 });
@@ -43,43 +45,42 @@ export async function POST(req: NextRequest) {
 
       // Strip data:image/...;base64, prefix if present
       const base64Clean = base64Data.replace(/^data:image\/\w+;base64,/, "");
-      buffer = Buffer.from(base64Clean, "base64");
+      const binary = Buffer.from(base64Clean, "base64");
+      buffer = new Uint8Array(binary.buffer, binary.byteOffset, binary.byteLength);
     }
 
     // Sanitize fileName
-    fileName = path.basename(fileName).trim();
+    fileName = path.basename(fileName || "").trim();
+    if (!fileName) {
+      return NextResponse.json({ ok: false, message: "No file provided" }, { status: 400 });
+    }
     if (!path.extname(fileName)) {
       fileName += ".jpg";
     }
 
-    const targetPath = path.join(imagesDir, fileName);
-    await fs.writeFile(targetPath, buffer);
+    await writeMedia("images", fileName, buffer, mimeType);
 
     // If a roomSlug is specified, also write standard mappings so it shows up immediately in the room
-    if (roomSlug) {
-      if (roomSlug === "deluxe") {
-        await fs.writeFile(path.join(imagesDir, "deluxe.jpg"), buffer);
-        await fs.writeFile(path.join(imagesDir, "DELUXE MAIN1.jpeg"), buffer);
-      } else if (roomSlug === "executive") {
-        await fs.writeFile(path.join(imagesDir, "executive.jpg"), buffer);
-        await fs.writeFile(path.join(imagesDir, "EXECUTIVE Main.jpeg"), buffer);
-      } else if (roomSlug === "standard-plus") {
-        await fs.writeFile(path.join(imagesDir, "Standard PLUS.jpeg"), buffer);
-        await fs.writeFile(path.join(imagesDir, "Standard Plus.jpg"), buffer);
-      } else if (roomSlug === "standard") {
-        await fs.writeFile(path.join(imagesDir, "Standard room.jpg"), buffer);
-        await fs.writeFile(path.join(imagesDir, "standard.jpg"), buffer);
-      } else if (roomSlug === "luxury" || roomSlug === "presidential-suite") {
-        await fs.writeFile(path.join(imagesDir, "Presidential.jpg"), buffer);
-      } else if (roomSlug === "luxury-suite" || roomSlug === "signature-suite") {
-        await fs.writeFile(path.join(imagesDir, "signature suite room.jpg"), buffer);
-      }
+    const aliases: Record<string, string[]> = {
+      deluxe: ["deluxe.jpg", "DELUXE MAIN1.jpeg"],
+      executive: ["executive.jpg", "EXECUTIVE Main.jpeg"],
+      "standard-plus": ["Standard PLUS.jpeg", "Standard Plus.jpg"],
+      standard: ["Standard room.jpg", "standard.jpg"],
+      luxury: ["Presidential.jpg"],
+      "presidential-suite": ["Presidential.jpg"],
+      "luxury-suite": ["signature suite room.jpg"],
+      "signature-suite": ["signature suite room.jpg"],
+    };
+
+    for (const alias of aliases[roomSlug] || []) {
+      if (alias === fileName) continue;
+      await writeMedia("images", alias, buffer, mimeType);
     }
 
     return NextResponse.json({
       ok: true,
       fileName,
-      url: `/images/${encodeURIComponent(fileName)}`,
+      url: `/media/images/${encodeURIComponent(fileName)}`,
       message: `Successfully cropped and saved ${fileName} (16:10 standard aspect ratio).`,
     });
   } catch (err: any) {

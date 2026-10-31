@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import fs from "fs/promises";
+
 import path from "path";
+
 import { requireStaff, jsonError } from "@/lib/booking/auth";
+import { writeMedia } from "@/lib/media/store";
 
 export async function POST(req: NextRequest) {
   const auth = await requireStaff(req);
   if (!auth.ok) return jsonError(auth.error, auth.message, 401);
+
   try {
     const formData = await req.formData();
     const files = formData.getAll("files") as File[];
@@ -44,99 +47,86 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No image files provided" }, { status: 400 });
     }
 
-    const imagesDir = path.join(process.cwd(), "public", "images");
-    await fs.mkdir(imagesDir, { recursive: true });
-
     const savedUrls: string[] = [];
 
     for (let i = 0; i < allFiles.length; i++) {
       const file = allFiles[i];
-      const bytes = await file.arrayBuffer();
-      const buffer = Buffer.from(bytes);
+      const buffer = new Uint8Array(await file.arrayBuffer());
+      const contentType = file.type && file.type.startsWith("image/") ? file.type : undefined;
 
       // Clean up filename or use standard slot — basename() strips any path
-      // segments so an uploaded name can never escape public/images.
-      const originalName = path.basename(file.name || `photo-${i + 1}.jpeg`).trim() || `photo-${i + 1}.jpeg`;
-      const ext = path.extname(originalName) || ".jpeg";
+      // segments so an uploaded name can never escape the media folder.
+      const originalName =
+        path.basename(file.name || `photo-${i + 1}.jpeg`).trim() || `photo-${i + 1}.jpeg`;
 
-      // 1. Save with exact original filename in public/images
-      const targetPath = path.join(imagesDir, originalName);
-      await fs.writeFile(targetPath, buffer);
-      savedUrls.push(`/images/${originalName}`);
+      // 1. Save with exact original filename
+      await writeMedia("images", originalName, buffer, contentType);
+      savedUrls.push(`/media/images/${encodeURIComponent(originalName)}`);
 
       // 2. Legacy alias files — written ONLY for the resolved target category,
       // so an upload can never bleed into another room's pictures.
       const targetSlug = resolveTargetSlug(originalName);
+      const writeAliases = async (names: string[]) => {
+        for (const name of names) {
+          if (name === originalName) continue;
+          await writeMedia("images", name, buffer, contentType);
+        }
+      };
 
       if (targetSlug === "deluxe") {
         if (i === 0) {
-          await fs.writeFile(path.join(imagesDir, `DELUXE MAIN${i + 1}.jpeg`), buffer);
-          await fs.writeFile(path.join(imagesDir, "deluxe.jpg"), buffer);
-          await fs.writeFile(path.join(imagesDir, "deluxe-main-1.jpg"), buffer);
+          await writeAliases([`DELUXE MAIN${i + 1}.jpeg`, "deluxe.jpg", "deluxe-main-1.jpg"]);
         } else if (i === 1) {
-          await fs.writeFile(path.join(imagesDir, "DELUXE MAIN2.jpeg"), buffer);
-          await fs.writeFile(path.join(imagesDir, "deluxe-main-2.jpg"), buffer);
+          await writeAliases(["DELUXE MAIN2.jpeg", "deluxe-main-2.jpg"]);
         } else {
-          await fs.writeFile(path.join(imagesDir, `DELUXE MAIN${i + 1}.jpeg`), buffer);
+          await writeAliases([`DELUXE MAIN${i + 1}.jpeg`]);
         }
       }
 
       if (targetSlug === "executive" && i < 2) {
-        if (i === 0) {
-          await fs.writeFile(path.join(imagesDir, "EXECUTIVE Main.jpeg"), buffer);
-          await fs.writeFile(path.join(imagesDir, "executive.jpg"), buffer);
-        } else {
-          await fs.writeFile(path.join(imagesDir, "EXECUTIVE MAIN2.jpeg"), buffer);
-        }
+        await writeAliases(i === 0 ? ["EXECUTIVE Main.jpeg", "executive.jpg"] : ["EXECUTIVE MAIN2.jpeg"]);
       }
 
       if (targetSlug === "standard-plus" && i < 2) {
-        if (i === 0) {
-          await fs.writeFile(path.join(imagesDir, "Standard PLUS.jpeg"), buffer);
-          await fs.writeFile(path.join(imagesDir, "Standard Plus.jpg"), buffer);
-        } else {
-          await fs.writeFile(path.join(imagesDir, "STANDARD PLUS MAIN .jpeg"), buffer);
-          await fs.writeFile(path.join(imagesDir, "STANDARD PLUS MAIN.jpeg"), buffer);
-        }
+        await writeAliases(
+          i === 0
+            ? ["Standard PLUS.jpeg", "Standard Plus.jpg"]
+            : ["STANDARD PLUS MAIN .jpeg", "STANDARD PLUS MAIN.jpeg"]
+        );
       }
 
       if (targetSlug === "standard" && i < 2) {
-        if (i === 0) {
-          await fs.writeFile(path.join(imagesDir, "Standard room.jpg"), buffer);
-          await fs.writeFile(path.join(imagesDir, "Standard roomx.jpg"), buffer);
-        } else {
-          await fs.writeFile(path.join(imagesDir, "standard.jpg"), buffer);
-        }
+        await writeAliases(i === 0 ? ["Standard room.jpg", "Standard roomx.jpg"] : ["standard.jpg"]);
       }
 
       // Primary images referenced by the static catalog for the suite categories
       if (i === 0 && targetSlug === "luxury") {
-        await fs.writeFile(path.join(imagesDir, "Presidential.jpg"), buffer);
+        await writeAliases(["Presidential.jpg"]);
       }
       if (i === 0 && targetSlug === "luxury-suite") {
-        await fs.writeFile(path.join(imagesDir, "signature suite room.jpg"), buffer);
+        await writeAliases(["signature suite room.jpg"]);
       }
 
       // 6. Map brand logo files if applicable
       const upperName = originalName.toUpperCase();
       if (upperName.includes("LOGO") || upperName.includes("BANKY")) {
-        // Normalize names (handle double dots like plus..png)
         if (originalName.endsWith("..png")) {
-          const singleDotName = originalName.slice(0, -5) + ".png";
-          await fs.writeFile(path.join(imagesDir, singleDotName), buffer);
+          await writeAliases([`${originalName.slice(0, -5)}.png`]);
         }
 
         if (upperName.includes("2 PLUS") || upperName.includes("WHITE")) {
-          // White silhouette logo mark
-          await fs.writeFile(path.join(imagesDir, "Banky Hotel & Suites Main Logo 2 plus.png"), buffer);
-          await fs.writeFile(path.join(imagesDir, "Banky Hotel & Suites Main Logo 2 plus..png"), buffer);
-          await fs.writeFile(path.join(imagesDir, "banky-white-logo.png"), buffer);
+          await writeAliases([
+            "Banky Hotel & Suites Main Logo 2 plus.png",
+            "Banky Hotel & Suites Main Logo 2 plus..png",
+            "banky-white-logo.png",
+          ]);
         } else if (upperName.includes("PLUS..") || (upperName.includes("PLUS") && !upperName.includes("2 PLUS"))) {
-          // Full brand logo / Mark logo
-          await fs.writeFile(path.join(imagesDir, "Banky Hotel & Suites Main Logo plus.png"), buffer);
-          await fs.writeFile(path.join(imagesDir, "Banky Hotel & Suites Main Logo plus..png"), buffer);
-          await fs.writeFile(path.join(imagesDir, "banky-desktop-logo.png"), buffer);
-          await fs.writeFile(path.join(imagesDir, "Banky Hotel & Suites Main Logo 1.png"), buffer);
+          await writeAliases([
+            "Banky Hotel & Suites Main Logo plus.png",
+            "Banky Hotel & Suites Main Logo plus..png",
+            "banky-desktop-logo.png",
+            "Banky Hotel & Suites Main Logo 1.png",
+          ]);
         }
       }
     }
@@ -144,7 +134,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       urls: savedUrls,
-      message: `Successfully saved ${allFiles.length} actual room image(s) to public/images/`,
+      message: `Successfully saved ${allFiles.length} room image(s).`,
     });
   } catch (error) {
     console.error("Failed to save room images:", error);

@@ -6,7 +6,7 @@ export function middleware(request: NextRequest) {
 
   // Intercept CORS preflight OPTIONS requests for videos and static assets
   if (request.method === "OPTIONS") {
-    if (pathname.startsWith("/videos/") || pathname.startsWith("/public/videos/") || pathname.startsWith("/images/") || pathname.startsWith("/api/")) {
+    if (pathname.startsWith("/videos/") || pathname.startsWith("/public/videos/") || pathname.startsWith("/images/") || pathname.startsWith("/media/") || pathname.startsWith("/api/")) {
       return new NextResponse(null, {
         status: 204,
         headers: {
@@ -38,5 +38,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/videos/:path*", "/public/videos/:path*", "/images/:path*", "/api/:path*"],
+  matcher: ["/videos/:path*", "/public/videos/:path*", "/images/:path*", "/media/:path*", "/api/:path*"],
 };

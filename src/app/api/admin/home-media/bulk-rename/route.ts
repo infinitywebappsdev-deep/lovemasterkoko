@@ -1,12 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
-import fs from "fs/promises";
+
 import path from "path";
-import { DEFAULT_HOMEPAGE_MEDIA, HomepageMediaConfig, normalizeHomepageMedia } from "@/lib/homepage-media";
+
+import {
+  DEFAULT_HOMEPAGE_MEDIA,
+  HomepageMediaConfig,
+  normalizeHomepageMedia,
+} from "@/lib/homepage-media";
 import { requireStaff, jsonError } from "@/lib/booking/auth";
+import {
+  copyMedia,
+  readMediaJson,
+  renameMedia,
+  statMedia,
+  writeMediaJson,
+} from "@/lib/media/store";
 
 export const dynamic = "force-dynamic";
 
-const BACKUP_FILE = path.join(process.cwd(), "public", "homepage-media.json");
+const CONFIG_KEY = "config/homepage-media.json";
+const PROTECTED_FILES = new Set(["favicon.ico", "favicon.png", "banky-desktop-logo.png"]);
 
 interface RenameItem {
   oldUrl: string;
@@ -16,6 +29,7 @@ interface RenameItem {
 export async function POST(req: NextRequest) {
   const auth = await requireStaff(req);
   if (!auth.ok) return jsonError(auth.error, auth.message, 401);
+
   try {
     const body = await req.json();
     const type = (body.type || "image") as "image" | "video";
@@ -26,23 +40,24 @@ export async function POST(req: NextRequest) {
     }
 
     const folder = type === "video" ? "videos" : "images";
-    const baseDir = path.join(process.cwd(), "public", folder);
-    await fs.mkdir(baseDir, { recursive: true });
+    const urlPrefix = `/media/${folder}`;
 
-    const results: Array<{
-      oldUrl: string;
-      newUrl: string;
-      success: boolean;
-      error?: string;
-    }> = [];
+    const results: Array<{ oldUrl: string; newUrl: string; success: boolean; error?: string }> = [];
+    const urlMap = new Map<string, string>();
 
-    const urlMap = new Map<string, string>(); // oldUrl -> newUrl
+    const decodeBase = (value: string): string => {
+      const withoutQuery = String(value || "").split("?")[0];
+      try {
+        return path.basename(decodeURIComponent(withoutQuery)).trim();
+      } catch {
+        return path.basename(withoutQuery).trim();
+      }
+    };
 
     for (const item of renames) {
-      const oldClean = path.basename(decodeURIComponent(item.oldUrl || "")).trim();
-      let newClean = path.basename(decodeURIComponent(item.newUrl || "")).trim();
+      const oldClean = decodeBase(item.oldUrl);
+      let newClean = decodeBase(item.newUrl);
 
-      // Protect against directory traversal
       if (!oldClean || !newClean || oldClean.includes("..") || newClean.includes("..")) {
         results.push({
           oldUrl: item.oldUrl,
@@ -53,9 +68,7 @@ export async function POST(req: NextRequest) {
         continue;
       }
 
-      // Safeguard essential logo files
-      const protectedFiles = new Set(["favicon.ico", "favicon.png", "banky-desktop-logo.png"]);
-      if (protectedFiles.has(oldClean.toLowerCase())) {
+      if (PROTECTED_FILES.has(oldClean.toLowerCase())) {
         results.push({
           oldUrl: item.oldUrl,
           newUrl: item.newUrl,
@@ -65,96 +78,91 @@ export async function POST(req: NextRequest) {
         continue;
       }
 
-      // Preserve file extension
       const oldExt = path.extname(oldClean).toLowerCase();
       if (!path.extname(newClean) && oldExt) {
         newClean += oldExt;
       }
 
-      // Normalize new name to safe characters
+      // Normalize the new name to safe characters
       const newExt = path.extname(newClean).toLowerCase() || oldExt;
       const baseOnly = path.basename(newClean, newExt).toLowerCase().replace(/[^a-z0-9_-]+/g, "-");
       newClean = `${baseOnly}${newExt}`;
 
-      const oldPath = path.join(baseDir, oldClean);
-      const newPath = path.join(baseDir, newClean);
-
-      const oldUrlFinal = `/${folder}/${oldClean}`;
-      const newUrlFinal = `/${folder}/${newClean}`;
+      const oldUrlFinal = `/${folder}/${encodeURIComponent(oldClean)}`;
 
       if (oldClean === newClean) {
-        results.push({ oldUrl: oldUrlFinal, newUrl: newUrlFinal, success: true });
+        results.push({ oldUrl: oldUrlFinal, newUrl: `${urlPrefix}/${encodeURIComponent(newClean)}`, success: true });
         continue;
       }
 
-      try {
-        await fs.access(oldPath);
-
-        // If target file already exists and is different from source, avoid overwriting
-        try {
-          await fs.access(newPath);
-          // Collision: target already exists! Let's generate a unique increment
-          let counter = 1;
-          let safeCandidate = `${baseOnly}-${counter}${newExt}`;
-          while (true) {
-            try {
-              await fs.access(path.join(baseDir, safeCandidate));
-              counter++;
-              safeCandidate = `${baseOnly}-${counter}${newExt}`;
-            } catch {
-              break;
-            }
-          }
-          newClean = safeCandidate;
-        } catch {
-          // Target doesn't exist, fine to rename
-        }
-
-        const safeNewPath = path.join(baseDir, newClean);
-        await fs.rename(oldPath, safeNewPath);
-
-        const resolvedNewUrl = `/${folder}/${newClean}`;
-        results.push({ oldUrl: oldUrlFinal, newUrl: resolvedNewUrl, success: true });
-        urlMap.set(oldUrlFinal, resolvedNewUrl);
-        // Also map raw filenames
-        urlMap.set(oldClean, newClean);
-      } catch (err: any) {
+      const source = await statMedia(folder, oldClean);
+      if (!source) {
         results.push({
           oldUrl: oldUrlFinal,
-          newUrl: newUrlFinal,
+          newUrl: `${urlPrefix}/${encodeURIComponent(newClean)}`,
           success: false,
-          error: err?.message || "File rename failed",
+          error: "File not found.",
         });
+        continue;
       }
+
+      // Avoid clobbering an existing object: add -1, -2, ... until free
+      let candidate = newClean;
+      let counter = 1;
+      while (await statMedia(folder, candidate)) {
+        candidate = `${baseOnly}-${counter}${newExt}`;
+        counter += 1;
+      }
+
+      const moved =
+        source.source === "static"
+          ? await copyMedia(
+              folder,
+              oldClean,
+              candidate,
+              `${req.nextUrl.origin}/${folder}/${encodeURIComponent(oldClean)}`
+            )
+          : await renameMedia(folder, oldClean, candidate);
+
+      if (!moved.ok) {
+        results.push({
+          oldUrl: oldUrlFinal,
+          newUrl: `${urlPrefix}/${encodeURIComponent(candidate)}`,
+          success: false,
+          error: moved.error || "File rename failed",
+        });
+        continue;
+      }
+
+      const resolvedNewUrl = `${urlPrefix}/${encodeURIComponent(moved.name)}`;
+      results.push({ oldUrl: oldUrlFinal, newUrl: resolvedNewUrl, success: true });
+      urlMap.set(oldUrlFinal, resolvedNewUrl);
+      urlMap.set(oldClean, moved.name);
     }
 
-    // Now update references in /public/homepage-media.json if any files were renamed
+    // Update stored homepage config references when files moved
     let updatedConfig: HomepageMediaConfig | null = null;
     if (urlMap.size > 0) {
       try {
-        let current: HomepageMediaConfig = { ...DEFAULT_HOMEPAGE_MEDIA };
-        try {
-          const raw = await fs.readFile(BACKUP_FILE, "utf-8");
-          current = normalizeHomepageMedia(JSON.parse(raw));
-        } catch {}
+        const stored = await readMediaJson<HomepageMediaConfig>(CONFIG_KEY);
+        const current = stored
+          ? normalizeHomepageMedia(stored)
+          : normalizeHomepageMedia({ ...DEFAULT_HOMEPAGE_MEDIA });
 
-        // Replace any matching URLs
         const replaceUrl = (url: string | undefined): string => {
           if (!url) return "";
-          // Direct match
           if (urlMap.has(url)) return urlMap.get(url)!;
-          // Basename match
-          const base = path.basename(url);
+          const base = path.basename(url.split("?")[0]);
           for (const [oldU, newU] of urlMap.entries()) {
-            if (path.basename(oldU) === base) {
-              return newU;
-            }
+            if (path.basename(oldU) === base) return newU;
           }
           return url;
         };
 
         if (current.hero.videoUrl) current.hero.videoUrl = replaceUrl(current.hero.videoUrl);
-        if (current.hero.videoSecondaryUrl) current.hero.videoSecondaryUrl = replaceUrl(current.hero.videoSecondaryUrl);
+        if (current.hero.videoSecondaryUrl) {
+          current.hero.videoSecondaryUrl = replaceUrl(current.hero.videoSecondaryUrl);
+        }
         if (current.hero.posterImage) current.hero.posterImage = replaceUrl(current.hero.posterImage);
 
         if (Array.isArray(current.hero.slideshowImages)) {
@@ -165,17 +173,11 @@ export async function POST(req: NextRequest) {
         if (current.about.image2) current.about.image2 = replaceUrl(current.about.image2);
 
         if (Array.isArray(current.gallery)) {
-          current.gallery = current.gallery.map((g) => ({
-            ...g,
-            url: replaceUrl(g.url),
-          }));
+          current.gallery = current.gallery.map((g) => ({ ...g, url: replaceUrl(g.url) }));
         }
 
         if (Array.isArray(current.experiences)) {
-          current.experiences = current.experiences.map((e) => ({
-            ...e,
-            img: replaceUrl(e.img),
-          }));
+          current.experiences = current.experiences.map((e) => ({ ...e, img: replaceUrl(e.img) }));
         }
 
         if (Array.isArray(current.featuredVideos)) {
@@ -187,10 +189,10 @@ export async function POST(req: NextRequest) {
         }
 
         current.updatedAt = new Date().toISOString();
-        await fs.writeFile(BACKUP_FILE, JSON.stringify(current, null, 2), "utf-8");
+        await writeMediaJson(CONFIG_KEY, current);
         updatedConfig = current;
       } catch (cfgErr) {
-        console.warn("Could not sync renamed URLs to homepage-media.json:", cfgErr);
+        console.warn("Could not sync renamed URLs to homepage media config:", cfgErr);
       }
     }
 

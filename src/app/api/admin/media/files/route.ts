@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import fs from "fs/promises";
 import path from "path";
 import { ROOMS } from "@/lib/hotel";
+import { listMedia } from "@/lib/media/store";
 import { getRoomTypes } from "@/lib/booking/engine";
 import type { RoomType } from "@/lib/booking/types";
 import { requireStaff, jsonError } from "@/lib/booking/auth";
@@ -10,11 +10,10 @@ export async function GET(req: Request) {
   const auth = await requireStaff(req);
   if (!auth.ok) return jsonError(auth.error, auth.message, 401);
   try {
-    const imagesDir = path.join(process.cwd(), "public", "images");
-    await fs.mkdir(imagesDir, { recursive: true });
-
-    const dirEntries = await fs.readdir(imagesDir, { withFileTypes: true });
     const imageExtensions = new Set([".jpg", ".jpeg", ".png", ".webp", ".gif", ".svg"]);
+    const mediaEntries = (await listMedia("images")).filter((entry) =>
+      imageExtensions.has(path.extname(entry.name).toLowerCase())
+    );
 
     // 1. Fetch room configurations from Firestore database (falling back to default room types and hotel catalog)
     let dbRoomTypes: RoomType[] = [];
@@ -77,14 +76,8 @@ export async function GET(req: Request) {
     let orphanedCount = 0;
     let orphanedBytes = 0;
 
-    for (const entry of dirEntries) {
-      if (!entry.isFile()) continue;
-      const ext = path.extname(entry.name).toLowerCase();
-      if (!imageExtensions.has(ext)) continue;
-
-      const filePath = path.join(imagesDir, entry.name);
-      const stat = await fs.stat(filePath);
-      totalBytes += stat.size;
+    for (const entry of mediaEntries) {
+      totalBytes += entry.size;
 
       const normName = entry.name.trim().toLowerCase();
       const referencedRooms = referencedMap.get(normName) || [];
@@ -95,14 +88,17 @@ export async function GET(req: Request) {
         referencedCount++;
       } else {
         orphanedCount++;
-        orphanedBytes += stat.size;
+        orphanedBytes += entry.size;
       }
 
       filesList.push({
         name: entry.name,
-        size: stat.size,
-        mtime: stat.mtime.toISOString(),
-        url: `/images/${encodeURIComponent(entry.name)}`,
+        size: entry.size,
+        mtime: new Date(entry.mtime).toISOString(),
+        url:
+          entry.source === "static"
+            ? `/images/${encodeURIComponent(entry.name)}`
+            : `/media/images/${encodeURIComponent(entry.name)}`,
         isReferencedInRooms,
         referencedRooms,
         isBrand,

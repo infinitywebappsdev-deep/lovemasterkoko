@@ -1,9 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
-import fs from "fs/promises";
+
 import path from "path";
+
 import { requireStaff, jsonError } from "@/lib/booking/auth";
+import { deleteMedia, listMedia } from "@/lib/media/store";
 
 export const dynamic = "force-dynamic";
+
+/** Core assets that must never be removed from the media library. */
+const PROTECTED_ASSETS = new Set([
+  "favicon.ico",
+  "favicon.png",
+  "favicon.svg",
+  "banky-desktop-logo.png",
+]);
+
+/** Strips any path, NUL or query noise from a caller-supplied filename. */
+function sanitize(name: string): string {
+  return path.basename(String(name || "").split("?")[0]).replace(/\0/g, "").trim();
+}
 
 /**
  * DELETE /api/admin/media/delete
@@ -15,11 +30,12 @@ export const dynamic = "force-dynamic";
 export async function POST(req: NextRequest) {
   const auth = await requireStaff(req);
   if (!auth.ok) return jsonError(auth.error, auth.message, 401);
+
   try {
-    const body = await req.json().catch(() => ({}));
+    const body = await req.json().catch(() => ({} as Record<string, unknown>));
     const type = (body.type || req.nextUrl.searchParams.get("type") || "image") as "image" | "video";
-    const filename = body.filename || req.nextUrl.searchParams.get("filename") || "";
-    const slug = body.slug || req.nextUrl.searchParams.get("slug") || "";
+    const filename = String(body.filename || req.nextUrl.searchParams.get("filename") || "");
+    const slug = String(body.slug || req.nextUrl.searchParams.get("slug") || "");
 
     if (!filename && !slug) {
       return NextResponse.json(
@@ -28,20 +44,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Protect against directory traversal attacks
-    const sanitize = (name: string) => path.basename(name).replace(/\0/g, "").trim();
-
     if (type === "video") {
-      const videosDir = path.join(process.cwd(), "public", "videos");
-      await fs.mkdir(videosDir, { recursive: true });
-
       const cleanSlug = slug ? sanitize(slug).toLowerCase().replace(/\s+/g, "-") : "";
       const exact = filename ? sanitize(filename) : "";
       const noHyphen = cleanSlug.replace(/-/g, "");
 
-      // Scan the directory instead of guessing a single filename: uploads can
-      // produce <slug>-room.mp4, <slug>.mp4, alias symlinks or timestamped
-      // hero/stitched files, and all of them belong to the same asset.
+      // Match the same family of filenames an upload can produce:
+      // <slug>-room.mp4, <slug>.mp4, unhyphenated aliases and timestamped ones.
       const isMatch = (name: string): boolean => {
         const lower = name.toLowerCase();
         if (exact && lower === exact.toLowerCase()) return true;
@@ -56,34 +65,18 @@ export async function POST(req: NextRequest) {
         );
       };
 
-      const entries = await fs.readdir(videosDir, { withFileTypes: true });
+      const candidates = (await listMedia("videos")).filter((entry) => isMatch(entry.name));
+
       const deleted: string[] = [];
+      const bundled: string[] = [];
 
-      for (const entry of entries) {
-        if (!entry.isFile()) continue;
-        if (!/\.(mp4|webm|mov|m4v)$/.test(entry.name)) continue;
-        if (!isMatch(entry.name)) continue;
-        try {
-          await fs.unlink(path.join(videosDir, entry.name));
-          deleted.push(entry.name);
-        } catch {
-          // file may have been removed concurrently
+      for (const entry of candidates) {
+        if (entry.source === "static") {
+          // Shipped inside the deployment bundle: no runtime write access.
+          bundled.push(entry.name);
+          continue;
         }
-      }
-
-      // Update manifest.json if slug was specified
-      if (cleanSlug) {
-        try {
-          const manifestPath = path.join(videosDir, "manifest.json");
-          const manifestData = await fs.readFile(manifestPath, "utf-8");
-          const manifest = JSON.parse(manifestData);
-          if (manifest[cleanSlug]) {
-            delete manifest[cleanSlug];
-            await fs.writeFile(manifestPath, JSON.stringify(manifest, null, 2));
-          }
-        } catch {
-          // manifest might not exist
-        }
+        if (await deleteMedia("videos", entry.name)) deleted.push(entry.name);
       }
 
       // Idempotent: a repeat delete (or a file that was already gone) is a
@@ -93,60 +86,63 @@ export async function POST(req: NextRequest) {
         success: true,
         deletedCount: deleted.length,
         deleted,
+        bundledCount: bundled.length,
+        bundled: bundled.length ? bundled : undefined,
         message:
           deleted.length > 0
             ? `Deleted ${deleted.length} video file(s).`
-            : "No matching video file was present — it was already removed.",
+            : bundled.length > 0
+              ? "These videos ship inside the deployment bundle and cannot be removed at runtime. Replace them with an upload instead."
+              : "No matching video file was present — it was already removed.",
       });
     }
 
-    // Default: Image deletion
-    const imagesDir = path.join(process.cwd(), "public", "images");
-    await fs.mkdir(imagesDir, { recursive: true });
-
+    // Default: image deletion
     const cleanFilename = sanitize(filename);
     if (!cleanFilename) {
       return NextResponse.json({ error: "Invalid image filename" }, { status: 400 });
     }
 
-    // Prevent deleting core system assets by mistake
-    const protectedAssets = new Set([
-      "favicon.ico",
-      "favicon.png",
-      "favicon.svg",
-      "banky-desktop-logo.png",
-    ]);
-
-    if (protectedAssets.has(cleanFilename.toLowerCase())) {
+    if (PROTECTED_ASSETS.has(cleanFilename.toLowerCase())) {
       return NextResponse.json(
         { error: `Cannot delete core system asset: ${cleanFilename}` },
         { status: 403 }
       );
     }
 
-    const targetPath = path.join(imagesDir, cleanFilename);
+    const removed = await deleteMedia("images", cleanFilename);
 
-    try {
-      await fs.unlink(targetPath);
-    } catch (err: any) {
-      if (err.code === "ENOENT") {
-        // Already gone — treat as success so references still get cleaned up.
+    if (!removed) {
+      const entries = await listMedia("images");
+      const bundled = entries.some(
+        (entry) => entry.name.toLowerCase() === cleanFilename.toLowerCase() && entry.source === "static"
+      );
+
+      if (bundled) {
         return NextResponse.json({
           ok: true,
           success: true,
           filename: cleanFilename,
-          alreadyGone: true,
-          message: `${cleanFilename} was already removed.`,
+          alreadyGone: false,
+          bundled: true,
+          message: `${cleanFilename} ships inside the deployment bundle, so its page references were cleared but the binary stays until the next build.`,
         });
       }
-      throw err;
+
+      return NextResponse.json({
+        ok: true,
+        success: true,
+        filename: cleanFilename,
+        alreadyGone: true,
+        message: `${cleanFilename} was already removed.`,
+      });
     }
 
     return NextResponse.json({
       ok: true,
       success: true,
       filename: cleanFilename,
-      message: `Image ${cleanFilename} was permanently deleted from public/images/.`,
+      message: `Image ${cleanFilename} was permanently deleted.`,
     });
   } catch (error: any) {
     console.error("Delete media API error:", error);

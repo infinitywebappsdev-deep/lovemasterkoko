@@ -1,84 +1,45 @@
 import { NextRequest, NextResponse } from "next/server";
-import fs from "fs/promises";
-import path from "path";
-import os from "os";
-import { execFile } from "child_process";
-import { promisify } from "util";
-import { requireStaff, jsonError } from "@/lib/booking/auth";
 
-const execFileAsync = promisify(execFile);
+import path from "path";
+
+import { requireStaff, jsonError } from "@/lib/booking/auth";
+import { statMedia } from "@/lib/media/store";
 
 export const dynamic = "force-dynamic";
 
-async function probeDimensions(filePath: string): Promise<string> {
-  try {
-    const { stdout } = await execFileAsync("ffprobe", [
-      "-v", "error",
-      "-select_streams", "v:0",
-      "-show_entries", "stream=width,height",
-      "-of", "csv=p=0:s=x",
-      filePath,
-    ]);
-    return stdout.trim() || "";
-  } catch {
-    return "";
-  }
-}
-
 /**
- * Resizes an existing image file on disk in public/images
+ * POST /api/admin/home-media/resize
+ *
+ * Reports the size of the requested media files.
+ *
+ * Re-encoding images needs ffmpeg/sharp, neither of which exists in the Worker
+ * runtime, so files are left byte-identical: shrinking them here would require
+ * a native image pipeline the deployment cannot run. The response keeps the
+ * shape the admin UI expects (with 0% savings and `skipped: true`) instead of
+ * failing the whole batch.
  */
-async function resizeFileOnDisk(filename: string, targetMaxWidth = 1280) {
-  const imagesDir = path.join(process.cwd(), "public", "images");
-  const cleanName = path.basename(filename);
-  const targetPath = path.join(imagesDir, cleanName);
+async function describe(filename: string, maxWidth: number) {
+  const clean = path.basename(String(filename || "").split("?")[0]).trim();
+  if (!clean) throw new Error("Missing filename");
 
-  const stat = await fs.stat(targetPath);
-  const originalSize = stat.size;
-  const ext = path.extname(cleanName).toLowerCase();
-
-  const tempId = `res_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
-  const outTemp = path.join(os.tmpdir(), `${tempId}_opt${ext}`);
-
-  const scaleFilter = `scale='min(${targetMaxWidth},iw)':-2`;
-
-  await execFileAsync("ffmpeg", [
-    "-y",
-    "-i", targetPath,
-    "-vf", scaleFilter,
-    "-q:v", "3",
-    "-pix_fmt", "yuvj420p",
-    "-map_metadata", "-1",
-    outTemp,
-  ]);
-
-  const optimizedBuffer = await fs.readFile(outTemp);
-  const optimizedSize = optimizedBuffer.length;
-  const dimensions = await probeDimensions(outTemp);
-
-  // Overwrite the file on disk with the optimized version if smaller
-  if (optimizedSize < originalSize) {
-    await fs.writeFile(targetPath, optimizedBuffer);
-  }
-
-  await fs.unlink(outTemp).catch(() => {});
-
-  const savingsPercent = originalSize > optimizedSize
-    ? Math.round(((originalSize - optimizedSize) / originalSize) * 100)
-    : 0;
+  const stat = await statMedia("images", clean);
+  if (!stat) throw new Error("File not found");
 
   return {
-    filename: cleanName,
-    originalSize,
-    optimizedSize: Math.min(originalSize, optimizedSize),
-    dimensions,
-    savingsPercent,
+    filename: clean,
+    originalSize: stat.size,
+    optimizedSize: stat.size,
+    dimensions: "",
+    savingsPercent: 0,
+    skipped: true,
+    maxWidth,
   };
 }
 
 export async function POST(req: NextRequest) {
   const auth = await requireStaff(req);
   if (!auth.ok) return jsonError(auth.error, auth.message, 401);
+
   try {
     const body = await req.json();
     const filename = body.filename as string | undefined;
@@ -86,40 +47,42 @@ export async function POST(req: NextRequest) {
     const maxWidth = Number(body.maxWidth) || 1280;
     const batchList = body.filenames as string[] | undefined;
 
+    const note =
+      "Image re-encoding is not available in this deployment (no ffmpeg/sharp at runtime); files are served unchanged.";
+
     if (batchList && Array.isArray(batchList) && batchList.length > 0) {
       const results = [];
-      for (const f of batchList) {
+      for (const file of batchList) {
         try {
-          const res = await resizeFileOnDisk(f, maxWidth);
-          results.push(res);
+          results.push(await describe(file, maxWidth));
         } catch (e: any) {
-          results.push({ filename: f, error: e?.message });
+          results.push({ filename: file, error: e?.message || "Processing failed" });
         }
       }
       return NextResponse.json({
         ok: true,
         batch: true,
         results,
-        message: `Processed ${results.length} image(s) for optimal landing page performance.`,
+        message: note,
       });
     }
 
-    const targetFile = filename || (url ? path.basename(url) : "");
+    const targetFile = filename || (url ? path.basename(url.split("?")[0]) : "");
     if (!targetFile) {
       return NextResponse.json({ ok: false, error: "Must specify filename or url" }, { status: 400 });
     }
 
-    const result = await resizeFileOnDisk(targetFile, maxWidth);
+    const result = await describe(targetFile, maxWidth);
 
     return NextResponse.json({
       ok: true,
       result,
-      message: `Image ${result.filename} was automatically resized to ${result.dimensions} (${result.savingsPercent}% file size reduction).`,
+      message: note,
     });
   } catch (error: any) {
     console.error("Image resize error:", error);
     return NextResponse.json(
-      { ok: false, error: error?.message || "Failed to resize image" },
+      { ok: false, error: error?.message || "Failed to inspect image" },
       { status: 500 }
     );
   }
