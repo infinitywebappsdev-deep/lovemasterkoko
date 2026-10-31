@@ -19,13 +19,14 @@ const FOLDERS = {
   videos: new Set([".mp4", ".webm", ".mov", ".m4v"]),
 };
 
-const manifest = { generatedAt: new Date().toISOString(), images: [], videos: [] };
+// No timestamp: the file is committed, and a stable order keeps diffs quiet.
+const manifest = { images: [], videos: [] };
 
 for (const [folder, extensions] of Object.entries(FOLDERS)) {
   const dir = join(root, "public", folder);
   let entries = [];
   try {
-    entries = readdirSync(dir, { withFileTypes: true });
+    entries = readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name));
   } catch {
     // Folder is optional — an empty inventory is valid.
   }

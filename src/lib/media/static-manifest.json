@@ -1,10 +1,14 @@
 {
-  "generatedAt": "2026-10-31T01:09:47.242Z",
   "images": [
     {
       "name": "Ballard Table.jpg",
       "size": 193387,
       "mtime": 1793403263836
+    },
+    {
+      "name": "banky  presidential TVwall xxx.jpg",
+      "size": 310257,
+      "mtime": 1793403278229
     },
     {
       "name": "Banky Executive1x.jpg",
@@ -42,6 +46,11 @@
       "mtime": 1793403266950
     },
     {
+      "name": "banky standar plus tvwall.jpg",
+      "size": 236060,
+      "mtime": 1793403279054
+    },
+    {
       "name": "Banky Standard 2.jpg",
       "size": 136169,
       "mtime": 1793403267504
@@ -52,9 +61,14 @@
       "mtime": 1793403267708
     },
     {
-      "name": "BankyHall.jpg",
-      "size": 98565,
-      "mtime": 1793403267836
+      "name": "banky standardplus.jpg",
+      "size": 131826,
+      "mtime": 1793403279602
+    },
+    {
+      "name": "banky standarplus1.jpg",
+      "size": 203928,
+      "mtime": 1793403280462
     },
     {
       "name": "Banky_Hotel___Suites_Main_Logo_2_-1793187937173.png",
@@ -142,6 +156,26 @@
       "mtime": 1793403272002
     },
     {
+      "name": "banky-desktop-logo.png",
+      "size": 23023,
+      "mtime": 1793403280664
+    },
+    {
+      "name": "BankyHall.jpg",
+      "size": 98565,
+      "mtime": 1793403267836
+    },
+    {
+      "name": "corridor-hallway-2.jpg",
+      "size": 89620,
+      "mtime": 1793403280791
+    },
+    {
+      "name": "corridor-hallway.jpg",
+      "size": 82346,
+      "mtime": 1793403280919
+    },
+    {
       "name": "DELUXE MAIN1.jpeg",
       "size": 91476,
       "mtime": 1793403272182
@@ -152,14 +186,29 @@
       "mtime": 1793403272342
     },
     {
+      "name": "deluxe-main-1.jpg",
+      "size": 91370,
+      "mtime": 1793403281059
+    },
+    {
+      "name": "deluxe-main-2.jpg",
+      "size": 91370,
+      "mtime": 1793403281231
+    },
+    {
+      "name": "deluxe.jpg",
+      "size": 91476,
+      "mtime": 1793403281407
+    },
+    {
+      "name": "dining.jpg",
+      "size": 67288,
+      "mtime": 1793403281503
+    },
+    {
       "name": "Diplomatic Suite.jpg",
       "size": 143385,
       "mtime": 1793403272494
-    },
-    {
-      "name": "EXECUTIVE MAIN2.jpeg",
-      "size": 105254,
-      "mtime": 1793403272658
     },
     {
       "name": "EXECUTIVE Main.jpeg",
@@ -167,14 +216,49 @@
       "mtime": 1793403272850
     },
     {
+      "name": "EXECUTIVE MAIN2.jpeg",
+      "size": 105254,
+      "mtime": 1793403272658
+    },
+    {
+      "name": "executive.jpg",
+      "size": 91476,
+      "mtime": 1793403281691
+    },
+    {
+      "name": "exterior-night.jpg",
+      "size": 224623,
+      "mtime": 1793403281887
+    },
+    {
+      "name": "hero.jpg",
+      "size": 224623,
+      "mtime": 1793403282079
+    },
+    {
       "name": "Hotel Lobby.jpg",
       "size": 84732,
       "mtime": 1793403272974
     },
     {
+      "name": "hotel-front-left.jpg",
+      "size": 265422,
+      "mtime": 1793403282303
+    },
+    {
+      "name": "hotel-front-right.jpg",
+      "size": 230019,
+      "mtime": 1793403282491
+    },
+    {
       "name": "IMG_6494.jpg",
       "size": 117531,
       "mtime": 1793403273106
+    },
+    {
+      "name": "lounge.jpg",
+      "size": 283957,
+      "mtime": 1793403282733
     },
     {
       "name": "Luxury Suite1.jpeg",
@@ -197,6 +281,11 @@
       "mtime": 1793403273750
     },
     {
+      "name": "open air bar sitout.jpg",
+      "size": 328205,
+      "mtime": 1793403282989
+    },
+    {
       "name": "OpenBar Garden 2.jpg",
       "size": 314644,
       "mtime": 1793403274014
@@ -217,6 +306,11 @@
       "mtime": 1793403274762
     },
     {
+      "name": "presidential 17.jpg",
+      "size": 159921,
+      "mtime": 1793403283189
+    },
+    {
       "name": "Presidential.jpg",
       "size": 199278,
       "mtime": 1793403275290
@@ -225,6 +319,16 @@
       "name": "Presidential1.jpg",
       "size": 211705,
       "mtime": 1793403275816
+    },
+    {
+      "name": "presidential23.jpg",
+      "size": 204854,
+      "mtime": 1793403283693
+    },
+    {
+      "name": "presidential3.jpg",
+      "size": 187275,
+      "mtime": 1793403284226
     },
     {
       "name": "Reception.jpg",
@@ -240,6 +344,21 @@
       "name": "Restaurant 2.jpg",
       "size": 105469,
       "mtime": 1793403276184
+    },
+    {
+      "name": "restaurant14.jpg",
+      "size": 133868,
+      "mtime": 1793403284702
+    },
+    {
+      "name": "signature suite room.jpg",
+      "size": 48404,
+      "mtime": 1793403284786
+    },
+    {
+      "name": "standar plus.jpg",
+      "size": 93675,
+      "mtime": 1793403284934
     },
     {
       "name": "STANDARD PLUS MAIN .jpeg",
@@ -277,136 +396,6 @@
       "mtime": 1793403277067
     },
     {
-      "name": "Suite1.jpg",
-      "size": 122694,
-      "mtime": 1793403277203
-    },
-    {
-      "name": "Super Executi.jpeg",
-      "size": 35078,
-      "mtime": 1793403277271
-    },
-    {
-      "name": "banky  presidential TVwall xxx.jpg",
-      "size": 310257,
-      "mtime": 1793403278229
-    },
-    {
-      "name": "banky standar plus tvwall.jpg",
-      "size": 236060,
-      "mtime": 1793403279054
-    },
-    {
-      "name": "banky standardplus.jpg",
-      "size": 131826,
-      "mtime": 1793403279602
-    },
-    {
-      "name": "banky standarplus1.jpg",
-      "size": 203928,
-      "mtime": 1793403280462
-    },
-    {
-      "name": "banky-desktop-logo.png",
-      "size": 23023,
-      "mtime": 1793403280664
-    },
-    {
-      "name": "corridor-hallway-2.jpg",
-      "size": 89620,
-      "mtime": 1793403280791
-    },
-    {
-      "name": "corridor-hallway.jpg",
-      "size": 82346,
-      "mtime": 1793403280919
-    },
-    {
-      "name": "deluxe-main-1.jpg",
-      "size": 91370,
-      "mtime": 1793403281059
-    },
-    {
-      "name": "deluxe-main-2.jpg",
-      "size": 91370,
-      "mtime": 1793403281231
-    },
-    {
-      "name": "deluxe.jpg",
-      "size": 91476,
-      "mtime": 1793403281407
-    },
-    {
-      "name": "dining.jpg",
-      "size": 67288,
-      "mtime": 1793403281503
-    },
-    {
-      "name": "executive.jpg",
-      "size": 91476,
-      "mtime": 1793403281691
-    },
-    {
-      "name": "exterior-night.jpg",
-      "size": 224623,
-      "mtime": 1793403281887
-    },
-    {
-      "name": "hero.jpg",
-      "size": 224623,
-      "mtime": 1793403282079
-    },
-    {
-      "name": "hotel-front-left.jpg",
-      "size": 265422,
-      "mtime": 1793403282303
-    },
-    {
-      "name": "hotel-front-right.jpg",
-      "size": 230019,
-      "mtime": 1793403282491
-    },
-    {
-      "name": "lounge.jpg",
-      "size": 283957,
-      "mtime": 1793403282733
-    },
-    {
-      "name": "open air bar sitout.jpg",
-      "size": 328205,
-      "mtime": 1793403282989
-    },
-    {
-      "name": "presidential 17.jpg",
-      "size": 159921,
-      "mtime": 1793403283189
-    },
-    {
-      "name": "presidential23.jpg",
-      "size": 204854,
-      "mtime": 1793403283693
-    },
-    {
-      "name": "presidential3.jpg",
-      "size": 187275,
-      "mtime": 1793403284226
-    },
-    {
-      "name": "restaurant14.jpg",
-      "size": 133868,
-      "mtime": 1793403284702
-    },
-    {
-      "name": "signature suite room.jpg",
-      "size": 48404,
-      "mtime": 1793403284786
-    },
-    {
-      "name": "standar plus.jpg",
-      "size": 93675,
-      "mtime": 1793403284934
-    },
-    {
       "name": "standard.jpg",
       "size": 166069,
       "mtime": 1793403285154
@@ -415,6 +404,16 @@
       "name": "studio3.jpg",
       "size": 195255,
       "mtime": 1793403285382
+    },
+    {
+      "name": "Suite1.jpg",
+      "size": 122694,
+      "mtime": 1793403277203
+    },
+    {
+      "name": "Super Executi.jpeg",
+      "size": 35078,
+      "mtime": 1793403277271
     },
     {
       "name": "super executive 2.jpg",
