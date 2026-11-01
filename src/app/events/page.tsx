@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { HOTEL, naira, whatsappLink, bookingMessage } from "@/lib/hotel";
+import { Check, Phone, Users } from "lucide-react";
+import { HOTEL, naira, whatsappLink } from "@/lib/hotel";
 import { BreadcrumbSchema } from "@/components/seo/StructuredData";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
-import { LazyAspectImage } from "@/components/common/LazyAspectImage";
 
 export const metadata: Metadata = {
   title: "Meetings & Events — Banky Hall",
@@ -18,88 +18,147 @@ export const metadata: Metadata = {
   },
 };
 
+const FEATURES = [
+  "Up to 300 seated guests",
+  "Air-conditioned climate control",
+  "Integrated audio/PA & staging",
+  "Crystal chandeliers & drapery",
+  "Bridal / VIP dressing suite",
+  "Dedicated banquet coordination",
+];
+
+const CONFIGURATIONS = [
+  { title: "Banqueting & dining", copy: "Round tables of ten, served from the hotel kitchen.", image: "/images/Restaurant 2.jpg" },
+  { title: "Arrival & foyer", copy: "A reception lounge for guest welcome and signage.", image: "/images/Reception1.jpg" },
+];
+
 export default function EventsPage() {
-  const breadcrumbs = [
-    { name: "Home", url: "/" },
-    { name: "Events", url: "/events" },
-  ];
   return (
     <>
-      <BreadcrumbSchema items={breadcrumbs} />
-      <section className="relative pt-32 pb-20 sm:pt-40 sm:pb-28 bg-[#1b1b1b] dark:bg-[#1a1a1d] overflow-hidden">
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", url: "/" },
+          { name: "Events", url: "/events" },
+        ]}
+      />
+
+      <section className="relative flex min-h-[62vh] items-end overflow-hidden">
         <Image
           src="/images/BankyHall.jpg"
-          alt="Banky Hall Banqueting and Events"
+          alt="Banky Hall banqueting and events space"
           fill
           priority
-          referrerPolicy="no-referrer"
-          className="object-cover opacity-30"
+          sizes="100vw"
+          className="object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#1b1b1b] dark:from-[#202023] via-[#1b1b1b]/60 to-[#1b1b1b]/80" />
-        <div className="container-x relative z-10 text-center">
-          <span className="eyebrow text-[var(--accent)] block mb-3">Banqueting &amp; Events</span>
-          <h1 className="font-display text-4xl sm:text-5xl md:text-6xl text-white">Banky Hall</h1>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/45" />
+        <div className="container-x relative z-10 pb-10 pt-32 sm:pb-14">
+          <p className="text-[0.66rem] font-medium uppercase tracking-[0.28em] text-white/60">
+            Banqueting &amp; events
+          </p>
+          <h1 className="mt-3 font-display text-[2.6rem] leading-[1.03] text-white sm:text-6xl">Banky Hall</h1>
+          <p className="mt-4 max-w-lg text-[0.95rem] leading-relaxed text-white/70">
+            Three hundred seats, full staging and a team that has run weddings, AGMs and gala nights on the
+            same compound for years.
+          </p>
         </div>
       </section>
-      <section className="py-16 sm:py-24 bg-white dark:bg-[#202023]">
-        <div className="container-x max-w-4xl">
-          <div className="grid gap-12 lg:grid-cols-2 items-center mb-16">
-            <div className="space-y-5">
-              <span className="eyebrow text-[var(--accent)]">300-Seat Capacity</span>
-              <h2 className="font-display text-3xl text-[#222] dark:text-[#f4efe6]">A Venue for Every Occasion</h2>
-              <p className="text-sm text-[#666] dark:text-[#a8a29e] leading-relaxed">A versatile, fully air-conditioned 300-seat banqueting hall configured for grand weddings, corporate summits, AGMs, and gala celebrations in Ado-Ekiti.</p>
-              <div className="space-y-3">
-                {["Up to 300 seated guests", "Air-conditioned climate control", "Integrated audio/PA & staging", "Crystal chandeliers & drapery", "Bridal / VIP dressing suite", "Dedicated banquet coordination"].map((f) => (
-                  <div key={f} className="flex items-center gap-2 text-sm text-[#666] dark:text-[#a8a29e]"><span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)] shrink-0" /><span>{f}</span></div>
-                ))}
-              </div>
-              <p className="font-display text-2xl text-[var(--accent)]">{naira(150000)} <span className="text-xs font-condensed text-stone-400">/ event</span></p>
+
+      <section className="container-x grid gap-12 py-16 sm:py-24 lg:grid-cols-12 lg:gap-16">
+        <div className="lg:col-span-6">
+          <p className="eyebrow">The venue</p>
+          <h2 className="display-md mt-3">A room that changes shape with the occasion</h2>
+          <p className="mt-4 text-[0.95rem] leading-relaxed text-[var(--text-secondary)]">
+            A versatile, fully air-conditioned banqueting hall configured for grand weddings, corporate
+            summits, AGMs and gala celebrations — with parking, power and catering all on site.
+          </p>
+
+          <ul className="mt-7 grid gap-3 sm:grid-cols-2">
+            {FEATURES.map((f) => (
+              <li key={f} className="flex items-start gap-2 text-[0.86rem] text-[var(--text-secondary)]">
+                <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[var(--accent)]" />
+                {f}
+              </li>
+            ))}
+          </ul>
+
+          <div className="mt-8 flex flex-wrap items-end gap-8 border-t border-[var(--border)] pt-6">
+            <div>
+              <p className="text-[0.6rem] uppercase tracking-[0.2em] text-[var(--text-muted)]">Hall hire from</p>
+              <p className="mt-1 font-display text-[1.9rem] leading-none">
+                {naira(150000)}
+                <span className="ml-1.5 font-sans text-[0.68rem] uppercase tracking-[0.14em] text-[var(--text-muted)]">
+                  / event
+                </span>
+              </p>
             </div>
-            <LazyAspectImage
-              src="/images/BankyHall.jpg"
-              alt="Banky Hall"
-              className="rounded-2xl border border-[#ece6dd] dark:border-[#2e2b26] shadow-md"
-              imgClassName="hover:scale-105 transition-transform duration-700"
-            />
+            <div>
+              <p className="text-[0.6rem] uppercase tracking-[0.2em] text-[var(--text-muted)]">Capacity</p>
+              <p className="mt-1 inline-flex items-center gap-2 text-[0.9rem]">
+                <Users className="h-4 w-4 text-[var(--accent)]" /> 300 seated
+              </p>
+            </div>
           </div>
 
-          {/* Additional Event Facilities Landscape Showcase */}
-          <div className="mb-16">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <LazyAspectImage
-                src="/images/Restaurant 2.jpg"
-                alt="Banquet & Dining Hall Setup"
-                className="rounded-2xl border border-[#ece6dd] dark:border-[#2e2b26] shadow-sm group"
-                imgClassName="group-hover:scale-105 transition-transform duration-700"
-              >
-                <div className="absolute inset-0 z-20 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-4">
-                  <div>
-                    <span className="text-[var(--accent)] text-xs font-condensed tracking-wider uppercase font-medium block mb-0.5">Configuration</span>
-                    <span className="text-white text-sm font-display font-normal">Banqueting &amp; Dining Hall Setup</span>
-                  </div>
-                </div>
-              </LazyAspectImage>
-              <LazyAspectImage
-                src="/images/Reception1.jpg"
-                alt="VIP & Event Welcoming Lounge"
-                className="rounded-2xl border border-[#ece6dd] dark:border-[#2e2b26] shadow-sm group"
-                imgClassName="group-hover:scale-105 transition-transform duration-700"
-              >
-                <div className="absolute inset-0 z-20 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-4">
-                  <div>
-                    <span className="text-[var(--accent)] text-xs font-condensed tracking-wider uppercase font-medium block mb-0.5">Arrival Experience</span>
-                    <span className="text-white text-sm font-display font-normal">Event Guest Reception &amp; Foyer</span>
-                  </div>
-                </div>
-              </LazyAspectImage>
-            </div>
-          </div>
-          <div className="text-center">
-            <a href={whatsappLink(`Hello, I would like to book Banky Hall for an event.`)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 bg-[#25D366] text-white px-6 py-3 text-xs font-condensed uppercase tracking-[0.16em] font-medium hover:bg-[#20bd5a] transition-colors mr-3">
-              <WhatsAppIcon className="h-4 w-4" />Inquire on WhatsApp
+          <div className="mt-8 flex flex-wrap gap-3">
+            <a
+              href={whatsappLink("Hello, I would like to book Banky Hall for an event.")}
+              target="_blank"
+              rel="noreferrer"
+              className="btn-brand"
+            >
+              <WhatsAppIcon className="h-4 w-4" />
+              Enquire on WhatsApp
             </a>
-            <a href={`tel:${HOTEL.phone}`} className="btn-gold px-6 py-3 text-xs font-medium">Call to Reserve</a>
+            <a href={`tel:${HOTEL.phone}`} className="btn-outline">
+              <Phone className="h-4 w-4" /> Call the events desk
+            </a>
           </div>
+        </div>
+
+        <div className="lg:col-span-6">
+          <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-[var(--surface-alt)]">
+            <Image
+              src="/images/BankyHall.jpg"
+              alt="Banky Hall set for an event"
+              fill
+              sizes="(max-width: 1024px) 100vw, 45vw"
+              className="object-cover"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section className="surface-sand border-y border-[var(--border)]">
+        <div className="container-x py-16 sm:py-20">
+          <p className="eyebrow">Configurations</p>
+          <h2 className="display-md mt-3">Set-ups we run most often</h2>
+          <div className="mt-8 grid gap-6 sm:grid-cols-2">
+            {CONFIGURATIONS.map((c) => (
+              <figure key={c.title} className="overflow-hidden rounded-2xl">
+                <div className="relative aspect-[16/10] bg-[var(--surface-alt)]">
+                  <Image src={c.image} alt={c.title} fill sizes="(max-width: 640px) 100vw, 45vw" className="object-cover" />
+                </div>
+                <figcaption className="pt-4">
+                  <p className="text-[0.92rem] font-medium">{c.title}</p>
+                  <p className="mt-1 text-[0.8rem] leading-relaxed text-[var(--text-muted)]">{c.copy}</p>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="container-x flex flex-col items-start justify-between gap-6 py-14 sm:flex-row sm:items-center">
+        <div>
+          <h2 className="display-sm">Staying the night?</h2>
+          <p className="mt-2 max-w-md text-[0.9rem] leading-relaxed text-[var(--text-muted)]">
+            Block-book rooms for guests at a group rate and keep everyone on the same compound.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-3">
+          <Link href="/booking" className="btn-gold">Check room availability</Link>
+          <Link href="/contact" className="btn-outline">Contact the hotel</Link>
         </div>
       </section>
     </>

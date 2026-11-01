@@ -1,99 +1,175 @@
 "use client";
-import { memo, useEffect, useState } from "react";
+
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
   ArrowRight,
-  Shield,
-  Wifi,
+  ArrowUpRight,
+  BedDouble,
+  CarFront,
+  ChevronDown,
   Coffee,
-  Utensils,
-  GlassWater,
-  CalendarCheck,
-  Bed,
-  Users,
+  ConciergeBell,
+  Dumbbell,
+  Plane,
   ShieldCheck,
   Sparkles,
-  Clock,
-  Zap,
-  Award,
-  Phone,
-  MessageSquare,
+  UtensilsCrossed,
+  Waves,
+  Wifi,
+  Wine,
 } from "lucide-react";
-import { PhoneSolidIcon } from "@/components/icons/PhoneSolidIcon";
-import { RoomImageSlider } from "@/components/common/RoomImageSlider";
-import { ROOMS, HOTEL, naira, Room, whatsappLink, bookingMessage } from "@/lib/hotel";
-import { subscribeRooms, getCachedRooms } from "@/lib/rooms-data";
-import { useRoomPreloader, preloadAllRoomsOnIdle } from "@/lib/image-preloader";
-import { DEFAULT_HOMEPAGE_MEDIA, HomepageMediaConfig, subscribeHomepageMedia } from "@/lib/homepage-media";
+import { naira, whatsappLink, bookingMessage, type Room } from "@/lib/hotel";
+import { ROOMS } from "@/lib/hotel";
+import { subscribeRooms } from "@/lib/rooms-data";
+import {
+  DEFAULT_HOMEPAGE_MEDIA,
+  subscribeHomepageMedia,
+  type HomepageMediaConfig,
+} from "@/lib/homepage-media";
 
-const FACILITIES = [
-  { icon: Utensils, title: "Restaurant & Dining", desc: "Authentic Nigerian delicacies and international breakfast served daily by master chefs." },
-  { icon: GlassWater, title: "Garden Bar & Sit-out", desc: "Refreshing cocktails, cold beverages, and an open-air breeze in the private garden lounge." },
-  { icon: CalendarCheck, title: "Banky Hall & Events", desc: "Air-conditioned 300-seat banqueting hall for wedding receptions and seminars." },
-  { icon: Wifi, title: "High-Speed Wi-Fi", desc: "Complimentary unbroken fiber internet throughout all rooms and public lounges." },
-  { icon: Shield, title: "24/7 Security & Power", desc: "Continuous multi-generator power backup and uniformed professional security." },
-  { icon: Coffee, title: "Room Service", desc: "Attentive in-room dining and concierge assistance whenever you desire." },
-];
+/* ------------------------------------------------------------------ */
+/*  Shared pieces                                                      */
+/* ------------------------------------------------------------------ */
 
-const FAQS = [
-  { q: "What are your check-in and check-out times?", a: "Standard check-in begins at 2:00 PM and check-out is by 12:00 noon. Early check-in or late check-out can be requested subject to room availability." },
-  { q: "Is complimentary breakfast included?", a: "Yes, all room reservations include complimentary gourmet breakfast served daily in our fine dining restaurant." },
-  { q: "Where is Banky Hotel & Suites located?", a: "We are located at Km 5 NDLEA Junction Ado-Iworoko Road, Adebayo, Ado-Ekiti, Ekiti State, Nigeria." },
-  { q: "Do you have 24/7 security and uninterrupted power?", a: "Yes, we provide round-the-clock armed professional security, CCTV surveillance, and full multi-tier generator power backup." },
-];
+function useHomepageMedia(): HomepageMediaConfig {
+  const [media, setMedia] = useState<HomepageMediaConfig>(DEFAULT_HOMEPAGE_MEDIA);
+  useEffect(() => subscribeHomepageMedia(setMedia), []);
+  return media;
+}
+
+function useLiveRooms(): Room[] {
+  const [rooms, setRooms] = useState<Room[]>(ROOMS);
+  useEffect(
+    () =>
+      subscribeRooms((live) => {
+        if (live.length) setRooms(live);
+      }),
+    [],
+  );
+  return useMemo(() => rooms.filter((r) => r.status !== "disabled"), [rooms]);
+}
+
+function SectionHead({
+  eyebrow,
+  title,
+  copy,
+  href,
+  linkLabel,
+  align = "left",
+  invert = false,
+}: {
+  eyebrow: string;
+  title: string;
+  copy?: string;
+  href?: string;
+  linkLabel?: string;
+  align?: "left" | "center";
+  invert?: boolean;
+}) {
+  return (
+    <div
+      className={`flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between ${
+        align === "center" ? "text-center sm:flex-col sm:items-center" : ""
+      }`}
+    >
+      <div className={align === "center" ? "max-w-2xl" : "max-w-xl"}>
+        <p className={`text-[0.66rem] font-medium uppercase tracking-[0.28em] ${invert ? "text-white/45" : "text-[var(--accent)]"}`}>
+          {eyebrow}
+        </p>
+        <h2 className={`display-lg mt-3 ${invert ? "text-white" : ""}`}>{title}</h2>
+        {copy && (
+          <p className={`mt-4 text-[0.95rem] leading-relaxed ${invert ? "text-white/60" : "text-[var(--text-secondary)]"}`}>
+            {copy}
+          </p>
+        )}
+      </div>
+      {href && linkLabel && (
+        <Link
+          href={href}
+          className={`group inline-flex shrink-0 items-center gap-2 text-[0.7rem] font-medium uppercase tracking-[0.18em] transition-colors ${
+            invert ? "text-white/70 hover:text-white" : "text-[var(--text-primary)] hover:text-[var(--accent)]"
+          }`}
+        >
+          {linkLabel}
+          <span className={`flex h-8 w-8 items-center justify-center rounded-full border transition-all group-hover:translate-x-0.5 ${
+            invert ? "border-white/25" : "border-[var(--border-strong)]"
+          }`}>
+            <ArrowRight className="h-3.5 w-3.5" />
+          </span>
+        </Link>
+      )}
+    </div>
+  );
+}
 
 /* ------------------------------------------------------------------ */
 /*  About                                                              */
 /* ------------------------------------------------------------------ */
-export const AboutSection = memo(function AboutSection() {
-  const [media, setMedia] = useState<HomepageMediaConfig>(DEFAULT_HOMEPAGE_MEDIA);
 
-  useEffect(() => {
-    const unsub = subscribeHomepageMedia((live) => {
-      setMedia(live);
-    });
-    return () => unsub();
-  }, []);
-
-  const about = media.about || DEFAULT_HOMEPAGE_MEDIA.about;
+export function AboutSection() {
+  const media = useHomepageMedia();
+  const about = media.about;
 
   return (
-    <section className="bg-[#f8f5f0] dark:bg-[#25252a] py-20 sm:py-28 border-b border-[#ece6dd] dark:border-[#3a3a42]" style={{ contentVisibility: "auto", containIntrinsicSize: "0 800px" }}>
-      <div className="container-x">
-        <div className="grid gap-12 lg:grid-cols-12 lg:items-center">
-          <div className="lg:col-span-6 space-y-6">
-            <div className="flex items-center gap-2">
-              <span className="h-px w-8 bg-[var(--accent)]" />
-              <span className="eyebrow text-[var(--accent)]">Banky Hotel &amp; Suites</span>
-            </div>
-            <h2 className="font-display font-normal text-3xl sm:text-4xl md:text-5xl text-[#222] dark:text-[#f4efe6] leading-[1.12]">
-              {about.heading || "Enjoy a Calm Haven in Ado-Ekiti"}
-            </h2>
-            <p className="text-base sm:text-lg leading-relaxed text-stone-700 dark:text-stone-200 font-normal">
-              {about.description1 || "Step into a story century in the making. At Banky, timeless architecture meets modern indulgence, where heritage charm and heartfelt warmth welcome you like family. Savor tradition-inspired dining beneath chandeliers that have witnessed generations, unwind in a wellness sanctuary rooted in old-world calm, and rest in rooms where history and comfort meet in perfect harmony. This isn't just a stay, it's a passage through time, wrapped in warmth, elegance, and unforgettable moments"}
-            </p>
-            <p className="text-base sm:text-lg leading-relaxed text-stone-700 dark:text-stone-200 font-normal">
-              {about.description2 || "Our 28 bespoke rooms and suites feature quiet climate control, unbroken high-speed Wi-Fi, and 24/7 dedicated generator power grid."}
-            </p>
-            <div className="pt-4 flex flex-col lg:flex-row items-center lg:justify-between gap-5 border-t border-[#ece6dd] dark:border-[#3a3a42]">
-              <div className="flex items-center gap-4">
-                <div className="h-12 w-12 rounded-full border border-[var(--accent)] flex items-center justify-center text-[var(--accent)]"><PhoneSolidIcon className="h-5 w-5" /></div>
-                <div>
-                  <span className="font-condensed uppercase tracking-wider text-xs text-[var(--accent)] font-medium block">Reservation Hotline</span>
-                  <a href={`tel:${HOTEL.phone}`} className="font-display text-2xl sm:text-3xl text-stone-900 dark:text-white font-normal hover:text-[var(--accent)] transition-colors">{HOTEL.phone}</a>
-                </div>
-              </div>
-              <Link href="/booking" className="btn-gold px-8 py-3.5 text-xs sm:text-sm font-medium inline-flex items-center justify-center text-center mx-auto lg:mx-0 shadow-md">Check Availability</Link>
-            </div>
+    <section className="container-x py-20 sm:py-28" id="story">
+      <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-16">
+        <div className="lg:col-span-6">
+          <div className="flex items-center gap-3">
+            <span className="text-[0.66rem] font-medium uppercase tracking-[0.28em] text-[var(--accent)]">
+              The house
+            </span>
+            <span className="h-px w-10 bg-[var(--accent)]" />
           </div>
-          <div className="lg:col-span-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 relative">
-              <div className="overflow-hidden rounded-2xl border border-[#ece6dd] dark:border-[#3a3a42] shadow-lg aspect-[16/19] relative">
-                <Image src={about.image1 || "/images/hotel-front-right.jpg"} alt={about.image1Alt || "Hotel exterior"} fill className="object-cover hover:scale-105 transition-transform duration-700" sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw" />
+          <h2 className="display-lg mt-4">{about.heading || "A quieter kind of luxury"}</h2>
+          <p className="lede mt-6">{about.description1}</p>
+          <p className="mt-4 text-[0.92rem] leading-relaxed text-[var(--text-muted)]">{about.description2}</p>
+
+          <dl className="mt-10 grid grid-cols-3 gap-6 border-t border-[var(--border)] pt-8">
+            {[
+              { k: "28", v: "Rooms & suites" },
+              { k: "300", v: "Seat event hall" },
+              { k: "24/7", v: "Power & front desk" },
+            ].map((s) => (
+              <div key={s.v}>
+                <dt className="font-display text-[2rem] leading-none">{s.k}</dt>
+                <dd className="mt-2 text-[0.68rem] uppercase tracking-[0.16em] text-[var(--text-muted)]">{s.v}</dd>
               </div>
-              <div className="overflow-hidden rounded-2xl border border-[#ece6dd] dark:border-[#3a3a42] shadow-lg aspect-[16/19] relative">
-                <Image src={about.image2 || "/images/OpenBar Garden.jpg"} alt={about.image2Alt || "Garden bar"} fill className="object-cover hover:scale-105 transition-transform duration-700" sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw" />
+            ))}
+          </dl>
+
+          <Link href="/about" className="btn-outline mt-9">
+            Our story
+            <ArrowUpRight className="h-4 w-4" />
+          </Link>
+        </div>
+
+        <div className="lg:col-span-6">
+          <div className="grid grid-cols-12 gap-4">
+            <div className="relative col-span-8 aspect-[4/5] overflow-hidden rounded-2xl bg-[var(--surface-alt)]">
+              <Image
+                src={about.image1 || "/images/hotel-front-right.jpg"}
+                alt={about.image1Alt || "Banky Hotel exterior"}
+                fill
+                sizes="(max-width: 1024px) 60vw, 30vw"
+                className="object-cover"
+              />
+            </div>
+            <div className="col-span-4 flex flex-col gap-4 pt-10">
+              <div className="relative aspect-square overflow-hidden rounded-2xl bg-[var(--surface-alt)]">
+                <Image
+                  src={about.image2 || "/images/OpenBar Garden.jpg"}
+                  alt={about.image2Alt || "Open-air garden bar"}
+                  fill
+                  sizes="(max-width: 1024px) 30vw, 15vw"
+                  className="object-cover"
+                />
+              </div>
+              <div className="flex flex-1 flex-col justify-end rounded-2xl bg-[var(--text-primary)] p-5 text-[var(--paper)]">
+                <Sparkles className="h-5 w-5 opacity-60" />
+                <p className="mt-3 font-display text-lg leading-tight">Book direct, always</p>
+                <p className="mt-1 text-[0.7rem] leading-relaxed opacity-60">Best rate, flexible terms, no booking fees.</p>
               </div>
             </div>
           </div>
@@ -101,382 +177,64 @@ export const AboutSection = memo(function AboutSection() {
       </div>
     </section>
   );
-});
+}
 
 /* ------------------------------------------------------------------ */
 /*  Rooms                                                              */
 /* ------------------------------------------------------------------ */
-export const RoomsSection = memo(function RoomsSection() {
-  const { getPreloadHandlers } = useRoomPreloader();
-  const [rooms, setRooms] = useState<Room[]>(ROOMS);
 
-  useEffect(() => {
-    const unsub = subscribeRooms((liveRooms) => {
-      setRooms(liveRooms);
-    });
-    return () => unsub();
-  }, []);
-
-  useEffect(() => {
-    const cancelIdle = preloadAllRoomsOnIdle(rooms.length > 0 ? rooms : ROOMS, 800);
-    return () => {
-      cancelIdle?.();
-    };
-  }, [rooms]);
-
-  const displayRooms = rooms.length > 0 ? rooms.slice(0, 8) : ROOMS.slice(0, 8);
+export function RoomsSection() {
+  const rooms = useLiveRooms();
+  const featured = rooms.slice(0, 3);
 
   return (
-    <section
-      id="rooms-catalog-section"
-      className="py-20 sm:py-28 bg-white dark:bg-[#202023] relative border-b border-[#ece6dd] dark:border-[#3a3a42]"
-      style={{ contentVisibility: "auto", containIntrinsicSize: "0 1200px" }}
-    >
-      <div className="container-x">
-        <div className="text-center max-w-2xl mx-auto mb-14">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <span className="h-px w-6 bg-[var(--accent)]" />
-            <span className="eyebrow text-[var(--accent)]">Luxury Accommodations</span>
-            <span className="h-px w-6 bg-[var(--accent)]" />
-          </div>
-          <h2 className="font-display font-normal text-3xl sm:text-4xl md:text-5xl text-[#222] dark:text-[#f4efe6]">
-            Rooms &amp; Suites
-          </h2>
-          <p className="mt-3 text-sm sm:text-base text-stone-600 dark:text-stone-300 font-normal max-w-lg mx-auto">
-            Discover our collection of 28 bespoke rooms and executive suites, designed for restful luxury and modern comfort in Ado-Ekiti.
-          </p>
-        </div>
+    <section className="surface-sand border-y border-[var(--border)]">
+      <div className="container-x py-20 sm:py-28">
+        <SectionHead
+          eyebrow="Rooms & suites"
+          title="Rest, arranged around you"
+          copy="Eight room categories, from a calm standard double to the signature suite with its own parlour. Every stay includes Wi-Fi, power around the clock and daily housekeeping."
+          href="/rooms"
+          linkLabel="All rooms"
+        />
 
-        <div className="grid gap-6 sm:gap-7 sm:grid-cols-2 lg:grid-cols-4">
-          {displayRooms.map((room) => {
-            const imagesList = room.images && room.images.length > 0 ? room.images : [room.image];
-            return (
-              <Link
-                key={room.slug}
-                href={`/rooms/${room.slug}`}
-                {...getPreloadHandlers(room.slug)}
-                className="group flex flex-col border border-[#ece6dd] dark:border-[#3a3a42] bg-white dark:bg-[#28282d] overflow-hidden rounded-2xl hover:shadow-xl transition-all duration-300 hover:border-[var(--accent)]"
-              >
-                {/* Auto-sliding room showcase box with NO guest buttons */}
-                <div className="overflow-hidden bg-stone-100 dark:bg-stone-900">
-                  <RoomImageSlider
-                    images={imagesList}
-                    alt={room.name}
-                    aspectClass="aspect-[16/11]"
-                    autoSlideInterval={5000}
-                    showControls={false}
-                    pauseOnHover={false}
-                  />
-                </div>
-
-                <div className="p-5 flex-1 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center justify-between gap-2 mb-1.5">
-                      <h3 className="font-display font-normal text-xl text-stone-900 dark:text-white group-hover:text-[var(--accent)] transition-colors">
-                        {room.name}
-                      </h3>
-                      {room.qty && (
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 font-semibold shrink-0">
-                          {room.qty} {room.qty === 1 ? "unit" : "units"}
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="flex items-center gap-2.5 text-[11px] text-stone-500 dark:text-stone-400 mb-2.5">
-                      <span className="flex items-center gap-1">
-                        <Bed className="h-3 w-3 text-[var(--accent)]" /> {room.bed || "King Bed"}
-                      </span>
-                      <span>•</span>
-                      <span className="flex items-center gap-1">
-                        <Users className="h-3 w-3 text-[var(--accent)]" /> {room.occupancy || "2 Guests"}
-                      </span>
-                    </div>
-
-                    <p className="text-xs text-stone-600 dark:text-stone-300 leading-relaxed line-clamp-2 mb-4 font-normal">
-                      {room.blurb}
-                    </p>
-                  </div>
-
-                  <div className="pt-3 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between">
-                    <div>
-                      <span className="font-display text-xl text-[var(--accent)] font-semibold">
-                        {naira(room.rate)}
-                      </span>
-                      <span className="text-[10px] uppercase font-condensed tracking-wider text-stone-500 dark:text-stone-400 ml-1">
-                        / night
-                      </span>
-                    </div>
-
-                    <span className="text-xs font-semibold text-[var(--accent)] group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
-                      <span>Explore</span>
-                      <ArrowRight className="h-3.5 w-3.5" />
-                    </span>
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-
-        <div className="mt-12 sm:mt-16 flex flex-wrap items-center justify-center gap-4">
-          <Link
-            id="book-direct-cta-btn"
-            href="/booking"
-            className="btn-gold px-9 py-4 text-xs sm:text-sm font-medium inline-flex items-center gap-2 shadow-md hover:scale-105 transition-all"
-          >
-            <span id="book-direct-save-label">Book Direct &amp; Save</span>
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-          <Link
-            href="/rooms"
-            className="btn-outline-gold px-8 py-3.5 text-xs sm:text-sm font-medium inline-flex items-center gap-2 rounded-full hover:bg-[var(--accent)] hover:text-white transition-all"
-          >
-            <span>View All Categories</span>
-            <ArrowRight className="h-3.5 w-3.5" />
-          </Link>
-        </div>
-      </div>
-    </section>
-  );
-});
-
-/* ------------------------------------------------------------------ */
-/*  Direct Booking Privileges (NEW SECTION)                           */
-/* ------------------------------------------------------------------ */
-export const PrivilegesSection = memo(function PrivilegesSection() {
-  const privileges = [
-    {
-      icon: Award,
-      title: "Guaranteed Best Direct Rate",
-      desc: "Lock in our lowest available rate with zero booking fees, instant room guarantee, and no third-party markups.",
-      badge: "Best Rate",
-    },
-    {
-      icon: Utensils,
-      title: "Complimentary Daily Breakfast",
-      desc: "Savor a complimentary gourmet Nigerian or continental breakfast prepared fresh each morning by our culinary team.",
-      badge: "Included Daily",
-    },
-    {
-      icon: Clock,
-      title: "Flexible Early Arrival & Late Checkout",
-      desc: "Enjoy extended check-in hours and complimentary late check-out on request, subject to availability.",
-      badge: "Priority Access",
-    },
-    {
-      icon: Zap,
-      title: "Unbroken 24/7 Power Grid",
-      desc: "Stay comfortable around the clock with dual industrial generators and dedicated on-site power regulation.",
-      badge: "100% Guaranteed",
-    },
-    {
-      icon: Wifi,
-      title: "Commercial High-Speed Fiber",
-      desc: "Blazing fast Wi-Fi throughout all rooms and suites, ideal for seamless video conferences, work, and streaming.",
-      badge: "Fiber Connected",
-    },
-    {
-      icon: ShieldCheck,
-      title: "Direct Concierge & QR Bedside Care",
-      desc: "Scan the in-room QR code for immediate room service dining or connect with our 24/7 WhatsApp concierge desk.",
-      badge: "24/7 Support",
-    },
-  ];
-
-  return (
-    <section
-      id="direct-booking-privileges-section"
-      className="py-20 sm:py-28 bg-[#fdfbf7] dark:bg-[#1a1a1e] relative border-b border-[#ece6dd] dark:border-[#3a3a42] overflow-hidden"
-      style={{ contentVisibility: "auto", containIntrinsicSize: "0 800px" }}
-    >
-      {/* Subtle luxury ambient accent glow */}
-      <div className="absolute top-0 right-1/4 w-96 h-96 bg-[var(--accent)]/5 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-[var(--accent)]/5 rounded-full blur-3xl pointer-events-none" />
-
-      <div className="container-x relative z-10">
-        {/* Section Header */}
-        <div className="text-center max-w-2xl mx-auto mb-14">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <span className="h-px w-6 bg-[var(--accent)]" />
-            <span className="eyebrow text-[var(--accent)]">The Banky Advantage</span>
-            <span className="h-px w-6 bg-[var(--accent)]" />
-          </div>
-          <h2 className="font-display font-normal text-3xl sm:text-4xl md:text-5xl text-[#222] dark:text-[#f4efe6]">
-            Direct Guest Privileges
-          </h2>
-          <p className="mt-3 text-sm sm:text-base text-stone-600 dark:text-stone-300 font-normal leading-relaxed">
-            Booking directly with Banky Hotel &amp; Suites gives you exclusive benefits and personalized hospitality from the moment you reserve.
-          </p>
-        </div>
-
-        {/* 6 Privileges Grid */}
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {privileges.map((item, idx) => {
-            const Icon = item.icon;
-            return (
-              <div
-                key={item.title}
-                id={`privilege-card-${idx + 1}`}
-                className="group relative bg-white dark:bg-[#25252a] p-7 sm:p-8 rounded-2xl border border-[#ece6dd] dark:border-[#3a3a42] hover:border-[var(--accent)] hover:shadow-lg transition-all duration-300 flex flex-col justify-between"
-              >
-                <div>
-                  <div className="flex items-center justify-between gap-3 mb-5">
-                    <div className="h-12 w-12 rounded-xl bg-[var(--accent)]/10 text-[var(--accent)] flex items-center justify-center group-hover:bg-[var(--accent)] group-hover:text-white transition-colors duration-300">
-                      <Icon className="h-6 w-6" />
-                    </div>
-                    <span className="text-[10px] uppercase font-condensed tracking-wider px-2.5 py-1 rounded-full bg-stone-100 dark:bg-stone-800 text-[var(--accent)] font-semibold border border-stone-200/60 dark:border-stone-700">
-                      {item.badge}
-                    </span>
-                  </div>
-
-                  <h3 className="font-display text-lg sm:text-xl text-stone-900 dark:text-white font-normal mb-2.5">
-                    {item.title}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 font-normal leading-relaxed">
-                    {item.desc}
-                  </p>
-                </div>
-
-                <div className="mt-6 pt-4 border-t border-stone-100 dark:border-stone-800 flex items-center text-xs font-semibold text-[var(--accent)] group-hover:translate-x-1 transition-transform">
-                  <Sparkles className="h-3.5 w-3.5 mr-1.5" />
-                  <span>Exclusive Direct Guest Benefit</span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* VIP Concierge Banner */}
-        <div className="mt-12 sm:mt-16 bg-white dark:bg-[#25252a] rounded-2xl border border-[var(--accent)]/30 p-6 sm:p-8 shadow-sm">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="space-y-1 text-center md:text-left">
-              <span className="text-[11px] font-condensed uppercase tracking-widest text-[var(--accent)] font-bold block">
-                Personalized Hospitality
-              </span>
-              <h3 className="font-display text-xl sm:text-2xl text-stone-900 dark:text-white font-normal">
-                Planning an extended stay or special delegation?
-              </h3>
-              <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 max-w-xl">
-                Our resident guest manager will assist with tailored suite allocations, airport transfers, and customized banqueting arrangements.
-              </p>
-            </div>
-
-            <div className="flex flex-wrap items-center justify-center gap-3 shrink-0">
-              <a
-                href={whatsappLink(bookingMessage({ room: "VIP Inquiry", rate: 0 }))}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-gold px-6 py-3 text-xs sm:text-sm font-medium inline-flex items-center gap-2 shadow-sm"
-              >
-                <MessageSquare className="h-4 w-4" />
-                <span>WhatsApp Guest Care</span>
-              </a>
-              <a
-                href={`tel:${HOTEL.phone}`}
-                className="btn-outline-gold px-5 py-3 text-xs sm:text-sm font-medium inline-flex items-center gap-2 rounded-full"
-              >
-                <Phone className="h-4 w-4" />
-                <span>Call {HOTEL.phone}</span>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-});
-
-/* ------------------------------------------------------------------ */
-/*  Facilities                                                         */
-/* ------------------------------------------------------------------ */
-export const FacilitiesSection = memo(function FacilitiesSection() {
-  return (
-    <section className="bg-[#f8f5f0] dark:bg-[#25252a] py-20 sm:py-28 border-y border-[#ece6dd] dark:border-[#3a3a42]" style={{ contentVisibility: "auto", containIntrinsicSize: "0 700px" }}>
-      <div className="container-x">
-        <div className="text-center max-w-2xl mx-auto mb-14">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <span className="h-px w-6 bg-[var(--accent)]" />
-            <span className="eyebrow text-[var(--accent)]">Our Services</span>
-            <span className="h-px w-6 bg-[var(--accent)]" />
-          </div>
-          <h2 className="font-display font-normal text-3xl sm:text-4xl md:text-5xl text-[#222] dark:text-[#f4efe6]">Hotel Facilities</h2>
-        </div>
-        <div className="grid gap-6 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {FACILITIES.map((f, i) => {
-            const Icon = f.icon;
-            return (
-              <div
-                key={f.title}
-                id={`facilities-card-${i + 1}`}
-                className="border border-[#ece6dd] dark:border-[#3a3a42] bg-white dark:bg-[#28282d] p-8 transition-all duration-300 hover:border-[var(--accent)] hover:shadow-md rounded-2xl"
-              >
-                <div
-                  id={`facilities-icon-${i + 1}`}
-                  className="h-14 w-14 border border-[var(--accent)] flex items-center justify-center text-[var(--accent)] mb-6 rounded-xl"
-                >
-                  <Icon className="h-6 w-6" />
-                </div>
-                <h3 className="font-display text-lg sm:text-xl text-stone-800 dark:text-stone-100 font-normal mb-2">{f.title}</h3>
-                <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 font-normal leading-relaxed">{f.desc}</p>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </section>
-  );
-});
-
-/* ------------------------------------------------------------------ */
-/*  Experiences                                                        */
-/* ------------------------------------------------------------------ */
-export const ExperiencesSection = memo(function ExperiencesSection() {
-  const [media, setMedia] = useState<HomepageMediaConfig>(DEFAULT_HOMEPAGE_MEDIA);
-
-  useEffect(() => {
-    const unsub = subscribeHomepageMedia((live) => {
-      setMedia(live);
-    });
-    return () => unsub();
-  }, []);
-
-  const experiences = media.experiences?.length > 0 ? media.experiences : DEFAULT_HOMEPAGE_MEDIA.experiences;
-
-  return (
-    <section className="py-20 sm:py-28 bg-white dark:bg-[#202023]" style={{ contentVisibility: "auto", containIntrinsicSize: "0 700px" }}>
-      <div className="container-x">
-        <div className="text-center max-w-2xl mx-auto mb-14">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <span className="h-px w-6 bg-[var(--accent)]" />
-            <span className="eyebrow text-[var(--accent)]">Explore The Grounds</span>
-            <span className="h-px w-6 bg-[var(--accent)]" />
-          </div>
-          <h2 className="font-display font-normal text-3xl sm:text-4xl md:text-5xl text-[#222] dark:text-[#f4efe6]">Dining &amp; Banqueting</h2>
-        </div>
-        <div id="experiences-cards-grid" className="grid gap-6 sm:gap-8 lg:grid-cols-3 w-full lg:max-w-[80%] mx-auto">
-          {experiences.map((c, i) => (
+        <div className="mt-12 grid gap-6 md:grid-cols-3">
+          {featured.map((room) => (
             <Link
-              key={c.id || c.title}
-              href={c.href || "/restaurant"}
-              id={`experiences-card-${i + 1}`}
-              className="group relative overflow-hidden rounded-2xl border border-[#ece6dd] dark:border-[#3a3a42] block shadow-md w-full h-[380px] sm:h-[440px]"
+              key={room.slug}
+              href={`/rooms/${room.slug}`}
+              className="group card card-hover overflow-hidden"
             >
-              <Image
-                id={`experiences-img-${i + 1}`}
-                src={c.img}
-                alt={c.title}
-                fill
-                className="object-cover group-hover:scale-110 transition-transform duration-700"
-                sizes="(max-width: 768px) 80vw, 25vw"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent" />
-              <div
-                id={`experiences-box-${i + 1}`}
-                className="absolute inset-x-3 sm:inset-x-4 bottom-3 sm:bottom-4 border border-white/15 bg-[#0a2777] dark:bg-[#28282d]/95 p-4 sm:p-5 text-white rounded-xl"
-              >
-                <span className="font-condensed text-[0.7rem] sm:text-xs tracking-[0.24em] uppercase text-[var(--accent-light)] font-medium block mb-1">{c.tag}</span>
-                <h3 id={`experiences-title-${i + 1}`} className="text-xl sm:text-2xl font-display text-white font-normal leading-snug">{c.title}</h3>
-                <p className="mt-1.5 text-xs sm:text-sm text-stone-100 font-normal line-clamp-2">{c.copy}</p>
+              <div className="relative aspect-[4/3] overflow-hidden bg-[var(--surface-alt)]">
+                <Image
+                  src={room.image}
+                  alt={room.name}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                />
+                <span className="absolute left-3 top-3 rounded-full bg-black/45 px-3 py-1.5 text-[0.6rem] font-medium uppercase tracking-[0.14em] text-white backdrop-blur-md">
+                  {room.occupancy || "2 guests"}
+                </span>
+              </div>
+              <div className="p-5 sm:p-6">
+                <div className="flex items-start justify-between gap-3">
+                  <h3 className="font-display text-[1.4rem] leading-tight">{room.name}</h3>
+                  <div className="text-right">
+                    <p className="font-display text-lg leading-none">{naira(room.rate)}</p>
+                    <p className="mt-1 text-[0.6rem] uppercase tracking-[0.14em] text-[var(--text-muted)]">per night</p>
+                  </div>
+                </div>
+                <p className="mt-3 line-clamp-2 text-[0.85rem] leading-relaxed text-[var(--text-muted)]">{room.blurb}</p>
+                <div className="mt-5 flex items-center justify-between border-t border-[var(--border)] pt-4">
+                  <span className="flex items-center gap-1.5 text-[0.66rem] uppercase tracking-[0.14em] text-[var(--text-muted)]">
+                    <BedDouble className="h-3.5 w-3.5" />
+                    {room.bed || "En-suite"}
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 text-[0.68rem] font-medium uppercase tracking-[0.16em] text-[var(--accent)]">
+                    View room <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                  </span>
+                </div>
               </div>
             </Link>
           ))}
@@ -484,130 +242,382 @@ export const ExperiencesSection = memo(function ExperiencesSection() {
       </div>
     </section>
   );
-});
+}
+
+/* ------------------------------------------------------------------ */
+/*  Privileges                                                         */
+/* ------------------------------------------------------------------ */
+
+const PRIVILEGES = [
+  {
+    icon: ShieldCheck,
+    title: "Best rate, guaranteed",
+    copy: "Booking here is always the lowest price — no agency or platform fees on top.",
+  },
+  {
+    icon: ConciergeBell,
+    title: "Front desk, on WhatsApp",
+    copy: "Message the team directly before you arrive. Requests are handled in the chat, not a form queue.",
+  },
+  {
+    icon: CarFront,
+    title: "Secure parking & transfer",
+    copy: "Complimentary on-site parking, with airport pick-up arranged for suite guests.",
+  },
+];
+
+export function PrivilegesSection() {
+  return (
+    <section className="container-x py-16 sm:py-20">
+      <div className="grid gap-8 border-b border-[var(--border)] pb-14 sm:grid-cols-3 sm:gap-10">
+        {PRIVILEGES.map(({ icon: Icon, title, copy }) => (
+          <div key={title} className="flex gap-4">
+            <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--accent-muted)] text-[var(--accent)]">
+              <Icon className="h-4 w-4" />
+            </span>
+            <div>
+              <h3 className="text-[0.95rem] font-semibold tracking-tight">{title}</h3>
+              <p className="mt-1.5 text-[0.82rem] leading-relaxed text-[var(--text-muted)]">{copy}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Facilities                                                         */
+/* ------------------------------------------------------------------ */
+
+const FACILITIES = [
+  { icon: Wifi, label: "Fibre Wi-Fi", note: "Throughout the property" },
+  { icon: UtensilsCrossed, label: "Restaurant", note: "Nigerian & continental" },
+  { icon: Wine, label: "Open-air bar", note: "Garden seating" },
+  { icon: Waves, label: "Swimming pool", note: "Outdoor, day use" },
+  { icon: Dumbbell, label: "Fitness room", note: "Open 06:00–22:00" },
+  { icon: Coffee, label: "Breakfast", note: "Served 07:00–10:30" },
+  { icon: Plane, label: "Airport transfer", note: "On request" },
+  { icon: CarFront, label: "Free parking", note: "Gated, guarded" },
+];
+
+export function FacilitiesSection() {
+  return (
+    <section className="container-x py-20 sm:py-24">
+      <div className="grid gap-12 lg:grid-cols-12">
+        <div className="lg:col-span-4">
+          <p className="text-[0.66rem] font-medium uppercase tracking-[0.28em] text-[var(--accent)]">Facilities</p>
+          <h2 className="display-md mt-3">Everything you need, quietly in place</h2>
+          <p className="mt-4 text-[0.92rem] leading-relaxed text-[var(--text-muted)]">
+            Twenty-eight rooms, a full kitchen, a garden bar and a hall that seats three hundred — all on one
+            gated compound off the Ado-Iworoko road.
+          </p>
+        </div>
+
+        <div className="lg:col-span-8">
+          <div className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-4">
+            {FACILITIES.map(({ icon: Icon, label, note }) => (
+              <div key={label}>
+                <Icon className="h-5 w-5 text-[var(--accent)]" strokeWidth={1.5} />
+                <p className="mt-3 text-[0.85rem] font-medium leading-tight">{label}</p>
+                <p className="mt-1 text-[0.72rem] leading-snug text-[var(--text-muted)]">{note}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Experiences                                                        */
+/* ------------------------------------------------------------------ */
+
+const EXPERIENCES = [
+  {
+    href: "/restaurant",
+    image: "/images/Restaurant 2.jpg",
+    label: "The Restaurant",
+    title: "Ekiti produce, cooked plainly well",
+    copy: "Breakfast through dinner, with a menu that changes with the market.",
+  },
+  {
+    href: "/bar",
+    image: "/images/OpenBar Garden 2.jpg",
+    label: "The Bar",
+    title: "An open-air garden after dark",
+    copy: "Cocktails, small chops and live sets under the trees.",
+  },
+  {
+    href: "/events",
+    image: "/images/Event Hall.jpg",
+    label: "Banky Hall",
+    title: "Weddings, boards and conferences",
+    copy: "300 seated guests, dedicated power and an events team on site.",
+  },
+];
+
+export function ExperiencesSection() {
+  return (
+    <section className="surface-ink">
+      <div className="container-x py-20 sm:py-28">
+        <SectionHead
+          invert
+          eyebrow="Around the house"
+          title="Dining, drinks, and room to gather"
+          copy="Three reasons guests stay on the property long after check-in."
+        />
+        <div className="mt-12 grid gap-6 md:grid-cols-3">
+          {EXPERIENCES.map((exp) => (
+            <Link key={exp.href} href={exp.href} className="group relative overflow-hidden rounded-2xl">
+              <div className="relative aspect-[4/5] bg-black/40">
+                <Image
+                  src={exp.image}
+                  alt={exp.title}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  className="object-cover opacity-85 transition-all duration-700 group-hover:scale-[1.05] group-hover:opacity-100"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
+              </div>
+              <div className="absolute inset-x-0 bottom-0 p-6">
+                <p className="text-[0.62rem] font-medium uppercase tracking-[0.24em] text-white/60">{exp.label}</p>
+                <h3 className="mt-2 font-display text-[1.45rem] leading-tight text-white">{exp.title}</h3>
+                <p className="mt-2 max-w-[26ch] text-[0.82rem] leading-relaxed text-white/70">{exp.copy}</p>
+                <span className="mt-4 inline-flex items-center gap-2 text-[0.66rem] font-medium uppercase tracking-[0.18em] text-white">
+                  Explore
+                  <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                </span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
 
 /* ------------------------------------------------------------------ */
 /*  Gallery                                                            */
 /* ------------------------------------------------------------------ */
-export const GallerySection = memo(function GallerySection() {
-  const [media, setMedia] = useState<HomepageMediaConfig>(DEFAULT_HOMEPAGE_MEDIA);
 
-  useEffect(() => {
-    const unsub = subscribeHomepageMedia((live) => {
-      setMedia(live);
-    });
-    return () => unsub();
-  }, []);
-
-  const activeGallery = media.gallery?.filter((g) => g.active !== false) || DEFAULT_HOMEPAGE_MEDIA.gallery;
-  const displayItems = activeGallery.length > 0 ? activeGallery : DEFAULT_HOMEPAGE_MEDIA.gallery;
+export function GallerySection() {
+  const media = useHomepageMedia();
+  const shots = media.gallery.filter((g) => g.active !== false).slice(0, 6);
+  if (!shots.length) return null;
 
   return (
-    <section className="py-20 sm:py-28 bg-[#f8f5f0] dark:bg-[#25252a] border-t border-[#ece6dd] dark:border-[#3a3a42]" style={{ contentVisibility: "auto", containIntrinsicSize: "0 600px" }}>
-      <div className="container-x">
-        <div className="text-center max-w-2xl mx-auto mb-14">
-          <span className="eyebrow text-[var(--accent)] block mb-2">Hotel Atmosphere</span>
-          <h2 className="font-display font-normal text-3xl sm:text-4xl md:text-5xl text-[#222] dark:text-[#f4efe6]">Photo Gallery</h2>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-          {displayItems.map((item, i) => (
-            <div key={item.id || i} className="overflow-hidden rounded-2xl border border-[#ece6dd] dark:border-[#3a3a42] aspect-[16/13.5] relative shadow-sm group">
-              <Image src={item.url} alt={item.title || "Gallery"} fill className="object-cover hover:scale-105 transition-transform duration-700" sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 25vw" />
-              {item.title && (
-                <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                  <span className="text-[11px] text-white font-medium block truncate drop-shadow">{item.title}</span>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-        <div className="mt-12 text-center">
+    <section className="container-x py-20 sm:py-28">
+      <SectionHead
+        eyebrow="Gallery"
+        title="A look around before you arrive"
+        href="/gallery"
+        linkLabel="Full gallery"
+      />
+      <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
+        {shots.map((shot, i) => (
           <Link
-            id="view-gallery-btn"
+            key={shot.id}
             href="/gallery"
-            className="btn-outline-gold px-8 py-3.5 text-xs sm:text-sm font-medium inline-flex items-center gap-2 transition-all rounded-full"
+            className={`group relative overflow-hidden rounded-2xl bg-[var(--surface-alt)] ${
+              i === 0 ? "col-span-2 row-span-2 aspect-square" : "aspect-[4/5]"
+            }`}
           >
-            <span>View Full Photo Gallery</span><ArrowRight className="h-3.5 w-3.5" />
+            <Image
+              src={shot.url}
+              alt={shot.title}
+              fill
+              sizes="(max-width: 640px) 50vw, 25vw"
+              className="object-cover transition-transform duration-700 group-hover:scale-[1.05]"
+            />
+            <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4 text-[0.7rem] font-medium uppercase tracking-[0.14em] text-white opacity-0 transition-opacity group-hover:opacity-100">
+              {shot.title}
+            </span>
           </Link>
-        </div>
+        ))}
       </div>
     </section>
   );
-});
+}
 
 /* ------------------------------------------------------------------ */
 /*  Testimonials                                                       */
 /* ------------------------------------------------------------------ */
-export const TestimonialsSection = memo(function TestimonialsSection() {
+
+const QUOTES = [
+  {
+    quote:
+      "The quietest night's sleep I've had in Ekiti. The team remembered our names by the second morning.",
+    name: "Adaeze O.",
+    detail: "Stayed in a Luxury Suite",
+  },
+  {
+    quote:
+      "We hosted ninety guests in Banky Hall. Power never flickered and the food came out hot — twice.",
+    name: "Tunde A.",
+    detail: "Conference, March",
+  },
+  {
+    quote:
+      "Booked directly on WhatsApp in about four minutes. No card, confirmation straight back.",
+    name: "Grace E.",
+    detail: "Weekend stay",
+  },
+];
+
+export function TestimonialsSection() {
   return (
-    <section className="py-20 sm:py-28 bg-blue-900 dark:bg-[#202023] text-white" style={{ contentVisibility: "auto", containIntrinsicSize: "0 600px" }}>
-      <div className="container-x text-center">
-        <span className="eyebrow text-[var(--accent-light)] block mb-2">What Our Guests Say</span>        <h2 className="font-display font-normal text-3xl sm:text-4xl md:text-5xl mb-12 text-white">Testimonials</h2>
-          <div className="grid gap-8 md:grid-cols-3 max-w-5xl mx-auto">
-          {[
-            { name: "Chief Adeleke", text: "An outstanding luxury experience. The Luxury Suite exceeded every expectation — the butler service and attention to detail were world-class.", rating: 5 },
-            { name: "Mrs. Oluwaseun", text: "We held our wedding reception at Banky Hall and it was absolutely perfect. The coordination team made our day seamless and magical.", rating: 5 },
-            { name: "Dr. Adebayo", text: "Best hotel in Ado-Ekiti by far. The executive rooms are immaculate, the Wi-Fi is genuinely fast, and the restaurant serves the best jollof rice in town.", rating: 5 },
-          ].map((t) => (
-            <div key={t.name} className="p-8 border border-white/10 bg-white/5 dark:bg-[#28282d] text-left rounded-2xl">
-              <div className="flex gap-1 text-[var(--accent-light)] mb-4">
-                {Array.from({ length: t.rating }).map((_, i) => <span key={i}>★</span>)}
-              </div>
-              <p className="text-base text-stone-100 font-normal leading-relaxed mb-6 italic">&ldquo;{t.text}&rdquo;</p>
-              <span className="font-condensed text-xs uppercase tracking-[0.2em] text-[var(--accent-light)] font-medium">{t.name}</span>
-            </div>
+    <section className="surface-sand border-y border-[var(--border)]">
+      <div className="container-x py-20 sm:py-24">
+        <SectionHead
+          eyebrow="Guest notes"
+          title="What people say after they leave"
+          align="center"
+        />
+        <div className="mt-12 grid gap-6 md:grid-cols-3">
+          {QUOTES.map((q) => (
+            <figure key={q.name} className="card flex h-full flex-col justify-between p-6 sm:p-7">
+              <blockquote className="text-[0.95rem] leading-relaxed text-[var(--text-secondary)]">
+                “{q.quote}”
+              </blockquote>
+              <figcaption className="mt-6 border-t border-[var(--border)] pt-4">
+                <p className="text-[0.85rem] font-medium">{q.name}</p>
+                <p className="mt-0.5 text-[0.7rem] uppercase tracking-[0.14em] text-[var(--text-muted)]">{q.detail}</p>
+              </figcaption>
+            </figure>
           ))}
         </div>
       </div>
     </section>
   );
-});
+}
 
 /* ------------------------------------------------------------------ */
 /*  FAQ                                                                */
 /* ------------------------------------------------------------------ */
-export const FaqSection = memo(function FaqSection() {
-  return (
-    <section className="py-20 sm:py-28 bg-white dark:bg-[#202023]" style={{ contentVisibility: "auto", containIntrinsicSize: "0 600px" }}>
-      <div className="container-x max-w-3xl">
-        <div className="text-center mb-14">
-          <span className="eyebrow text-[var(--accent)] block mb-2">Questions &amp; Answers</span>
-          <h2 className="font-display font-normal text-3xl sm:text-4xl md:text-5xl text-[#222] dark:text-[#f4efe6]">Frequently Asked Questions</h2>
-        </div>
-        <div className="space-y-4">            {FAQS.map((f, i) => (
-              <details key={i} className="group border border-[#ece6dd] dark:border-[#3a3a42] bg-transparent dark:bg-[#28282d] p-6">                <summary className="font-display text-lg sm:text-[1.18rem] font-normal text-stone-800 dark:text-stone-100 cursor-pointer list-none flex items-center justify-between">
-                {f.q}
-                <span className="text-[var(--accent)] group-open:rotate-45 transition-transform text-xl font-condensed font-normal">+</span>
-              </summary>                <p className="mt-3.5 text-sm sm:text-[0.9375rem] text-stone-600 dark:text-stone-300 font-normal leading-relaxed">{f.a}</p>
-            </details>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-});
 
-/* ------------------------------------------------------------------ */
-/*  CTA                                                                */
-/* ------------------------------------------------------------------ */
-export const CtaSection = memo(function CtaSection() {
+const FAQS = [
+  {
+    q: "What time is check-in and check-out?",
+    a: "Check-in opens at 2:00 PM and check-out is 12:00 PM. Early arrival and late departure can be arranged with the front desk, subject to availability.",
+  },
+  {
+    q: "How do I pay for my stay?",
+    a: "You can pay online by card, USSD or bank transfer through Paystack, settle by direct bank transfer, or pay at the front desk on arrival. Every reservation is held while you decide.",
+  },
+  {
+    q: "Is breakfast included?",
+    a: "Breakfast is included on selected rate plans and can be added at checkout. It is served in the restaurant daily from 7:00 to 10:30 AM.",
+  },
+  {
+    q: "Do you have parking and airport transfers?",
+    a: "Parking is free, gated and guarded. Airport pick-up from Ado-Ekiti can be arranged when you book — add it as an extra or ask the front desk.",
+  },
+  {
+    q: "Can I cancel or change my booking?",
+    a: "Free cancellation applies up to the deadline shown on your rate plan. Non-refundable rates are marked clearly before payment, and changes are handled by the front desk.",
+  },
+];
+
+export function FaqSection() {
+  const [open, setOpen] = useState<number | null>(0);
+
   return (
-    <section className="py-20 sm:py-24 bg-blue-900 dark:bg-[#202023] text-white text-center border-t border-[var(--accent)]/30">
-      <div className="container-x max-w-2xl mx-auto space-y-5">
-        <span className="font-condensed text-xs uppercase tracking-[0.3em] font-medium text-[var(--accent-light)] block">Direct Reservation Privilege</span>
-        <h2 className="text-3xl sm:text-5xl font-display font-normal text-white leading-tight">Book Your Next Stay in Ado-Ekiti</h2>
-        <p className="text-sm sm:text-base text-stone-100 font-normal leading-relaxed max-w-lg mx-auto">
-          Experience serene luxury with immediate room confirmation, dedicated concierge assistance, and guaranteed best rates when booking direct.
-        </p>
-        <div className="pt-4 flex flex-wrap items-center justify-center gap-4">
-          <Link href="/booking" className="btn-gold px-9 py-4 text-xs sm:text-sm font-medium inline-flex items-center gap-2 shadow-lg">
-            <span>Check Availability &amp; Book</span><ArrowRight className="h-4 w-4" />
-          </Link>
-          <a id="cta-phone-btn" href={`tel:${HOTEL.phone}`} className="btn-outline-white px-9 py-4 text-xs sm:text-sm font-medium inline-flex items-center gap-2 rounded-full">
-            <PhoneSolidIcon className="h-4 w-4" /><span>+234 903 587 9708</span>
+    <section className="container-x py-20 sm:py-28">
+      <div className="grid gap-12 lg:grid-cols-12">
+        <div className="lg:col-span-4">
+          <p className="text-[0.66rem] font-medium uppercase tracking-[0.28em] text-[var(--accent)]">Questions</p>
+          <h2 className="display-md mt-3">Before you book</h2>
+          <p className="mt-4 text-[0.9rem] leading-relaxed text-[var(--text-muted)]">
+            Still unsure about something? The front desk answers on WhatsApp within minutes.
+          </p>
+          <a
+            href={whatsappLink(bookingMessage({}))}
+            target="_blank"
+            rel="noreferrer"
+            className="btn-outline mt-6"
+          >
+            Ask on WhatsApp
           </a>
         </div>
+
+        <div className="lg:col-span-8">
+          <div className="divide-y divide-[var(--border)] border-y border-[var(--border)]">
+            {FAQS.map((item, i) => {
+              const isOpen = open === i;
+              return (
+                <div key={item.q}>
+                  <button
+                    type="button"
+                    onClick={() => setOpen(isOpen ? null : i)}
+                    aria-expanded={isOpen}
+                    className="flex w-full items-center justify-between gap-6 py-5 text-left"
+                  >
+                    <span className="text-[0.95rem] font-medium">{item.q}</span>
+                    <ChevronDown
+                      className={`h-4 w-4 shrink-0 text-[var(--text-muted)] transition-transform ${isOpen ? "rotate-180" : ""}`}
+                    />
+                  </button>
+                  {isOpen && (
+                    <p className="-mt-1 max-w-2xl pb-6 text-[0.88rem] leading-relaxed text-[var(--text-muted)]">
+                      {item.a}
+                    </p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          <Link href="/faqs" className="btn-quiet mt-6">
+            All policies <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+        </div>
       </div>
     </section>
   );
-});
+}
+
+/* ------------------------------------------------------------------ */
+/*  Closing CTA                                                        */
+/* ------------------------------------------------------------------ */
+
+export function CtaSection() {
+  return (
+    <section className="container-x pb-20 sm:pb-28">
+      <div className="relative overflow-hidden rounded-3xl">
+        <Image
+          src="/images/exterior-night.jpg"
+          alt="Banky Hotel & Suites at night"
+          fill
+          sizes="100vw"
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/65 to-black/30" />
+        <div className="relative grid gap-8 p-8 sm:p-14 lg:grid-cols-12 lg:items-end">
+          <div className="lg:col-span-7">
+            <p className="text-[0.64rem] font-medium uppercase tracking-[0.28em] text-white/50">Reservations</p>
+            <h2 className="display-lg mt-3 text-white">Your room is ready when you are</h2>
+            <p className="mt-4 max-w-md text-[0.92rem] leading-relaxed text-white/65">
+              Live availability, instant confirmation, and a front desk that answers. Book direct for the best
+              available rate.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3 lg:col-span-5 lg:justify-end">
+            <Link href="/booking" className="btn-gold">
+              Check availability
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+            <a
+              href={whatsappLink(bookingMessage({}))}
+              target="_blank"
+              rel="noreferrer"
+              className="btn-outline-white"
+            >
+              WhatsApp the desk
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}

@@ -36,7 +36,13 @@ for (const [folder, extensions] of Object.entries(FOLDERS)) {
     if (!extensions.has(extname(entry.name).toLowerCase())) continue;
     try {
       const stat = statSync(join(dir, entry.name));
-      manifest[folder].push({ name: entry.name, size: stat.size, mtime: Math.floor(stat.mtimeMs) });
+      // Whole seconds: checkout mtimes have sub-second noise that would churn
+      // this committed file on every build.
+      manifest[folder].push({
+        name: entry.name,
+        size: stat.size,
+        mtime: Math.floor(stat.mtimeMs / 1000) * 1000,
+      });
     } catch {
       // Skip files that disappear mid-scan.
     }

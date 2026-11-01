@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Barlow, Barlow_Condensed, Gilda_Display } from "next/font/google";
+import { Inter, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -10,27 +10,18 @@ import { ThemeProvider } from "@/lib/ThemeContext";
 import { ColorSchemeProvider } from "@/lib/ColorSchemeContext";
 import { HotelSchema } from "@/components/seo/StructuredData";
 
-const barlow = Barlow({
+const inter = Inter({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  style: ["normal", "italic"],
   display: "swap",
-  variable: "--font-barlow",
+  variable: "--font-sans",
 });
 
-const barlowCondensed = Barlow_Condensed({
+const instrumentSerif = Instrument_Serif({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: "400",
   style: ["normal", "italic"],
   display: "swap",
-  variable: "--font-barlow-condensed",
-});
-
-const gildaDisplay = Gilda_Display({
-  subsets: ["latin"],
-  weight: ["400"],
-  display: "swap",
-  variable: "--font-gilda",
+  variable: "--font-display",
 });
 
 const SITE_URL = "https://bankyhotelandsuites.com";
@@ -96,13 +87,13 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${barlow.variable} ${barlowCondensed.variable} ${gildaDisplay.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${instrumentSerif.variable}`}>
       <head>
         <link rel="icon" href="/favicon.png" type="image/png" />
         {/* Prevent FOUC: apply dark class based on Lagos, Nigeria WAT schedule (07:00am-06:59pm Light, 07:00pm-06:59am Dark) */}
         <script src="/theme-init.js" defer />
       </head>
-      <body suppressHydrationWarning className="min-h-screen bg-white dark:bg-[#202023] text-[#222] dark:text-[#f4efe6]">
+      <body suppressHydrationWarning className="min-h-screen bg-[var(--paper)] text-[var(--text-primary)]">
         <ThemeProvider>
           <ColorSchemeProvider>
             <HotelSchema />

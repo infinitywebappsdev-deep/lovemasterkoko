@@ -1,9 +1,10 @@
 "use client";
+
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { AlertCircle, CheckCircle2, Clock, Mail, MapPin, Phone } from "lucide-react";
 import { HOTEL, whatsappLink, bookingMessage } from "@/lib/hotel";
-import { Mail, MapPin } from "lucide-react";
-import { PhoneSolidIcon } from "@/components/icons/PhoneSolidIcon";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 
 export default function ContactPage() {
@@ -33,134 +34,183 @@ export default function ContactPage() {
     setSent(true);
   };
 
-  const field =
-    "w-full border-b border-[#ece6dd] dark:border-[#2e2b26] py-2.5 text-sm bg-transparent outline-none placeholder:text-stone-400 text-[#222] dark:text-[#f4efe6] focus:border-[var(--accent)] transition-colors";
-
   return (
     <>
-      <section className="relative pt-32 pb-20 sm:pt-40 sm:pb-28 bg-[#1b1b1b] dark:bg-[#1a1a1d]">
-        <Image
-          src="/images/hotel-front-left.jpg"
-          alt="Banky Hotel Exterior"
-          fill
-          priority
-          referrerPolicy="no-referrer"
-          className="object-cover opacity-35"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#1b1b1b]/90 dark:from-[#202023]/90 via-[#1b1b1b]/70 to-[#1b1b1b]" />
-        <div className="container-x relative z-10 text-center">
-          <span className="eyebrow text-[var(--accent)] block mb-3">Get in Touch</span>
-          <h1 className="font-display font-normal text-4xl sm:text-5xl md:text-6xl text-white">Contact Us</h1>
+      <section className="container-x pb-8 pt-28 sm:pt-36">
+        <nav className="flex items-center gap-2 text-[0.7rem] uppercase tracking-[0.16em] text-[var(--text-muted)]">
+          <Link href="/" className="transition-colors hover:text-[var(--text-primary)]">Home</Link>
+          <span>/</span>
+          <span className="text-[var(--text-primary)]">Contact</span>
+        </nav>
+        <div className="mt-6 max-w-2xl">
+          <p className="text-[0.66rem] font-medium uppercase tracking-[0.28em] text-[var(--accent)]">
+            Front desk, 24 hours
+          </p>
+          <h1 className="display-lg mt-3">Talk to the house</h1>
+          <p className="lede mt-4">
+            Reservations, dining bookings and event enquiries are answered around the clock. WhatsApp is
+            usually the fastest route.
+          </p>
         </div>
       </section>
-      <section className="py-16 sm:py-24 bg-white dark:bg-[#202023]">
-        <div className="container-x max-w-4xl">
-          {/* Landscape Exterior Feature */}
-          <div className="mb-12 overflow-hidden rounded-2xl border border-[#ece6dd] dark:border-[#2e2b26] shadow-md aspect-[16/10] sm:aspect-[21/9] relative bg-stone-200 dark:bg-stone-800">
-            {/* Blurred placeholder background using CSS filter: blur(20px) while full image loads */}
-            <div
-              className="img-blur-bg absolute inset-0 bg-cover bg-center pointer-events-none transition-opacity duration-700"
-              style={{
-                backgroundImage: "url('/images/hotel-front-right.jpg')",
-                filter: "blur(20px)",
-                WebkitFilter: "blur(20px)",
-                transform: "scale(1.15)",
-              }}
-              data-placeholder="blur"
-              aria-hidden="true"
-            />
+
+      <section className="container-x grid gap-10 pb-16 pt-6 lg:grid-cols-12 lg:gap-14">
+        {/* Details */}
+        <div className="lg:col-span-5">
+          <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-[var(--surface-alt)]">
             <Image
               src="/images/hotel-front-right.jpg"
-              alt="Banky Hotel & Suites Entrance"
+              alt="Banky Hotel & Suites entrance"
               fill
-              sizes="(max-width: 768px) 100vw, 896px"
-              referrerPolicy="no-referrer"
-              className="relative z-10 object-cover transition-opacity duration-500"
-              onLoad={(e) => {
-                const sibling = e.currentTarget.previousElementSibling as HTMLElement | null;
-                if (sibling) {
-                  sibling.style.opacity = "0";
-                  sibling.classList.add("is-loaded");
-                }
-              }}
+              priority
+              sizes="(max-width: 1024px) 100vw, 40vw"
+              className="object-cover"
             />
-            <div className="absolute inset-0 z-20 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-6">
-              <div>
-                <span className="text-[var(--accent)] text-xs font-condensed tracking-wider uppercase font-bold block mb-1">Visit Us In Person</span>
-                <p className="text-white text-base sm:text-lg font-display">Ado-Ekiti, Ekiti State · Warmly Welcoming Guests Daily</p>
-              </div>
-            </div>
           </div>
-          <div className="grid sm:grid-cols-2 gap-12">
-            <div className="space-y-8">
-              <div>
-                <h2 className="font-display text-2xl text-[#222] dark:text-[#f4efe6] mb-4">Reservations &amp; Inquiries</h2>
-                <p className="text-sm text-[#666] dark:text-[#a8a29e] leading-relaxed">Available 24 hours daily for room reservations, dining bookings, and event hall inquiries.</p>
-              </div>
-              <div className="space-y-5">
-                <a href={`tel:${HOTEL.phone}`} className="flex items-center gap-4 text-sm text-[#666] dark:text-[#a8a29e] hover:text-[var(--accent)] transition-colors">
-                  <div className="h-12 w-12 rounded-full border border-[var(--accent)] flex items-center justify-center text-[var(--accent)] shrink-0"><PhoneSolidIcon className="h-5 w-5" /></div>
-                  <div><span className="font-condensed uppercase text-xs text-[var(--accent)] font-semibold block mb-0.5">Phone</span>{HOTEL.phone}</div>
+
+          <ul className="mt-6 divide-y divide-[var(--border)] border-y border-[var(--border)]">
+            {HOTEL.phones.map((phone) => (
+              <li key={phone}>
+                <a href={`tel:${phone}`} className="flex items-center gap-4 py-4 transition-colors hover:text-[var(--accent)]">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--border)]">
+                    <Phone className="h-4 w-4 text-[var(--accent)]" />
+                  </span>
+                  <span>
+                    <span className="block text-[0.6rem] uppercase tracking-[0.2em] text-[var(--text-muted)]">Phone</span>
+                    <span className="text-[0.92rem]">{phone}</span>
+                  </span>
                 </a>
-                <a href={`mailto:${HOTEL.email}`} className="flex items-center gap-4 text-sm text-[#666] dark:text-[#a8a29e] hover:text-[var(--accent)] transition-colors">
-                  <div className="h-12 w-12 rounded-full border border-[var(--accent)] flex items-center justify-center text-[var(--accent)] shrink-0"><Mail className="h-5 w-5" /></div>
-                  <div><span className="font-condensed uppercase text-xs text-[var(--accent)] font-semibold block mb-0.5">Email</span><span className="break-all">{HOTEL.email}</span></div>
-                </a>
-                <div className="flex items-center gap-4 text-sm text-[#666] dark:text-[#a8a29e]">
-                  <div className="h-12 w-12 rounded-full border border-[var(--accent)] flex items-center justify-center text-[var(--accent)] shrink-0"><MapPin className="h-5 w-5" /></div>
-                  <div><span className="font-condensed uppercase text-xs text-[var(--accent)] font-semibold block mb-0.5">Address</span>{HOTEL.address}</div>
-                </div>
-              </div>
-              <a href={whatsappLink(bookingMessage({}))} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 bg-[#25D366] text-white px-6 py-3 text-xs font-condensed uppercase tracking-[0.16em] font-semibold hover:bg-[#20bd5a] transition-colors">
-                <WhatsAppIcon className="h-4 w-4" />Chat on WhatsApp
+              </li>
+            ))}
+            <li>
+              <a href={`mailto:${HOTEL.email}`} className="flex items-center gap-4 py-4 transition-colors hover:text-[var(--accent)]">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--border)]">
+                  <Mail className="h-4 w-4 text-[var(--accent)]" />
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-[0.6rem] uppercase tracking-[0.2em] text-[var(--text-muted)]">Email</span>
+                  <span className="break-all text-[0.92rem]">{HOTEL.email}</span>
+                </span>
               </a>
-            </div>
-            <div className="bg-[#f8f5f0] dark:bg-[#1c1a17] p-8 border border-[#ece6dd] dark:border-[#2e2b26]">
-              <h3 className="font-display text-xl text-[#222] dark:text-[#f4efe6] mb-6">Send Us a Message</h3>
-              <form className="space-y-4" onSubmit={handleSubmit}>
+            </li>
+            <li className="flex items-start gap-4 py-4">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--border)]">
+                <MapPin className="h-4 w-4 text-[var(--accent)]" />
+              </span>
+              <span>
+                <span className="block text-[0.6rem] uppercase tracking-[0.2em] text-[var(--text-muted)]">Address</span>
+                <span className="text-[0.92rem] leading-relaxed">{HOTEL.address}</span>
+              </span>
+            </li>
+            <li className="flex items-start gap-4 py-4">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--border)]">
+                <Clock className="h-4 w-4 text-[var(--accent)]" />
+              </span>
+              <span>
+                <span className="block text-[0.6rem] uppercase tracking-[0.2em] text-[var(--text-muted)]">Arrival</span>
+                <span className="text-[0.92rem]">Check-in {HOTEL.checkIn} · Check-out {HOTEL.checkOut}</span>
+              </span>
+            </li>
+          </ul>
+
+          <a
+            href={whatsappLink(bookingMessage({}))}
+            target="_blank"
+            rel="noreferrer"
+            className="btn-brand mt-6 w-full"
+          >
+            <WhatsAppIcon className="h-4 w-4" />
+            Chat with the front desk
+          </a>
+        </div>
+
+        {/* Form */}
+        <div className="lg:col-span-7">
+          <div className="card p-6 sm:p-8">
+            <h2 className="font-display text-2xl">Send a message</h2>
+            <p className="mt-2 text-[0.84rem] leading-relaxed text-[var(--text-muted)]">
+              It opens WhatsApp with your note already written — the team replies within minutes.
+            </p>
+
+            <form className="mt-6 grid gap-4 sm:grid-cols-2" onSubmit={handleSubmit}>
+              <label className="block sm:col-span-2">
+                <span className="field-label">Your name *</span>
                 <input
-                  placeholder="Your Name"
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className={field}
+                  className="field"
+                  placeholder="Your name"
+                  autoComplete="name"
                 />
+              </label>
+              <label className="block">
+                <span className="field-label">Email</span>
                 <input
                   type="email"
-                  placeholder="Email Address"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  className={field}
+                  className="field"
+                  placeholder="you@email.com"
+                  autoComplete="email"
                 />
+              </label>
+              <label className="block">
+                <span className="field-label">Phone</span>
                 <input
                   type="tel"
-                  placeholder="Phone Number"
                   value={form.phone}
                   onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                  className={field}
+                  className="field"
+                  placeholder="+234…"
+                  autoComplete="tel"
                 />
+              </label>
+              <label className="block sm:col-span-2">
+                <span className="field-label">Message *</span>
                 <textarea
-                  rows={4}
-                  placeholder="Your Message"
+                  rows={5}
                   value={form.message}
                   onChange={(e) => setForm({ ...form, message: e.target.value })}
-                  className={`${field} resize-none`}
+                  className="field resize-none"
+                  placeholder="Tell us what you need — a room, a table, or the hall."
                 />
-                {error && (
-                  <p role="alert" className="text-xs text-red-600 dark:text-red-400">
-                    {error}
-                  </p>
-                )}
-                {sent && (
-                  <p role="status" className="text-xs text-green-700 dark:text-green-400">
-                    WhatsApp is open with your message — press send there and our team will reply right away.
-                  </p>
-                )}
-                <button type="submit" className="btn-gold w-full py-3.5 text-xs">Send Message</button>
-                <p className="text-xs text-[#666] dark:text-[#a8a29e] text-center">
-                  Opens WhatsApp so our team can respond instantly, 24 hours a day.
+              </label>
+
+              {error && (
+                <p role="alert" className="flex items-center gap-2 text-[0.78rem] text-red-600 sm:col-span-2 dark:text-red-400">
+                  <AlertCircle className="h-3.5 w-3.5" /> {error}
                 </p>
-              </form>
-            </div>
+              )}
+              {sent && (
+                <p role="status" className="flex items-center gap-2 text-[0.78rem] text-emerald-700 sm:col-span-2 dark:text-emerald-400">
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                  WhatsApp is open with your message — press send there and we will reply right away.
+                </p>
+              )}
+
+              <div className="sm:col-span-2">
+                <button type="submit" className="btn-gold w-full sm:w-auto">
+                  Send message
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div className="mt-6 grid gap-3 sm:grid-cols-2">
+            <Link href="/booking" className="card-flat flex items-center justify-between p-5 transition-colors hover:border-[var(--border-strong)]">
+              <span>
+                <span className="block text-[0.9rem] font-medium">Reserve a room</span>
+                <span className="mt-0.5 block text-[0.76rem] text-[var(--text-muted)]">Live availability</span>
+              </span>
+              <span className="text-[var(--accent)]">→</span>
+            </Link>
+            <Link href="/events" className="card-flat flex items-center justify-between p-5 transition-colors hover:border-[var(--border-strong)]">
+              <span>
+                <span className="block text-[0.9rem] font-medium">Book Banky Hall</span>
+                <span className="mt-0.5 block text-[0.76rem] text-[var(--text-muted)]">300 seated guests</span>
+              </span>
+              <span className="text-[var(--accent)]">→</span>
+            </Link>
           </div>
         </div>
       </section>

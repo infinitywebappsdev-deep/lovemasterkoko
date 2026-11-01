@@ -1,198 +1,175 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { naira, Room, ROOMS } from "@/lib/hotel";
+import Image from "next/image";
+import { ArrowRight, BedDouble, SlidersHorizontal, Users } from "lucide-react";
+import { naira, type Room } from "@/lib/hotel";
+import { ROOMS } from "@/lib/hotel";
 import { subscribeRooms } from "@/lib/rooms-data";
-import { ArrowRight, Bed, Users, Sparkles } from "lucide-react";
-import { RoomImageSlider } from "@/components/common/RoomImageSlider";
+import { BookingSearchBar } from "@/components/booking/BookingSearchBar";
+
+type Sort = "recommended" | "price-asc" | "price-desc";
+
+const SORTS: { key: Sort; label: string }[] = [
+  { key: "recommended", label: "Recommended" },
+  { key: "price-asc", label: "Lowest price" },
+  { key: "price-desc", label: "Highest price" },
+];
 
 export default function RoomsPage() {
   const [rooms, setRooms] = useState<Room[]>(ROOMS);
-  const [activeFilter, setActiveFilter] = useState<"all" | "suites" | "executive" | "standard">("all");
+  const [sort, setSort] = useState<Sort>("recommended");
 
-  // Subscribe to live room categories from Firestore
-  useEffect(() => {
-    const unsub = subscribeRooms((liveRooms) => {
-      setRooms(liveRooms);
-    });
-    return () => unsub();
-  }, []);
+  useEffect(
+    () =>
+      subscribeRooms((live) => {
+        if (live.length) setRooms(live);
+      }),
+    [],
+  );
 
-  const filteredRooms = rooms.filter((r) => {
-    // CMS switch: disabled categories are removed from the public catalog.
-    if (r.status === "disabled") return false;
-    if (activeFilter === "all") return true;
-    const nameLower = r.name.toLowerCase();
-    if (activeFilter === "suites") {
-      return nameLower.includes("suite") || nameLower.includes("presidential") || nameLower.includes("penthouse");
-    }
-    if (activeFilter === "executive") {
-      return nameLower.includes("executive") || nameLower.includes("deluxe") || nameLower.includes("luxury");
-    }
-    if (activeFilter === "standard") {
-      return nameLower.includes("standard") || nameLower.includes("studio");
-    }
-    return true;
-  });
+  const visible = useMemo(() => {
+    const list = rooms.filter((r) => r.status !== "disabled");
+    if (sort === "price-asc") return [...list].sort((a, b) => a.rate - b.rate);
+    if (sort === "price-desc") return [...list].sort((a, b) => b.rate - a.rate);
+    return list;
+  }, [rooms, sort]);
+
+  const fromRate = visible.length ? Math.min(...visible.map((r) => r.rate)) : 30000;
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#202023]">
-      {/* ─────────────────────────────────────────────────────────────
-          1. DEDICATED SEPARATE VIDEO / IMAGE HEADER SECTION
-         ───────────────────────────────────────────────────────────── */}
-      <div className="relative w-full h-[40vh] sm:h-[50vh] min-h-[300px] bg-stone-950 overflow-hidden flex items-center justify-center">
-        {/* Baseline Header Photo */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/images/exterior-night.jpg"
-          alt="Rooms & Suites at Banky Hotel"
-          className="absolute inset-0 w-full h-full object-cover opacity-35 pointer-events-none select-none"
-        />
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          poster="/images/exterior-night.jpg"
-          preload="auto"
-          className="absolute inset-0 w-full h-full object-cover opacity-35 pointer-events-none"
-        >
-          <source src="/videos/hero.mp4" type="video/mp4" />
-          <source src="/videos/executive-room.mp4" type="video/mp4" />
-        </video>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/60 pointer-events-none" />
-
-        <div className="container-x relative z-10 text-center py-12">
-          <span className="text-[11px] font-condensed uppercase tracking-widest text-[#ffbf00] font-bold block mb-2">
-            Luxury Accommodations
-          </span>
-          <h1 className="font-display font-normal text-3xl sm:text-4xl md:text-5xl text-white mb-3">
-            Rooms &amp; Suites
-          </h1>
-          <p className="text-sm sm:text-base text-stone-200 font-normal max-w-xl mx-auto leading-relaxed">
-            Twenty-eight appointed residences, each designed for comfort, elegance, and an unforgettable stay in Ado-Ekiti.
-          </p>
-        </div>
-      </div>
-
-      {/* ─────────────────────────────────────────────────────────────
-          2. ROOM CATEGORIES CATALOG SECTION
-         ───────────────────────────────────────────────────────────── */}
-      <section className="py-12 sm:py-20">
+    <>
+      {/* Header band */}
+      <section className="border-b border-[var(--border)] bg-[var(--surface)] pb-10 pt-28 sm:pb-14 sm:pt-36">
         <div className="container-x">
-          {/* Filter Pills */}
-          <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-stone-200 dark:border-stone-800 mb-8">
-            <div className="flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setActiveFilter("all")}
-                className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                  activeFilter === "all"
-                    ? "bg-[#ffbf00] text-white shadow-sm"
-                    : "bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700"
-                }`}
-              >
-                All Categories ({rooms.filter((r) => r.status !== "disabled").length})
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveFilter("suites")}
-                className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                  activeFilter === "suites"
-                    ? "bg-[#ffbf00] text-white shadow-sm"
-                    : "bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700"
-                }`}
-              >
-                Suites &amp; Penthouse
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveFilter("executive")}
-                className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                  activeFilter === "executive"
-                    ? "bg-[#ffbf00] text-white shadow-sm"
-                    : "bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700"
-                }`}
-              >
-                Executive &amp; Deluxe
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveFilter("standard")}
-                className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                  activeFilter === "standard"
-                    ? "bg-[#ffbf00] text-white shadow-sm"
-                    : "bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700"
-                }`}
-              >
-                Standard &amp; Studio
-              </button>
+          <nav className="flex items-center gap-2 text-[0.7rem] uppercase tracking-[0.16em] text-[var(--text-muted)]">
+            <Link href="/" className="transition-colors hover:text-[var(--text-primary)]">Home</Link>
+            <span>/</span>
+            <span className="text-[var(--text-primary)]">Rooms</span>
+          </nav>
+
+          <div className="mt-6 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+            <div className="max-w-xl">
+              <p className="text-[0.66rem] font-medium uppercase tracking-[0.28em] text-[var(--accent)]">
+                Accommodation
+              </p>
+              <h1 className="display-lg mt-3">Rooms &amp; suites</h1>
+              <p className="lede mt-4">
+                Twenty-eight rooms across eight categories — from calm standard doubles to the signature
+                suite. Rates start at {naira(fromRate)} per night, taxes included at checkout.
+              </p>
             </div>
 
-            <div className="text-xs text-stone-500">
-              Showing <strong>{filteredRooms.length}</strong> room {filteredRooms.length === 1 ? "category" : "categories"}
+            <div className="flex items-center gap-2 rounded-full border border-[var(--border)] p-1">
+              <span className="pl-3 pr-1 text-[var(--text-muted)]">
+                <SlidersHorizontal className="h-3.5 w-3.5" />
+              </span>
+              {SORTS.map((s) => (
+                <button
+                  key={s.key}
+                  type="button"
+                  onClick={() => setSort(s.key)}
+                  className={`rounded-full px-3.5 py-2 text-[0.66rem] font-medium uppercase tracking-[0.12em] transition-colors ${
+                    sort === s.key
+                      ? "bg-[var(--text-primary)] text-[var(--surface)]"
+                      : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                  }`}
+                >
+                  {s.label}
+                </button>
+              ))}
             </div>
           </div>
 
-          {/* Room Cards Grid */}
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredRooms.map((room) => {
-              const imagesList = room.images && room.images.length > 0 ? room.images : [room.image];
-              return (
-                <Link
-                  key={room.slug}
-                  href={`/rooms/${room.slug}`}
-                  className="group block border border-stone-200 dark:border-stone-800 bg-white dark:bg-[#28282d] overflow-hidden rounded-2xl hover:shadow-xl transition-all duration-300 hover:border-[#ffbf00]"
-                >
-                  {/* Slider with NO BUTTONS visible to guests as requested */}
-                  <div className="overflow-hidden bg-stone-100 dark:bg-stone-900">
-                    <RoomImageSlider
-                      images={imagesList}
-                      alt={room.name}
-                      aspectClass="aspect-[16/10]"
-                      autoSlideInterval={5500}
-                      showControls={false}
-                      pauseOnHover={false}
-                    />
-                  </div>
-
-                  <div className="p-6">
-                    <div className="flex items-center justify-between gap-2 mb-2">
-                      <h2 className="font-display text-2xl font-normal text-stone-900 dark:text-white group-hover:text-[#ffbf00] transition-colors">
-                        {room.name}
-                      </h2>
-                      <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 font-semibold">
-                        {room.qty} {room.qty === 1 ? "unit" : "units"}
-                      </span>
-                    </div>
-
-                    <p className="text-sm text-stone-600 dark:text-stone-300 font-normal leading-relaxed line-clamp-2 mb-4">
-                      {room.blurb}
-                    </p>
-
-                    <div className="flex items-center justify-between pt-4 border-t border-stone-100 dark:border-stone-800">
-                      <div>
-                        <span className="font-display text-2xl font-normal text-[#ffbf00]">
-                          {naira(room.rate)}
-                        </span>
-                        <span className="text-[11px] uppercase font-condensed tracking-wider text-stone-500 dark:text-stone-400 ml-1">
-                          / night
-                        </span>
-                      </div>
-
-                      <span className="px-3.5 py-1.5 rounded-lg bg-[#ffbf00] hover:bg-[#e09e00] text-white text-xs font-semibold inline-flex items-center gap-1.5 group-hover:translate-x-0.5 transition-all shadow-sm">
-                        <span>View Details</span>
-                        <ArrowRight className="h-3.5 w-3.5" />
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
+          <div className="mt-8">
+            <BookingSearchBar />
           </div>
         </div>
       </section>
-    </div>
+
+      {/* Listing */}
+      <section className="container-x py-14 sm:py-20">
+        <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
+          {visible.map((room) => (
+            <article key={room.slug} className="group grid gap-6 sm:grid-cols-2 sm:items-center">
+              <Link
+                href={`/rooms/${room.slug}`}
+                className="relative block aspect-[4/3] overflow-hidden rounded-2xl bg-[var(--surface-alt)]"
+              >
+                <Image
+                  src={room.image}
+                  alt={room.name}
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                  className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                />
+              </Link>
+
+              <div>
+                <p className="text-[0.62rem] font-medium uppercase tracking-[0.2em] text-[var(--accent)]">
+                  {room.qty > 1 ? `${room.qty} rooms available` : "One-of-one"}
+                </p>
+                <h2 className="mt-2 font-display text-[1.7rem] leading-tight">{room.name}</h2>
+                <p className="mt-2 line-clamp-3 text-[0.85rem] leading-relaxed text-[var(--text-muted)]">
+                  {room.blurb}
+                </p>
+
+                <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-[0.72rem] text-[var(--text-muted)]">
+                  <span className="inline-flex items-center gap-1.5">
+                    <Users className="h-3.5 w-3.5" /> {room.occupancy || "2 guests"}
+                  </span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <BedDouble className="h-3.5 w-3.5" /> {room.bed || "En-suite"}
+                  </span>
+                </div>
+
+                <div className="mt-5 flex items-end justify-between border-t border-[var(--border)] pt-4">
+                  <div>
+                    <p className="font-display text-xl leading-none">{naira(room.rate)}</p>
+                    <p className="mt-1 text-[0.6rem] uppercase tracking-[0.14em] text-[var(--text-muted)]">
+                      per night
+                    </p>
+                  </div>
+                  <Link
+                    href={`/rooms/${room.slug}`}
+                    className="inline-flex items-center gap-2 text-[0.68rem] font-medium uppercase tracking-[0.16em] text-[var(--text-primary)] transition-colors hover:text-[var(--accent)]"
+                  >
+                    View room
+                    <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                  </Link>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        {!visible.length && (
+          <div className="card p-10 text-center">
+            <h2 className="display-sm">No room categories are published right now</h2>
+            <p className="mt-3 text-sm text-[var(--text-muted)]">
+              Please call the front desk and we will find you a room directly.
+            </p>
+          </div>
+        )}
+      </section>
+
+      {/* Closing band */}
+      <section className="surface-sand border-t border-[var(--border)]">
+        <div className="container-x flex flex-col items-start gap-6 py-14 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="display-md">Not sure which room?</h2>
+            <p className="mt-2 max-w-md text-[0.9rem] leading-relaxed text-[var(--text-muted)]">
+              Tell the front desk who is travelling and how long for — they will recommend the right
+              category and hold it while you decide.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <Link href="/booking" className="btn-gold">Check availability</Link>
+            <Link href="/contact" className="btn-outline">Talk to the desk</Link>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }

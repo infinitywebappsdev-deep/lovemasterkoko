@@ -1,247 +1,206 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+
+import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import Image from "next/image";
-import {
-  ArrowRight,
-  Play,
-  Pause,
-  Volume2,
-  VolumeX,
-  Loader2,
-} from "lucide-react";
-
-/* ------------------------------------------------------------------ */
-/*  Dynamic imports — below-fold sections load only when scrolled to    */
-/* ------------------------------------------------------------------ */
-const AboutSection = dynamic(() => import("@/components/home/sections").then((m) => m.AboutSection), { loading: () => <div className="h-96" /> });
-const RoomsSection = dynamic(() => import("@/components/home/sections").then((m) => m.RoomsSection), { loading: () => <div className="h-96" /> });
-const PrivilegesSection = dynamic(() => import("@/components/home/sections").then((m) => m.PrivilegesSection), { loading: () => <div className="h-80" /> });
-const FacilitiesSection = dynamic(() => import("@/components/home/sections").then((m) => m.FacilitiesSection), { loading: () => <div className="h-96" /> });
-const ExperiencesSection = dynamic(() => import("@/components/home/sections").then((m) => m.ExperiencesSection), { loading: () => <div className="h-96" /> });
-const GallerySection = dynamic(() => import("@/components/home/sections").then((m) => m.GallerySection), { loading: () => <div className="h-96" /> });
-const TestimonialsSection = dynamic(() => import("@/components/home/sections").then((m) => m.TestimonialsSection), { loading: () => <div className="h-96" /> });
-const FaqSection = dynamic(() => import("@/components/home/sections").then((m) => m.FaqSection), { loading: () => <div className="h-96" /> });
-const CtaSection = dynamic(() => import("@/components/home/sections").then((m) => m.CtaSection), { loading: () => <div className="h-64" /> });
-
+import { ArrowRight, Loader2, Pause, Play, Star, Volume2, VolumeX } from "lucide-react";
 import {
   DEFAULT_HOMEPAGE_MEDIA,
-  HomepageMediaConfig,
+  type HomepageMediaConfig,
   subscribeHomepageMedia,
 } from "@/lib/homepage-media";
+import { BookingSearchBar } from "@/components/booking/BookingSearchBar";
 import { whatsappLink, bookingMessage } from "@/lib/hotel";
-import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 
-/* ------------------------------------------------------------------ */
-/*  Hero Video Header Component                                       */
-/* ------------------------------------------------------------------ */
-interface HeroVideoHeaderProps {
-  config: HomepageMediaConfig;
-}
+const AboutSection = dynamic(() => import("@/components/home/sections").then((m) => m.AboutSection), {
+  loading: () => <div className="h-96" />,
+});
+const RoomsSection = dynamic(() => import("@/components/home/sections").then((m) => m.RoomsSection), {
+  loading: () => <div className="h-96" />,
+});
+const PrivilegesSection = dynamic(
+  () => import("@/components/home/sections").then((m) => m.PrivilegesSection),
+  { loading: () => <div className="h-40" /> },
+);
+const FacilitiesSection = dynamic(
+  () => import("@/components/home/sections").then((m) => m.FacilitiesSection),
+  { loading: () => <div className="h-96" /> },
+);
+const ExperiencesSection = dynamic(
+  () => import("@/components/home/sections").then((m) => m.ExperiencesSection),
+  { loading: () => <div className="h-96" /> },
+);
+const GallerySection = dynamic(
+  () => import("@/components/home/sections").then((m) => m.GallerySection),
+  { loading: () => <div className="h-96" /> },
+);
+const TestimonialsSection = dynamic(
+  () => import("@/components/home/sections").then((m) => m.TestimonialsSection),
+  { loading: () => <div className="h-96" /> },
+);
+const FaqSection = dynamic(() => import("@/components/home/sections").then((m) => m.FaqSection), {
+  loading: () => <div className="h-96" />,
+});
+const CtaSection = dynamic(() => import("@/components/home/sections").then((m) => m.CtaSection), {
+  loading: () => <div className="h-64" />,
+});
 
-function HeroVideoHeader({ config }: HeroVideoHeaderProps) {
+function HeroBackdrop({ config }: { config: HomepageMediaConfig }) {
   const videoRef = useRef<HTMLVideoElement>(null);
-
-  const [isPlaying, setIsPlaying] = useState(true);
-  const [isMuted, setIsMuted] = useState(true);
-  const [videoLoaded, setVideoLoaded] = useState(false);
-
   const hero = config.hero || DEFAULT_HOMEPAGE_MEDIA.hero;
-  const isVideoActive = hero.isVideoEnabled !== false;
-  const activeVideoSrc = hero.videoUrl || "/videos/hero.mp4";
+  const videoActive = hero.isVideoEnabled !== false;
+  const src = hero.videoUrl || "/videos/hero.mp4";
+  const poster = hero.posterImage || "/images/exterior-night.jpg";
 
-  // When activeVideoSrc changes, reload and play
+  const [loaded, setLoaded] = useState(false);
+  const [playing, setPlaying] = useState(true);
+  const [muted, setMuted] = useState(true);
+
   useEffect(() => {
-    if (videoRef.current && isVideoActive) {
-      videoRef.current.muted = true;
-      videoRef.current.src = activeVideoSrc;
-      videoRef.current.load();
-
-      const playPromise = videoRef.current.play();
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => {
-            setIsPlaying(true);
-            setVideoLoaded(true);
-          })
-          .catch(() => {
-            if (videoRef.current) {
-              videoRef.current.muted = true;
-              videoRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
-            }
-          });
-      }
-    }
-  }, [activeVideoSrc, isVideoActive]);
+    const video = videoRef.current;
+    if (!video || !videoActive) return;
+    video.muted = true;
+    const attempt = video.play();
+    attempt?.then(() => setPlaying(true)).catch(() => setPlaying(false));
+  }, [src, videoActive]);
 
   const togglePlay = () => {
     const video = videoRef.current;
     if (!video) return;
     if (video.paused) {
-      const p = video.play();
-      if (p !== undefined) {
-        p.then(() => setIsPlaying(true)).catch((err) => {
-          console.warn("Home hero play retry with mute:", err);
-          video.muted = true;
-          setIsMuted(true);
-          const p2 = video.play();
-          if (p2 !== undefined) {
-            p2.then(() => setIsPlaying(true)).catch(() => {});
-          }
-        });
-      }
+      video.play().then(() => setPlaying(true)).catch(() => {});
     } else {
       video.pause();
-      setIsPlaying(false);
+      setPlaying(false);
     }
   };
 
   const toggleMute = () => {
-    if (!videoRef.current) return;
-    videoRef.current.muted = !videoRef.current.muted;
-    setIsMuted(videoRef.current.muted);
+    const video = videoRef.current;
+    if (!video) return;
+    video.muted = !video.muted;
+    setMuted(video.muted);
   };
 
   return (
-    <div
-      id="video-header-container"
-      data-video-header="true"
-      className="video-header-container absolute inset-0 overflow-hidden bg-black"
-    >
-      {/* Baseline Hero Image Backdrop — preloaded as the LCP element, visible before the video decodes */}
+    <>
       <Image
-        src={hero.posterImage || "/images/exterior-night.jpg"}
-        alt="Banky Hotel & Suites Exterior"
+        src={poster}
+        alt="Banky Hotel & Suites"
         fill
         priority
         sizes="100vw"
-        className="object-cover object-center pointer-events-none select-none"
+        className="object-cover object-center"
       />
-
-      {/* Video Element */}
-      {isVideoActive && (
+      {videoActive && (
         <video
           ref={videoRef}
-          key={activeVideoSrc}
-          src={activeVideoSrc}
-          poster={hero.posterImage || "/images/exterior-night.jpg"}
+          key={src}
+          src={src}
+          poster={poster}
           autoPlay
           loop
           muted
           playsInline
           preload="auto"
-          onLoadStart={() => setVideoLoaded(false)}
-          onWaiting={() => setVideoLoaded(false)}
-          onLoadedData={() => setVideoLoaded(true)}
-          onCanPlay={() => setVideoLoaded(true)}
-          onPlaying={() => {
-            setVideoLoaded(true);
-            setIsPlaying(true);
-          }}
-          className={`w-full h-full object-cover object-center select-none transition-opacity duration-700 ${
-            videoLoaded ? "opacity-100" : "opacity-0"
+          onLoadedData={() => setLoaded(true)}
+          onCanPlay={() => setLoaded(true)}
+          onPlaying={() => setPlaying(true)}
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${
+            loaded ? "opacity-100" : "opacity-0"
           }`}
         />
       )}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/35 to-black/85" />
+      <div className="absolute inset-0 bg-[radial-gradient(120%_80%_at_50%_0%,transparent,rgba(0,0,0,0.45))]" />
 
-      {/* Gradient overlay for readability */}
-      <div className="absolute inset-0 z-20 bg-gradient-to-t from-black/85 via-black/45 to-black/25 pointer-events-none" />
-
-      {/* Hero Header Controls (Right side) */}
-      <div className="absolute bottom-4 right-4 sm:right-6 z-30 flex items-center gap-2">
-        {/* Video Playback Toggle */}
-        {isVideoActive && (
+      {videoActive && (
+        <div className="absolute bottom-5 right-4 z-20 flex gap-2 sm:right-6">
           <button
-            id="video-playback-toggle"
             type="button"
             onClick={togglePlay}
-            className="w-8 h-8 rounded-full bg-black/60 hover:bg-black/80 border border-white/20 text-white flex items-center justify-center backdrop-blur-md transition-all hover:scale-105 active:scale-95 shadow-md cursor-pointer"
-            aria-label={!videoLoaded ? "Video loading..." : isPlaying ? "Pause video" : "Play video"}
-            title={!videoLoaded ? "Video buffering..." : isPlaying ? "Pause video" : "Play video"}
+            aria-label={playing ? "Pause background video" : "Play background video"}
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-white/25 bg-black/35 text-white backdrop-blur-md transition-colors hover:bg-black/55"
           >
-            {!videoLoaded ? (
-              <Loader2 className="h-3.5 w-3.5 animate-spin text-amber-300" />
-            ) : isPlaying ? (
+            {!loaded ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : playing ? (
               <Pause className="h-3.5 w-3.5" />
             ) : (
-              <Play className="h-3.5 w-3.5 fill-white" />
+              <Play className="h-3.5 w-3.5 fill-current" />
             )}
           </button>
-        )}
-
-        {/* Audio Toggle */}
-        {isVideoActive && (
           <button
-            id="video-audio-toggle"
             type="button"
             onClick={toggleMute}
-            className="w-8 h-8 rounded-full bg-black/60 hover:bg-black/80 border border-white/20 text-white flex items-center justify-center backdrop-blur-md transition-all hover:scale-105 active:scale-95 shadow-md cursor-pointer"
-            aria-label={isMuted ? "Unmute audio" : "Mute audio"}
-            title={isMuted ? "Unmute audio" : "Mute audio"}
+            aria-label={muted ? "Unmute background video" : "Mute background video"}
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-white/25 bg-black/35 text-white backdrop-blur-md transition-colors hover:bg-black/55"
           >
-            {isMuted ? <VolumeX className="h-3.5 w-3.5" /> : <Volume2 className="h-3.5 w-3.5" />}
+            {muted ? <VolumeX className="h-3.5 w-3.5" /> : <Volume2 className="h-3.5 w-3.5" />}
           </button>
-        )}
-      </div>
-    </div>
+        </div>
+      )}
+    </>
   );
 }
 
-/* ------------------------------------------------------------------ */
-/*  Main Homepage Component                                           */
-/* ------------------------------------------------------------------ */
 export default function Home() {
-  const [mediaConfig, setMediaConfig] = useState<HomepageMediaConfig>(DEFAULT_HOMEPAGE_MEDIA);
+  const [media, setMedia] = useState<HomepageMediaConfig>(DEFAULT_HOMEPAGE_MEDIA);
 
-  useEffect(() => {
-    const unsub = subscribeHomepageMedia((live) => {
-      setMediaConfig(live);
-    });
-    return () => unsub();
-  }, []);
+  useEffect(() => subscribeHomepageMedia(setMedia), []);
 
-  const hero = mediaConfig.hero || DEFAULT_HOMEPAGE_MEDIA.hero;
+  const hero = media.hero || DEFAULT_HOMEPAGE_MEDIA.hero;
 
   return (
     <>
-      {/* HERO — critical, inlined */}
-      <section className="relative min-h-[100dvh] w-full overflow-hidden flex flex-col justify-center lg:justify-end">
-        <HeroVideoHeader config={mediaConfig} />
-        <div className="container-x relative z-30 flex flex-col justify-center lg:justify-end pt-20 sm:pt-24 lg:pt-28 pb-8 sm:pb-12 my-auto lg:my-0">
-          <div className="max-w-3xl pb-0 lg:pb-8 mx-auto lg:mx-0 text-center lg:text-left">
-            <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-normal text-white leading-[1.1] text-center lg:text-left">
-              {hero.headline || "Banky Hotel & Suites"}
+      {/* ── Hero ─────────────────────────────────────────────────── */}
+      <section className="relative flex min-h-[100svh] flex-col justify-end overflow-hidden">
+        <HeroBackdrop config={media} />
+
+        <div className="container-x relative z-10 pb-8 pt-28 sm:pb-12 sm:pt-32">
+          <div className="max-w-2xl">
+            <div className="flex items-center gap-3">
+              <span className="flex items-center gap-1 text-[#e7c08a]">
+                {[0, 1, 2, 3, 4].map((i) => (
+                  <Star key={i} className="h-3 w-3 fill-current" />
+                ))}
+              </span>
+              <span className="text-[0.66rem] font-medium uppercase tracking-[0.24em] text-white/60">
+                Ado-Ekiti · Ekiti State
+              </span>
+            </div>
+
+            <h1 className="mt-5 font-display text-[2.9rem] leading-[1.02] text-white sm:text-6xl lg:text-[4.6rem]">
+              {hero.headline || "Quiet luxury in the heart of Ado-Ekiti"}
             </h1>
-            <p className="mt-3 sm:mt-5 max-w-xl mx-auto lg:mx-0 text-[14px] sm:text-base leading-relaxed text-stone-100 font-normal text-center lg:text-left">
-              {hero.tagline || "Quiet luxury in the heart of Ado-Ekiti"}
+            <p className="mt-5 max-w-lg text-[0.95rem] leading-relaxed text-white/70 sm:text-base">
+              {hero.tagline ||
+                "Twenty-eight rooms and suites, a garden bar, and a kitchen that cooks Ekiti produce plainly well."}
             </p>
-            <div className="mt-6 sm:mt-8 flex flex-wrap items-center justify-center lg:justify-start gap-3.5">
-              {/* Primary channel: WhatsApp */}
+
+            <div className="mt-7 flex flex-wrap items-center gap-3">
+              <Link href={hero.ctaLink || "/booking"} className="btn-gold">
+                {hero.ctaText || "Book a stay"}
+                <ArrowRight className="h-4 w-4" />
+              </Link>
               <a
                 href={whatsappLink(bookingMessage({}))}
                 target="_blank"
-                rel="noopener noreferrer"
-                className="btn-gold px-8 py-4 text-xs sm:text-sm inline-flex items-center gap-2.5 shadow-lg shadow-[var(--accent)]/30 font-medium"
+                rel="noreferrer"
+                className="btn-outline-white"
               >
-                <WhatsAppIcon className="h-4 w-4" />
-                <span>Book on WhatsApp</span>
+                WhatsApp the front desk
               </a>
-
-              {/* Alternative: full online booking engine */}
-              <Link
-                href={hero.ctaLink || "/booking"}
-                className="px-8 py-4 text-xs sm:text-sm inline-flex items-center gap-2.5 rounded-xl border border-white/40 text-white hover:bg-white/10 hover:border-white/70 transition-colors font-medium backdrop-blur-sm"
-              >
-                <span>{hero.ctaText || "Book Online"}</span>
-                <ArrowRight className="h-4 w-4" />
-              </Link>
             </div>
+          </div>
+
+          <div className="mt-10 sm:mt-14">
+            <BookingSearchBar variant="hero" />
           </div>
         </div>
       </section>
 
-      {/* BELOW-FOLD — dynamically split into separate chunks */}
       <AboutSection />
       <RoomsSection />
       <PrivilegesSection />
