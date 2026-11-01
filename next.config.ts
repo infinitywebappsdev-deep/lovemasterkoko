@@ -12,7 +12,10 @@ const nextConfig: NextConfig = {
   // Without it Next.js blocks all dev resources (HMR websocket, dev overlay,
   // source maps) as cross-origin, which leaves the page un-hydrated: every
   // button — hamburger menu, theme toggle, calendar — renders but is dead.
-  allowedDevOrigins: ["pv-f7f0f1098227-248d2dc5-d27e-4c11-b9ba-1ea9b9e00e0d.style.dev"],
+  allowedDevOrigins: [
+    "pv-f7f0f1098227-248d2dc5-d27e-4c11-b9ba-1ea9b9e00e0d.style.dev",
+    "pv-7b0790de466e-bebc0f54-87eb-4a66-b0d4-b195153a253c.style.dev",
+  ],
   experimental: {
     optimizePackageImports: ["lucide-react"],
     // Cap build workers — the sandbox enforces a 2 GB memory limit and
